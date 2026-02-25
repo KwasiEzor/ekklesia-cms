@@ -44,4 +44,5 @@ For non-technical users, a deploy button will be available at [ekklesia.app](htt
 
 ## Stay Updated
 
-Watch the [GitHub repository](https://github.com/your-org/ekklesia-cms) and check the [Roadmap](/guide/roadmap) for progress updates.
+Watch the [GitHub repository](https://github.com/kwasiEzor/ekklesia-cms) and check the [Roadmap](/guide/roadmap) for progress updates.
+Online doc [GitHub Doc](https://kwasiezor.github.io/ekklesia-cms/)
