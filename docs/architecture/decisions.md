@@ -76,11 +76,20 @@ The contract governing what a community plugin can and cannot do — which data 
 
 ---
 
-### Content Versioning <span class="decision-badge">OPEN</span>
+### Content Versioning <span class="decision-badge">DECIDED</span>
 
-**Status:** Not yet decided. Must be resolved before v1 alpha.
+**Decision:** Soft versioning with a `previous_version` JSONB column on each content table.
 
-Whether content types support revision history affects the database schema design for all content tables. If versioning is included, tables need a `revision_id` or a separate `_revisions` table pattern. The cost of adding this later is high.
+**Rationale:** Church staff are non-technical users — accidental saves that destroy content would erode trust immediately. Full revision tables (Option 3 from open questions) double write complexity and add a separate `_revisions` table per content type, which is overkill for v1. Soft versioning adds one nullable JSONB column per content table, handled by a reusable `HasSoftVersioning` Eloquent trait that automatically snapshots changed fields on the `updating` event.
+
+**Implementation:**
+- Each content table includes a `previous_version JSONB` nullable column
+- The `App\Concerns\HasSoftVersioning` trait hooks into the Eloquent `updating` event
+- Before each save, the trait snapshots only the dirty (changed) fields into `previous_version`
+- A `revertToPreviousVersion()` method restores the snapshot and clears `previous_version`
+- Only one level of undo is supported in v1 — this is deliberate to keep the schema simple
+
+**Upgrade path:** If full revision history is needed later, a `_revisions` table per content type can be added via migration. The trait can be extended to write to both the inline snapshot and the revision table during a transition period.
 
 ---
 

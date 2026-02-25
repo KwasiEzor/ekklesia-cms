@@ -2,6 +2,9 @@
 
 ## v0.1.0 — Architecture Phase (February 2026)
 
+### Decided
+- Content versioning strategy: soft versioning with `previous_version` JSONB column and `HasSoftVersioning` trait
+
 ### Added
 - Project vision and niche definition documented
 - Multi-tenancy architectural decision: single database + `stancl/tenancy`

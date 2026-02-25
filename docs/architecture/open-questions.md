@@ -22,15 +22,10 @@ Questions to answer:
 
 ## 2. Content Versioning
 
-**Status:** Open — must resolve before v1 alpha  
+**Status:** ~~Open~~ **Resolved** — see [Core Decisions](/architecture/decisions#content-versioning)
 **Impact:** High — affects database schema for all content tables
 
-Whether content types support revision history is a schema-level decision that is expensive to add retroactively.
-
-Options:
-1. **No versioning (v1)** — Simpler schema, can add later with a migration. Risk: churches lose content on accidental saves.
-2. **Soft versioning** — Store `previous_version` as JSONB snapshot on the record. Lightweight but limited history.
-3. **Full revision table** — A `_revisions` table per content type. Full history, but doubles write complexity.
+**Decision:** Option 2 — Soft versioning with `previous_version` JSONB column, implemented via a reusable `HasSoftVersioning` Eloquent trait. Full details in the [decisions page](/architecture/decisions#content-versioning).
 
 ---
 
