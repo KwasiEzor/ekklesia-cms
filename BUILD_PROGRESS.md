@@ -270,7 +270,7 @@ Content CRUD → ContentObserver → ContentChanged (ShouldBroadcast)
 
 ## Phase 2, Session 3 — Announcement Content Type
 
-**Commit:** `TBD` — `feat: Announcement content type — model, migration, Filament resource, API, tests`
+**Commit:** `824e0c9` — `feat: Announcement content type — model, migration, Filament resource, API, tests`
 **Date:** 2026-02-25
 
 ### Model
