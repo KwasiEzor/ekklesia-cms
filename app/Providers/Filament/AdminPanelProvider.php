@@ -33,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->brandName('Ekklesia CMS')
             ->tenant(Tenant::class, slugAttribute: 'slug')
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

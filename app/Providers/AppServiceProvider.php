@@ -2,23 +2,26 @@
 
 namespace App\Providers;
 
+use App\Events\ContentChanged;
+use App\Listeners\NotifyTenantAdmins;
+use App\Models\Event;
+use App\Models\Sermon;
+use App\Observers\ContentObserver;
+use Illuminate\Support\Facades\Event as EventFacade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        Sermon::observe(ContentObserver::class);
+        Event::observe(ContentObserver::class);
+
+        EventFacade::listen(ContentChanged::class, NotifyTenantAdmins::class);
     }
 }

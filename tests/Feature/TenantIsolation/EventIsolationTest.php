@@ -1,8 +1,15 @@
 <?php
 
+use App\Events\ContentChanged;
 use App\Models\Event;
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Support\Facades\Event as EventFacade;
+
+// Fake ContentChanged to prevent the observer/queue from resetting tenant context
+beforeEach(function () {
+    EventFacade::fake([ContentChanged::class]);
+});
 
 test('event belongs to tenant and cannot be accessed by another tenant', function () {
     $tenant1 = Tenant::factory()->create();
