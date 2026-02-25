@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'Ekklesia CMS',
   description: 'The open-source CMS built for African churches and religious organizations',
   lang: 'en-US',
+  base: '/ekklesia-cms/',
 
   head: [
     ['link', { rel: 'icon', href: '/favicon.svg' }],
@@ -62,7 +63,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/your-org/ekklesia-cms' }
+      { icon: 'github', link: 'https://github.com/KwasiEzor/ekklesia-cms' }
     ],
 
     footer: {
@@ -71,7 +72,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/your-org/ekklesia-cms/edit/main/docs/:path',
+      pattern: 'https://github.com/KwasiEzor/ekklesia-cms/edit/main/docs/:path',
       text: 'Edit this page on GitHub'
     },
 

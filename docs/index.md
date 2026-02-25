@@ -14,7 +14,7 @@ hero:
       link: /architecture/overview
     - theme: alt
       text: View on GitHub
-      link: https://github.com/your-org/ekklesia-cms
+      link: https://github.com/KwasiEzor/ekklesia-cms
 
 features:
   - icon: 🏛️
