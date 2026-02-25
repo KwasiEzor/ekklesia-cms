@@ -14,7 +14,7 @@
 | 2.1 | Sermon Content Type | Done | 2026-02-25 |
 | 2.2 | Event Content Type | Done | 2026-02-25 |
 | — | Laravel Reverb Integration | Done | 2026-02-25 |
-| 2.3 | Announcement Content Type | Pending | — |
+| 2.3 | Announcement Content Type | Done | 2026-02-25 |
 | 2.4 | Member Content Type | Pending | — |
 | 2.5 | Page Content Type | Pending | — |
 | 2.6 | GivingRecord Content Type | Pending | — |
@@ -268,11 +268,61 @@ Content CRUD → ContentObserver → ContentChanged (ShouldBroadcast)
 
 ---
 
-## Upcoming: Phase 2, Session 3 — Announcement Content Type
+## Phase 2, Session 3 — Announcement Content Type
+
+**Commit:** `TBD` — `feat: Announcement content type — model, migration, Filament resource, API, tests`
+**Date:** 2026-02-25
+
+### Model
+- **`App\Models\Announcement`** — BelongsToTenant, HasSoftVersioning, HasFactory
+  - Casts: `published_at` (datetime), `expires_at` (datetime), `pinned` (boolean), `custom_fields` (array), `previous_version` (array)
+  - Hidden: `tenant_id`
+  - Accessors: `is_active` (published and not expired), `is_expired` (past expiry date)
+
+### Migration
+| Migration | Table | Indexes |
+|-----------|-------|---------|
+| `2026_02_25_160000` | `announcements` | `tenant_id`, `(tenant_id, published_at)`, `(tenant_id, created_at)`, unique `(tenant_id, slug)`, GIN on `custom_fields` |
+
+### Filament Resource
+- **`App\Filament\Resources\AnnouncementResource`**
+  - Navigation: icon `Heroicon::OutlinedMegaphone`, group "Contenu", sort 3
+  - Form: title (auto-slug), slug, published_at, expires_at (validated after published_at), pinned toggle, target_group select (Tous/Jeunesse/Femmes/Hommes/Responsables), body (MarkdownEditor)
+  - Table: title, published_at, expires_at, pinned (icon), target_group; filters for active/expired/pinned; default sort by published_at desc
+  - Pages: ListAnnouncements, CreateAnnouncement, EditAnnouncement
+
+### API Layer
+| Endpoint | Controller Method | Auth |
+|----------|------------------|------|
+| `GET /api/v1/announcements` | `index` | Sanctum |
+| `POST /api/v1/announcements` | `store` | Sanctum |
+| `GET /api/v1/announcements/{announcement}` | `show` | Sanctum |
+| `PUT /api/v1/announcements/{announcement}` | `update` | Sanctum |
+| `DELETE /api/v1/announcements/{announcement}` | `destroy` | Sanctum |
+
+- **Filtering:** `?pinned=true`, `?active=true`, `?expired=true`, `?target_group=`
+- **Pagination:** `?per_page=` (default 15)
+- **Validation:** `expires_at` must be after `published_at`; tenant-scoped unique slug
+
+### Tests — 24 new (79 total, 244 assertions)
+
+**Unit (9 tests)**
+- `AnnouncementTest` — casts (custom_fields, published_at/expires_at, pinned), hidden tenant_id, is_active (published+not expired, published+no expiry, not yet published), is_expired (past expiry, no expiry)
+
+**Feature (15 tests)**
+- `AnnouncementApiTest` — 401 without auth, list, no tenant_id, create, show, update, delete, pagination, filter pinned, filter active, filter target_group, expires_at validation
+- `AnnouncementIsolationTest` — announcement invisible to other tenant, count isolated, API scoped to tenant
+
+### Observer Registration
+- `Announcement::observe(ContentObserver::class)` added in `AppServiceProvider::boot()`
+
+---
+
+## Upcoming: Phase 2, Session 4 — Member Content Type
 
 Next session will build:
-- `Announcement` model with BelongsToTenant, HasSoftVersioning
-- Migration with `title`, `body`, `published_at`, `expires_at`, `pinned`, `target_group`, `custom_fields`, `previous_version`
+- `Member` model with BelongsToTenant, HasSoftVersioning
+- Migration with `first_name`, `last_name`, `email`, `phone`, `baptism_date`, `cell_group_id`, `status`, `custom_fields`, `previous_version`
 - Filament resource with French labels
-- API endpoints: `/api/v1/announcements`
+- API endpoints: `/api/v1/members`
 - Tests: unit, API CRUD, tenant isolation

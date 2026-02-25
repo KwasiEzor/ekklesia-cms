@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\ContentChanged;
 use App\Listeners\NotifyTenantAdmins;
+use App\Models\Announcement;
 use App\Models\Event;
 use App\Models\Sermon;
 use App\Observers\ContentObserver;
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Sermon::observe(ContentObserver::class);
         Event::observe(ContentObserver::class);
+        Announcement::observe(ContentObserver::class);
 
         EventFacade::listen(ContentChanged::class, NotifyTenantAdmins::class);
     }
