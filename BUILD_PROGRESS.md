@@ -13,6 +13,7 @@
 | 1 | Project Scaffold | Done | 2026-02-25 |
 | 2.1 | Sermon Content Type | Done | 2026-02-25 |
 | 2.2 | Event Content Type | Done | 2026-02-25 |
+| — | Laravel Reverb Integration | Done | 2026-02-25 |
 | 2.3 | Announcement Content Type | Pending | — |
 | 2.4 | Member Content Type | Pending | — |
 | 2.5 | Page Content Type | Pending | — |
@@ -160,7 +161,7 @@
 
 ## Phase 2, Session 2 — Event Content Type
 
-**Commit:** `(pending)` — `feat: Event content type — model, migration, Filament resource, API, tests`
+**Commit:** `4b1ea2f` — `feat: Event content type — model, migration, Filament resource, API, tests`
 **Date:** 2026-02-25
 
 ### Model
@@ -202,6 +203,68 @@
 **Feature (14 tests)**
 - `EventApiTest` — 401 without auth, list, no tenant_id, create, show, update, delete, pagination, filter upcoming, filter location, end_at validation
 - `EventIsolationTest` — event invisible to other tenant, count isolated, API scoped to tenant
+
+---
+
+## Laravel Reverb Integration — Real-Time Broadcasting
+
+**Commit:** `ea70018` — `feat: integrate Laravel Reverb for real-time broadcasting`
+**Date:** 2026-02-25
+
+### What Was Built
+
+Real-time broadcasting infrastructure so Filament admin panel users receive live notifications when other admins in their tenant create, update, or delete content.
+
+### Architecture
+
+```
+Content CRUD → ContentObserver → ContentChanged (ShouldBroadcast)
+                                       ├─→ Broadcasts on private-tenant.{id} channel
+                                       └─→ NotifyTenantAdmins listener
+                                              └─→ Database notification to other admins
+                                                    └─→ Filament bell icon (30s polling)
+```
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `app/Events/ContentChanged.php` | Broadcast event — carries content_type, action, content_id, content_title, changed_by, tenant_id |
+| `app/Observers/ContentObserver.php` | Registered on Sermon and Event; dispatches ContentChanged on created/updated/deleted |
+| `app/Listeners/NotifyTenantAdmins.php` | Sends database notifications to all tenant admins except the author |
+| `app/Notifications/ContentChangedNotification.php` | Database notification with French action labels (créé, modifié, supprimé) |
+| `routes/channels.php` | Channel authorization: `tenant.{tenantId}` (tenant_id match) and `App.Models.User.{id}` (user id match) |
+| `config/broadcasting.php` | Reverb driver configuration |
+| `config/reverb.php` | Reverb server configuration |
+| `database/migrations/..._create_notifications_table.php` | Laravel notifications table for database channel |
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `app/Providers/AppServiceProvider.php` | Register ContentObserver on Sermon/Event; bind ContentChanged → NotifyTenantAdmins |
+| `app/Providers/Filament/AdminPanelProvider.php` | Added `->databaseNotifications()` and `->databaseNotificationsPolling('30s')` |
+| `bootstrap/app.php` | Added `channels:` route registration |
+| `.env.example` | Added Reverb env vars (REVERB_APP_ID, REVERB_APP_KEY, etc.) |
+
+### Channel Authorization
+
+| Channel Pattern | Rule |
+|----------------|------|
+| `private-tenant.{tenantId}` | `$user->tenant_id === $tenantId` |
+| `private-App.Models.User.{id}` | `(int) $user->id === (int) $id` |
+
+### Tests — 12 new (55 total, 164 assertions)
+
+**Broadcasting (12 tests)**
+- `ContentChangedTest` — dispatch on create/update/delete, broadcasts on correct tenant channel, payload structure, notification sent to other admins only, cross-tenant isolation
+- `ChannelAuthTest` — tenant channel auth (own/other), user channel auth (own/other), channel callbacks registered
+
+### Bug Fixes During Integration
+
+1. **Tenant isolation tests broken (3 tests):** `ContentObserver` dispatching `ContentChanged` (ShouldBroadcast) triggered synchronous `BroadcastEvent` queue jobs. The `QueueTenancyBootstrapper` reset tenant context after job completion, causing `Sermon::count()` / `Event::count()` to return unscoped results. **Fix:** `Event::fake([ContentChanged::class])` in isolation test `beforeEach()`.
+
+2. **Channel auth tests failing (3 tests):** `NullBroadcaster::auth()` is a no-op — returns null/200 for all requests regardless of authorization. **Fix:** Rewrote tests to verify channel callback logic directly instead of hitting `/broadcasting/auth` endpoint.
 
 ---
 
