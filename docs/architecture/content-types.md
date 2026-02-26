@@ -83,17 +83,36 @@ This avoids the EAV anti-pattern used by WordPress, which requires multiple JOIN
 
 ---
 
-### Page
+### Page <span class="decision-badge">IMPLEMENTED</span>
 
 | Column | Type | Notes |
 |--------|------|-------|
 | `title` | string | Required |
-| `slug` | string | Unique per tenant |
-| `content_blocks` | jsonb | Block-based content |
-| `seo_title` | string | Nullable |
-| `seo_description` | string | Nullable |
-| `published_at` | datetime | Nullable |
+| `slug` | string | Unique per tenant, auto-generated from title |
+| `content_blocks` | jsonb | Block-based content (GIN indexed) |
+| `seo_title` | string | Nullable — meta title for SEO |
+| `seo_description` | string | Nullable — meta description for SEO |
+| `published_at` | datetime | Nullable — draft if null, published if past |
 | `custom_fields` | jsonb | GIN indexed |
+| `previous_version` | jsonb | Soft versioning snapshot |
+
+**Block types (Filament Builder component):**
+
+| Block | Fields | Use case |
+|-------|--------|----------|
+| `heading` | level (h2/h3/h4), content | Section headings |
+| `rich_text` | body (Markdown) | Main content paragraphs |
+| `image` | url, alt, caption | Photos and illustrations |
+| `video` | url, caption | YouTube/Vimeo embeds |
+| `call_to_action` | label, url, style (primary/secondary) | Buttons and links |
+| `quote` | text, attribution | Bible verses, testimonials |
+
+**Computed attributes:**
+- `is_published` — `true` when `published_at` is set and in the past
+
+**API filters:**
+- `?published=true` — only published pages
+- `?search=` — title search (case-insensitive via `ilike`)
 
 ---
 

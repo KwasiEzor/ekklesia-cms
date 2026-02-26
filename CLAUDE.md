@@ -304,3 +304,7 @@ To work on a specific phase, tell Claude Code:
 - [ ] Plugin architecture contract — OPEN (resolve before Phase 1)
 - [x] Phase 1 scaffold — COMPLETE
 - [x] Phase 2, Session 1 — Sermon content type COMPLETE
+- [x] Phase 2, Session 2 — Event content type COMPLETE
+- [x] Phase 2, Session 3 — Announcement content type COMPLETE
+- [x] Phase 2, Session 4 — Member & Gallery content types COMPLETE
+- [x] Phase 2, Session 5 — Page content type (with block builder) COMPLETE
