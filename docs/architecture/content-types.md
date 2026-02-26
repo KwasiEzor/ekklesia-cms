@@ -116,18 +116,36 @@ This avoids the EAV anti-pattern used by WordPress, which requires multiple JOIN
 
 ---
 
-### Giving Record
+### Giving Record <span class="decision-badge">IMPLEMENTED</span>
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `member_id` | foreignId | Nullable (anonymous) |
+| `member_id` | foreignId | Nullable (anonymous giving) |
 | `amount` | decimal(12,2) | Required |
-| `currency` | string | XOF, EUR, USD, etc. |
+| `currency` | string(3) | Default `XOF` — supports XOF, XAF, EUR, USD, GBP, CAD |
 | `date` | date | Required |
-| `method` | string | mobile_money, cash, bank |
-| `reference` | string | Transaction ID |
-| `campaign_id` | foreignId | Nullable |
+| `method` | string | `mobile_money`, `cash`, `bank_transfer`, `card` |
+| `reference` | string | Nullable — transaction ID / receipt number |
+| `campaign_id` | string | Nullable — campaign reference |
 | `custom_fields` | jsonb | GIN indexed |
+| `previous_version` | jsonb | Soft versioning snapshot |
+
+**Relationships:**
+- `belongsTo(Member)` — nullable for anonymous giving
+
+**Computed attributes:**
+- `is_anonymous` — `true` when `member_id` is null
+- `formatted_amount` — formatted with currency (e.g. "50 000,00 XOF")
+
+**API filters:**
+- `?method=mobile_money` — filter by payment method
+- `?currency=XOF` — filter by currency
+- `?member_id=5` — filter by member
+- `?anonymous=true` — only anonymous donations
+- `?campaign_id=easter-2026` — filter by campaign
+- `?from=2026-01-01&to=2026-03-31` — date range filter
+
+**Indexes:** `(tenant_id, date)`, `(tenant_id, method)`, `(tenant_id, currency)`, `(tenant_id, member_id)`, `(tenant_id, campaign_id)`
 
 ---
 

@@ -308,3 +308,5 @@ To work on a specific phase, tell Claude Code:
 - [x] Phase 2, Session 3 — Announcement content type COMPLETE
 - [x] Phase 2, Session 4 — Member & Gallery content types COMPLETE
 - [x] Phase 2, Session 5 — Page content type (with block builder) COMPLETE
+- [x] Phase 2, Session 6 — GivingRecord content type COMPLETE
+- [x] **Phase 2 — Core Content Types COMPLETE** (all 6 content types built)

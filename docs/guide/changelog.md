@@ -2,6 +2,16 @@
 
 ## Phase 2 — Core Content Types (February 2026)
 
+### Session 6 — GivingRecord (2026-02-26)
+- **Model:** `App\Models\GivingRecord` with `BelongsToTenant`, `HasSoftVersioning`, `LogsActivityWithTenant`
+- **Relationships:** `belongsTo(Member)` — nullable for anonymous giving
+- **Filament resource:** `GivingRecordResource` under "Finance" navigation group, currency selector (XOF/XAF/EUR/USD/GBP/CAD), payment methods (Mobile Money, Espèces, Virement, Carte)
+- **API:** `GET/POST/PUT/DELETE /api/v1/giving-records` with filters: `?method=`, `?currency=`, `?member_id=`, `?anonymous=true`, `?campaign_id=`, `?from=`/`?to=` date range
+- **Validation:** tenant-scoped member_id exists check, method must be in allowed list (mobile_money, cash, bank_transfer, card)
+- **Computed:** `is_anonymous` accessor, `formatted_amount` accessor (e.g. "50 000,00 XOF")
+- **Tests:** 9 unit + 14 API feature + 3 tenant isolation = 26 new tests (173 total passing)
+- **Translations:** `lang/fr/giving_records.php` and `lang/en/giving_records.php`
+
 ### Session 5 — Page (2026-02-26)
 - **Model:** `App\Models\Page` with `BelongsToTenant`, `HasSlug`, `HasSoftVersioning`, `LogsActivityWithTenant`
 - **Block builder:** 6 block types — heading, rich_text, image, video, call_to_action, quote
