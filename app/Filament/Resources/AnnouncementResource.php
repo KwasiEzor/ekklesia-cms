@@ -11,7 +11,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Forms\Components;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class AnnouncementResource extends Resource
 {
@@ -45,15 +44,13 @@ class AnnouncementResource extends Resource
                         Components\TextInput::make('title')
                             ->label(__('announcements.title'))
                             ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($set, ?string $state) => $set('slug', Str::slug($state ?? ''))),
+                            ->maxLength(255),
 
                         Components\TextInput::make('slug')
                             ->label(__('announcements.slug'))
-                            ->required()
                             ->maxLength(255)
-                            ->unique(ignoreRecord: true),
+                            ->disabled()
+                            ->dehydrated(),
 
                         Components\DateTimePicker::make('published_at')
                             ->label(__('announcements.published_at')),

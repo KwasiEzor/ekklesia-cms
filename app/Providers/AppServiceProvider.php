@@ -6,6 +6,8 @@ use App\Events\ContentChanged;
 use App\Listeners\NotifyTenantAdmins;
 use App\Models\Announcement;
 use App\Models\Event;
+use App\Models\Gallery;
+use App\Models\Member;
 use App\Models\Sermon;
 use App\Observers\ContentObserver;
 use Illuminate\Support\Facades\Event as EventFacade;
@@ -23,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
         Sermon::observe(ContentObserver::class);
         Event::observe(ContentObserver::class);
         Announcement::observe(ContentObserver::class);
+        Member::observe(ContentObserver::class);
+        Gallery::observe(ContentObserver::class);
 
         EventFacade::listen(ContentChanged::class, NotifyTenantAdmins::class);
     }

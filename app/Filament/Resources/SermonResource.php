@@ -11,7 +11,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Forms\Components;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class SermonResource extends Resource
 {
@@ -45,15 +44,13 @@ class SermonResource extends Resource
                         Components\TextInput::make('title')
                             ->label(__('sermons.title'))
                             ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($set, ?string $state) => $set('slug', Str::slug($state ?? ''))),
+                            ->maxLength(255),
 
                         Components\TextInput::make('slug')
                             ->label(__('sermons.slug'))
-                            ->required()
                             ->maxLength(255)
-                            ->unique(ignoreRecord: true),
+                            ->disabled()
+                            ->dehydrated(),
 
                         Components\TextInput::make('speaker')
                             ->label(__('sermons.speaker'))

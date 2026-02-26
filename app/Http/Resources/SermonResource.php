@@ -25,7 +25,7 @@ class SermonResource extends JsonResource
                 'title' => $this->series->title,
                 'slug' => $this->series->slug,
             ]),
-            'tags' => $this->tags ?? [],
+            'tags' => $this->tags->pluck('name')->toArray(),
             'custom_fields' => $this->custom_fields ?? (object) [],
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),

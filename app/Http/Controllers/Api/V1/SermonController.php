@@ -26,7 +26,7 @@ class SermonController extends Controller
         }
 
         if ($request->has('tag')) {
-            $query->whereJsonContains('tags', $request->input('tag'));
+            $query->withAnyTags([$request->input('tag')]);
         }
 
         $sermons = $query
@@ -38,10 +38,18 @@ class SermonController extends Controller
 
     public function store(StoreSermonRequest $request): SermonResource
     {
+        $validated = $request->validated();
+        $tags = $validated['tags'] ?? [];
+        unset($validated['tags']);
+
         $sermon = Sermon::create([
-            ...$request->validated(),
+            ...$validated,
             'tenant_id' => tenant('id'),
         ]);
+
+        if ($tags) {
+            $sermon->syncTags($tags);
+        }
 
         return new SermonResource($sermon->load('series'));
     }
@@ -53,7 +61,15 @@ class SermonController extends Controller
 
     public function update(UpdateSermonRequest $request, Sermon $sermon): SermonResource
     {
-        $sermon->update($request->validated());
+        $validated = $request->validated();
+        $tags = $validated['tags'] ?? null;
+        unset($validated['tags']);
+
+        $sermon->update($validated);
+
+        if ($tags !== null) {
+            $sermon->syncTags($tags);
+        }
 
         return new SermonResource($sermon->fresh()->load('series'));
     }

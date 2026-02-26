@@ -3,13 +3,25 @@
 namespace App\Models;
 
 use App\Concerns\HasSoftVersioning;
+use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Event extends Model
 {
-    use BelongsToTenant, HasFactory, HasSoftVersioning;
+    use BelongsToTenant, HasFactory, HasSlug, HasSoftVersioning, LogsActivityWithTenant;
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('title')
+            ->saveSlugsTo('slug')
+            ->extraScope(fn ($builder) => $builder->where('tenant_id', $this->tenant_id));
+    }
 
     protected $fillable = [
         'title',
@@ -50,5 +62,10 @@ class Event extends Model
         $end = $this->end_at ?? $this->start_at;
 
         return $end->isPast();
+    }
+
+    public function galleries(): MorphMany
+    {
+        return $this->morphMany(Gallery::class, 'galleryable');
     }
 }

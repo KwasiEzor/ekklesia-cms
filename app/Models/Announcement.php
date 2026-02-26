@@ -3,13 +3,24 @@
 namespace App\Models;
 
 use App\Concerns\HasSoftVersioning;
+use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Announcement extends Model
 {
-    use BelongsToTenant, HasFactory, HasSoftVersioning;
+    use BelongsToTenant, HasFactory, HasSlug, HasSoftVersioning, LogsActivityWithTenant;
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('title')
+            ->saveSlugsTo('slug')
+            ->extraScope(fn ($builder) => $builder->where('tenant_id', $this->tenant_id));
+    }
 
     protected $fillable = [
         'title',

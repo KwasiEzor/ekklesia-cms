@@ -3,14 +3,26 @@
 namespace App\Models;
 
 use App\Concerns\HasSoftVersioning;
+use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
+use Spatie\Tags\HasTags;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Sermon extends Model
 {
-    use BelongsToTenant, HasFactory, HasSoftVersioning;
+    use BelongsToTenant, HasFactory, HasSlug, HasSoftVersioning, HasTags, LogsActivityWithTenant;
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('title')
+            ->saveSlugsTo('slug')
+            ->extraScope(fn ($builder) => $builder->where('tenant_id', $this->tenant_id));
+    }
 
     protected $fillable = [
         'title',
@@ -22,7 +34,6 @@ class Sermon extends Model
         'video_url',
         'transcript',
         'series_id',
-        'tags',
         'custom_fields',
         'tenant_id',
     ];
@@ -36,7 +47,6 @@ class Sermon extends Model
         return [
             'date' => 'date',
             'duration' => 'integer',
-            'tags' => 'array',
             'custom_fields' => 'array',
             'previous_version' => 'array',
         ];

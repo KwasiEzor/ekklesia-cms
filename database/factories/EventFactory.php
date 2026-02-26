@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Event;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class EventFactory extends Factory
 {
@@ -13,14 +12,12 @@ class EventFactory extends Factory
 
     public function definition(): array
     {
-        $title = $this->faker->sentence(3);
         $startAt = $this->faker->dateTimeBetween('-1 month', '+3 months');
         $endAt = (clone $startAt)->modify('+' . $this->faker->numberBetween(1, 4) . ' hours');
 
         return [
             'tenant_id' => Tenant::factory(),
-            'title' => $title,
-            'slug' => Str::slug($title),
+            'title' => $this->faker->sentence(3),
             'start_at' => $startAt,
             'end_at' => $this->faker->optional(0.8)->passthrough($endAt),
             'location' => $this->faker->optional(0.9)->address(),

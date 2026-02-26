@@ -101,7 +101,7 @@ test('other tenant admins receive notification on content change', function () {
 
     // Simulate admin1 creating a sermon — dispatch the event manually
     $sermon = Sermon::withoutEvents(function () use ($tenant) {
-        return Sermon::factory()->create(['tenant_id' => $tenant->id]);
+        return Sermon::factory()->create(['tenant_id' => $tenant->id, 'slug' => 'test-sermon']);
     });
 
     $event = new ContentChanged($sermon, 'created', 'Admin One');
@@ -126,7 +126,7 @@ test('admins from other tenants do not receive notification', function () {
 
     tenancy()->initialize($tenant1);
     $sermon = Sermon::withoutEvents(function () use ($tenant1) {
-        return Sermon::factory()->create(['tenant_id' => $tenant1->id]);
+        return Sermon::factory()->create(['tenant_id' => $tenant1->id, 'slug' => 'test-sermon']);
     });
 
     $event = new ContentChanged($sermon, 'created', null);

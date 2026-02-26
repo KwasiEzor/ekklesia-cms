@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Announcement;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class AnnouncementFactory extends Factory
 {
@@ -13,12 +12,9 @@ class AnnouncementFactory extends Factory
 
     public function definition(): array
     {
-        $title = $this->faker->sentence(4);
-
         return [
             'tenant_id' => Tenant::factory(),
-            'title' => $title,
-            'slug' => Str::slug($title),
+            'title' => $this->faker->sentence(4),
             'body' => $this->faker->optional(0.8)->paragraphs(2, true),
             'published_at' => $this->faker->optional(0.7)->dateTimeBetween('-1 month', '+1 week'),
             'expires_at' => $this->faker->optional(0.5)->dateTimeBetween('+1 week', '+3 months'),

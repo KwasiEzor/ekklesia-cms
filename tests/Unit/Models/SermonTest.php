@@ -16,16 +16,15 @@ test('sermon casts custom_fields as array', function () {
     expect($sermon->fresh()->custom_fields)->toBe(['key' => 'value']);
 });
 
-test('sermon casts tags as array', function () {
+test('sermon supports relational tags via HasTags', function () {
     $tenant = Tenant::factory()->create();
     tenancy()->initialize($tenant);
 
-    $sermon = Sermon::factory()->create([
-        'tenant_id' => $tenant->id,
-        'tags' => ['foi', 'prière'],
-    ]);
+    $sermon = Sermon::factory()->create(['tenant_id' => $tenant->id]);
+    $sermon->syncTags(['foi', 'prière']);
 
-    expect($sermon->fresh()->tags)->toBe(['foi', 'prière']);
+    $fresh = $sermon->fresh();
+    expect($fresh->tags->pluck('name')->sort()->values()->toArray())->toBe(['foi', 'prière']);
 });
 
 test('sermon hides tenant_id from serialization', function () {
