@@ -28,13 +28,15 @@ Ekklesia is the tool that was missing.
 
 ## Project Status
 
-Ekklesia is currently in **pre-alpha architecture phase**. Core architectural decisions have been made and documented. Active development begins once the architecture documentation is complete.
+Ekklesia is currently in **pre-alpha active development**. Phase 2 (Core Content Types) is complete — all 6 content types are built with full API, Filament admin, and test coverage. Phase 3 (API Layer) is next.
 
 > **Warning:** Do not use in production. The API, database schema, and plugin contracts are all subject to change without notice until v1.0 stable.
 
 ## Documentation
 
-The full documentation site is built with VitePress and lives in the `docs/` directory.
+**[Read the full documentation](https://kwasiezor.github.io/ekklesia-cms/)**
+
+The documentation covers architecture decisions, content type system, multi-tenancy strategy, deployment, and the project roadmap. It is built with VitePress and lives in the `docs/` directory.
 
 ### Local Development
 
