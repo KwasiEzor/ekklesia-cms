@@ -1,0 +1,151 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tenant_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Events/ContentChanged.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:addMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/GalleryResource/Pages/CreateGallery.php
+
+		-
+			message: '#^Cannot call method addMedia\(\) on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Resources/GalleryResource/Pages/EditGallery.php
+
+		-
+			message: '#^Cannot call method getMedia\(\) on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Resources/GalleryResource/Pages/EditGallery.php
+
+		-
+			message: '#^Anonymous function never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Filament/Resources/GivingRecordResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:addMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/MemberResource/Pages/CreateMember.php
+
+		-
+			message: '#^Cannot call method addMedia\(\) on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Resources/MemberResource/Pages/EditMember.php
+
+		-
+			message: '#^Cannot call method clearMediaCollection\(\) on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Filament/Resources/MemberResource/Pages/EditMember.php
+
+		-
+			message: '#^Cannot call method getFirstMediaUrl\(\) on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Resources/MemberResource/Pages/EditMember.php
+
+		-
+			message: '#^Anonymous function never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Filament/Resources/PageResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:syncTags\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/SermonResource/Pages/CreateSermon.php
+
+		-
+			message: '#^Cannot access property \$tags on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Filament/Resources/SermonResource/Pages/EditSermon.php
+
+		-
+			message: '#^Cannot call method syncTags\(\) on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Resources/SermonResource/Pages/EditSermon.php
+
+		-
+			message: '#^Cannot call method isFuture\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Models/Announcement.php
+
+		-
+			message: '#^Cannot call method isPast\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/Announcement.php
+
+		-
+			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
+			identifier: unset.offset
+			count: 1
+			path: app/Models/Announcement.php
+
+		-
+			message: '#^Cannot call method isFuture\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^Cannot call method isPast\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
+			identifier: unset.offset
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
+			identifier: unset.offset
+			count: 1
+			path: app/Models/Gallery.php
+
+		-
+			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
+			identifier: unset.offset
+			count: 1
+			path: app/Models/GivingRecord.php
+
+		-
+			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
+			identifier: unset.offset
+			count: 1
+			path: app/Models/Member.php
+
+		-
+			message: '#^Cannot call method isPast\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
+			identifier: unset.offset
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
+			identifier: unset.offset
+			count: 1
+			path: app/Models/Sermon.php

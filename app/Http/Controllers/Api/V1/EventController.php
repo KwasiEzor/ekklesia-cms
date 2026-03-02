@@ -18,7 +18,7 @@ class EventController extends Controller
         $query = Event::query();
 
         if ($request->has('location')) {
-            $query->where('location', 'ilike', '%' . $request->input('location') . '%');
+            $query->where('location', 'ilike', '%'.$request->input('location').'%');
         }
 
         if ($request->boolean('upcoming', false)) {

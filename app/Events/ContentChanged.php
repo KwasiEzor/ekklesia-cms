@@ -14,23 +14,22 @@ class ContentChanged implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $contentType;
-    public string $action;
+
     public int $contentId;
+
     public string $contentTitle;
+
     public string $tenantId;
-    public ?string $changedBy;
 
     public function __construct(
         Model $model,
-        string $action,
-        ?string $changedBy = null,
+        public string $action,
+        public ?string $changedBy = null,
     ) {
         $this->contentType = class_basename($model);
-        $this->action = $action;
         $this->contentId = $model->getKey();
         $this->contentTitle = $model->title ?? $model->name ?? "#{$model->getKey()}";
         $this->tenantId = $model->tenant_id;
-        $this->changedBy = $changedBy;
     }
 
     public function broadcastOn(): array

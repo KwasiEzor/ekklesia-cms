@@ -35,9 +35,9 @@ class EditMember extends EditRecord
     {
         $avatar = $this->data['avatar'] ?? null;
 
-        if ($avatar && ! str_starts_with($avatar, 'http')) {
+        if ($avatar && ! str_starts_with((string) $avatar, 'http')) {
             $this->record->clearMediaCollection('avatar');
-            $this->record->addMedia(storage_path('app/public/' . $avatar))
+            $this->record->addMedia(storage_path('app/public/'.$avatar))
                 ->toMediaCollection('avatar');
         } elseif (empty($avatar)) {
             $this->record->clearMediaCollection('avatar');

@@ -13,9 +13,7 @@ class NotifyTenantAdmins
         $users = User::where('tenant_id', $event->tenantId)->get();
 
         // Don't notify the user who made the change
-        $recipients = $users->filter(function (User $user) use ($event) {
-            return $user->name !== $event->changedBy;
-        });
+        $recipients = $users->filter(fn (User $user): bool => $user->name !== $event->changedBy);
 
         foreach ($recipients as $user) {
             $user->notify(new ContentChangedNotification($event));

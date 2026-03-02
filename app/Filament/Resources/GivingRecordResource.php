@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use BackedEnum;
 use App\Filament\Resources\GivingRecordResource\Pages;
 use App\Models\GivingRecord;
 use App\Models\Member;
+use BackedEnum;
+use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Forms\Components;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -110,12 +110,12 @@ class GivingRecordResource extends Resource
 
                 Tables\Columns\TextColumn::make('amount')
                     ->label(__('giving_records.amount'))
-                    ->formatStateUsing(fn ($state, $record) => number_format((float) $state, 2, ',', ' ') . ' ' . $record->currency)
+                    ->formatStateUsing(fn ($state, $record): string => number_format((float) $state, 2, ',', ' ').' '.$record->currency)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('method')
                     ->label(__('giving_records.method'))
-                    ->formatStateUsing(fn ($state) => __("giving_records.methods.{$state}"))
+                    ->formatStateUsing(fn ($state): string|array|null => __("giving_records.methods.{$state}"))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('date')

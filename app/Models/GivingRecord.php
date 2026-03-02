@@ -51,6 +51,6 @@ class GivingRecord extends Model
 
     public function getFormattedAmountAttribute(): string
     {
-        return number_format((float) $this->amount, 2, ',', ' ') . ' ' . $this->currency;
+        return number_format((float) $this->amount, 2, ',', ' ').' '.$this->currency;
     }
 }

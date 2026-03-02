@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use BackedEnum;
 use App\Filament\Resources\MemberResource\Pages;
 use App\Models\Member;
 use App\States\MemberStatus\MemberStatus;
+use BackedEnum;
+use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Forms\Components;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -106,13 +106,13 @@ class MemberResource extends Resource
                 Tables\Columns\ImageColumn::make('avatar_url')
                     ->label(__('members.avatar'))
                     ->circular()
-                    ->defaultImageUrl(fn (Member $record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->full_name) . '&background=random')
+                    ->defaultImageUrl(fn (Member $record): string => 'https://ui-avatars.com/api/?name='.urlencode($record->full_name).'&background=random')
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('full_name')
                     ->label(__('members.full_name'))
                     ->state(fn (Member $record) => $record->full_name)
-                    ->searchable(query: function ($query, string $search) {
+                    ->searchable(query: function ($query, string $search): void {
                         $query->where('first_name', 'ilike', "%{$search}%")
                             ->orWhere('last_name', 'ilike', "%{$search}%");
                     })

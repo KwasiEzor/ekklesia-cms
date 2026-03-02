@@ -23,7 +23,7 @@ class PageController extends Controller
         }
 
         if ($request->has('search')) {
-            $query->where('title', 'ilike', '%' . $request->input('search') . '%');
+            $query->where('title', 'ilike', '%'.$request->input('search').'%');
         }
 
         $pages = $query

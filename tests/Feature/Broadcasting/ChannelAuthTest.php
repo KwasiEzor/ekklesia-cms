@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Broadcast;
  * We test the registered callbacks directly because the NullBroadcaster
  * (used in tests) does not invoke channel callbacks via /broadcasting/auth.
  */
-
 test('user can join their own tenant channel', function () {
     $tenant = Tenant::factory()->create();
     tenancy()->initialize($tenant);

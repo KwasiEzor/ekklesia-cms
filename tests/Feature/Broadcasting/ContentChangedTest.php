@@ -1,8 +1,8 @@
 <?php
 
 use App\Events\ContentChanged;
-use App\Models\Sermon;
 use App\Models\Event;
+use App\Models\Sermon;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\ContentChangedNotification;
@@ -105,7 +105,7 @@ test('other tenant admins receive notification on content change', function () {
     });
 
     $event = new ContentChanged($sermon, 'created', 'Admin One');
-    (new \App\Listeners\NotifyTenantAdmins())->handle($event);
+    (new \App\Listeners\NotifyTenantAdmins)->handle($event);
 
     // Admin2 should be notified, Admin1 (the author) should not
     Notification::assertSentTo($admin2, ContentChangedNotification::class);
@@ -130,7 +130,7 @@ test('admins from other tenants do not receive notification', function () {
     });
 
     $event = new ContentChanged($sermon, 'created', null);
-    (new \App\Listeners\NotifyTenantAdmins())->handle($event);
+    (new \App\Listeners\NotifyTenantAdmins)->handle($event);
 
     Notification::assertSentTo($admin1, ContentChangedNotification::class);
     Notification::assertNotSentTo($admin2, ContentChangedNotification::class);

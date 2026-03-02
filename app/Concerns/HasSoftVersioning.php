@@ -6,7 +6,7 @@ trait HasSoftVersioning
 {
     public static function bootHasSoftVersioning(): void
     {
-        static::updating(function ($model) {
+        static::updating(function ($model): void {
             $dirty = $model->getDirty();
 
             // Don't snapshot if only previous_version itself is changing (revert operation)

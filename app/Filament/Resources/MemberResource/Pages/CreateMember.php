@@ -20,7 +20,7 @@ class CreateMember extends CreateRecord
         $avatar = $this->data['avatar'] ?? null;
 
         if ($avatar) {
-            $this->record->addMedia(storage_path('app/public/' . $avatar))
+            $this->record->addMedia(storage_path('app/public/'.$avatar))
                 ->toMediaCollection('avatar');
         }
     }

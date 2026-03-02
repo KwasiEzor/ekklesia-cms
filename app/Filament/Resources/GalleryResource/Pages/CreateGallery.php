@@ -22,7 +22,7 @@ class CreateGallery extends CreateRecord
         $photos = $this->data['photos'] ?? [];
 
         foreach ($photos as $photo) {
-            $this->record->addMedia(storage_path('app/public/' . $photo))
+            $this->record->addMedia(storage_path('app/public/'.$photo))
                 ->toMediaCollection('photos');
         }
     }

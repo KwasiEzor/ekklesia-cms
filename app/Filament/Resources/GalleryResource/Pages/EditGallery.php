@@ -37,13 +37,11 @@ class EditGallery extends EditRecord
         $photos = $this->data['photos'] ?? [];
 
         // Sync: clear existing and re-add new uploads (non-URL entries are new files)
-        $newPhotos = array_filter($photos, fn ($p) => ! str_starts_with($p, 'http'));
+        $newPhotos = array_filter($photos, fn ($p): bool => ! str_starts_with((string) $p, 'http'));
 
-        if ($newPhotos) {
-            foreach ($newPhotos as $photo) {
-                $this->record->addMedia(storage_path('app/public/' . $photo))
-                    ->toMediaCollection('photos');
-            }
+        foreach ($newPhotos as $photo) {
+            $this->record->addMedia(storage_path('app/public/'.$photo))
+                ->toMediaCollection('photos');
         }
     }
 }

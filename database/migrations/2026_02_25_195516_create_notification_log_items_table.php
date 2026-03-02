@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('notification_log_items', function (Blueprint $table) {
+        Schema::create('notification_log_items', function (Blueprint $table): void {
             $table->id();
             $table->string('notification_type');
             $table->unsignedBigInteger('notifiable_id')->nullable();

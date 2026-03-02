@@ -20,7 +20,7 @@ class SermonResource extends JsonResource
             'audio_url' => $this->audio_url,
             'video_url' => $this->video_url,
             'transcript' => $this->transcript,
-            'series' => $this->whenLoaded('series', fn () => [
+            'series' => $this->whenLoaded('series', fn (): array => [
                 'id' => $this->series->id,
                 'title' => $this->series->title,
                 'slug' => $this->series->slug,

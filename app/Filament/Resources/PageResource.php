@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources;
 
-use BackedEnum;
 use App\Filament\Resources\PageResource\Pages;
 use App\Models\Page;
+use BackedEnum;
+use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Forms\Components;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -196,8 +196,8 @@ class PageResource extends Resource
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->badge()
-                    ->color(fn ($record) => $record->is_published ? 'success' : 'warning')
-                    ->formatStateUsing(fn ($state, $record) => $record->is_published ? __('pages.published') : __('pages.draft')),
+                    ->color(fn ($record): string => $record->is_published ? 'success' : 'warning')
+                    ->formatStateUsing(fn ($state, $record): string|array|null => $record->is_published ? __('pages.published') : __('pages.draft')),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('pages.created_at'))

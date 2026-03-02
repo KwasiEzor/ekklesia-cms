@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources;
 
-use BackedEnum;
 use App\Filament\Resources\GalleryResource\Pages;
 use App\Models\Gallery;
+use BackedEnum;
+use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Forms\Components;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -54,8 +54,8 @@ class GalleryResource extends Resource
                         Components\Select::make('galleryable_type')
                             ->label(__('galleries.linked_to_type'))
                             ->options([
-                                'App\\Models\\Event' => __('galleries.types.event'),
-                                'App\\Models\\Member' => __('galleries.types.member'),
+                                \App\Models\Event::class => __('galleries.types.event'),
+                                \App\Models\Member::class => __('galleries.types.member'),
                             ])
                             ->reactive()
                             ->nullable(),
@@ -73,12 +73,12 @@ class GalleryResource extends Resource
                                     ->limit(50)
                                     ->get()
                                     ->pluck('title', 'id')
-                                    ->when($type === 'App\\Models\\Member', fn ($c) => $type::query()->limit(50)->get()->mapWithKeys(fn ($m) => [$m->id => $m->full_name]))
+                                    ->when($type === \App\Models\Member::class, fn ($c) => $type::query()->limit(50)->get()->mapWithKeys(fn ($m): array => [$m->id => $m->full_name]))
                                     ->toArray();
                             })
                             ->searchable()
                             ->nullable()
-                            ->visible(fn (callable $get) => filled($get('galleryable_type'))),
+                            ->visible(fn (callable $get): bool => filled($get('galleryable_type'))),
                     ])
                     ->columns(2),
 
@@ -124,7 +124,7 @@ class GalleryResource extends Resource
 
                 Tables\Columns\TextColumn::make('galleryable_type')
                     ->label(__('galleries.linked_to_type'))
-                    ->formatStateUsing(fn (?string $state) => $state ? class_basename($state) : '—')
+                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '—')
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')

@@ -76,7 +76,7 @@ class Gallery extends Model implements HasMedia
 
     public function getPhotosAttribute(): array
     {
-        return $this->getMedia('photos')->map(fn (Media $media) => [
+        return $this->getMedia('photos')->map(fn (Media $media): array => [
             'id' => $media->id,
             'url' => $media->getUrl(),
             'thumb' => $media->getUrl('thumb'),

@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('sermons', function (Blueprint $table) {
+        Schema::table('sermons', function (Blueprint $table): void {
             $table->dropColumn('tags');
         });
     }
 
     public function down(): void
     {
-        Schema::table('sermons', function (Blueprint $table) {
+        Schema::table('sermons', function (Blueprint $table): void {
             $table->jsonb('tags')->nullable();
         });
     }

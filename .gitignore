@@ -31,3 +31,6 @@ docs/node_modules/
 
 # SQLite (dev only, we use PostgreSQL)
 database/database.sqlite
+
+# Generated API docs
+api.json

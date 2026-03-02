@@ -27,21 +27,21 @@ class MemberFactory extends Factory
 
     public function active(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'status' => 'active',
         ]);
     }
 
     public function inactive(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'status' => 'inactive',
         ]);
     }
 
     public function visiting(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'status' => 'visiting',
         ]);
     }

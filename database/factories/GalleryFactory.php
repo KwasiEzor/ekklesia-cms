@@ -27,7 +27,7 @@ class GalleryFactory extends Factory
 
         return [
             'tenant_id' => Tenant::factory(),
-            'title' => $this->faker->randomElement($titles) . ' ' . $this->faker->year(),
+            'title' => $this->faker->randomElement($titles).' '.$this->faker->year(),
             'description' => $this->faker->boolean(70) ? $this->faker->sentence() : null,
         ];
     }

@@ -23,7 +23,7 @@ class PageFactory extends Factory
                 'Notre histoire',
                 'Leadership',
                 'Vie de l\'église',
-            ]) . ' ' . $this->faker->unique()->numberBetween(1, 9999),
+            ]).' '.$this->faker->unique()->numberBetween(1, 9999),
             'content_blocks' => null,
             'seo_title' => $this->faker->optional(0.5)->sentence(6),
             'seo_description' => $this->faker->optional(0.5)->sentence(12),
@@ -34,21 +34,21 @@ class PageFactory extends Factory
 
     public function published(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'published_at' => $this->faker->dateTimeBetween('-1 month', '-1 hour'),
         ]);
     }
 
     public function draft(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'published_at' => null,
         ]);
     }
 
     public function withBlocks(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'content_blocks' => [
                 [
                     'type' => 'heading',

@@ -26,14 +26,14 @@ class AnnouncementFactory extends Factory
 
     public function pinned(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'pinned' => true,
         ]);
     }
 
     public function expired(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'published_at' => $this->faker->dateTimeBetween('-3 months', '-1 month'),
             'expires_at' => $this->faker->dateTimeBetween('-1 week', '-1 day'),
         ]);
@@ -41,7 +41,7 @@ class AnnouncementFactory extends Factory
 
     public function active(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'published_at' => $this->faker->dateTimeBetween('-1 month', '-1 day'),
             'expires_at' => $this->faker->dateTimeBetween('+1 week', '+3 months'),
         ]);

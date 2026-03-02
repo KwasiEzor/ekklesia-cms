@@ -28,35 +28,35 @@ class GivingRecordFactory extends Factory
 
     public function withMember(?Member $member = null): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'member_id' => $member?->id ?? Member::factory(),
         ]);
     }
 
     public function anonymous(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'member_id' => null,
         ]);
     }
 
     public function mobileMoney(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'method' => 'mobile_money',
         ]);
     }
 
     public function cash(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'method' => 'cash',
         ]);
     }
 
     public function inCurrency(string $currency): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'currency' => $currency,
         ]);
     }

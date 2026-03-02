@@ -13,7 +13,7 @@ class EventFactory extends Factory
     public function definition(): array
     {
         $startAt = $this->faker->dateTimeBetween('-1 month', '+3 months');
-        $endAt = (clone $startAt)->modify('+' . $this->faker->numberBetween(1, 4) . ' hours');
+        $endAt = (clone $startAt)->modify('+'.$this->faker->numberBetween(1, 4).' hours');
 
         return [
             'tenant_id' => Tenant::factory(),
@@ -31,14 +31,14 @@ class EventFactory extends Factory
 
     public function upcoming(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'start_at' => $this->faker->dateTimeBetween('+1 day', '+3 months'),
         ]);
     }
 
     public function past(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'start_at' => $this->faker->dateTimeBetween('-6 months', '-1 day'),
             'end_at' => $this->faker->dateTimeBetween('-6 months', '-1 day'),
         ]);
