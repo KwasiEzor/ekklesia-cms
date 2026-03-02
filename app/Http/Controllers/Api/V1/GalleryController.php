@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\StoreGalleryRequest;
+use App\Http\Requests\Api\V1\UpdateGalleryRequest;
 use App\Http\Resources\GalleryCollection;
 use App\Http\Resources\GalleryResource;
 use App\Models\Gallery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class GalleryController extends Controller
 {
@@ -33,18 +34,10 @@ class GalleryController extends Controller
         return new GalleryCollection($galleries);
     }
 
-    public function store(Request $request): GalleryResource
+    public function store(StoreGalleryRequest $request): GalleryResource
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'galleryable_type' => ['nullable', 'string', Rule::in(['App\\Models\\Event', 'App\\Models\\Member'])],
-            'galleryable_id' => ['nullable', 'integer'],
-            'custom_fields' => ['nullable', 'array'],
-        ]);
-
         $gallery = Gallery::create([
-            ...$validated,
+            ...$request->validated(),
             'tenant_id' => tenant('id'),
         ]);
 
@@ -56,17 +49,9 @@ class GalleryController extends Controller
         return new GalleryResource($gallery);
     }
 
-    public function update(Request $request, Gallery $gallery): GalleryResource
+    public function update(UpdateGalleryRequest $request, Gallery $gallery): GalleryResource
     {
-        $validated = $request->validate([
-            'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'galleryable_type' => ['nullable', 'string', Rule::in(['App\\Models\\Event', 'App\\Models\\Member'])],
-            'galleryable_id' => ['nullable', 'integer'],
-            'custom_fields' => ['nullable', 'array'],
-        ]);
-
-        $gallery->update($validated);
+        $gallery->update($request->validated());
 
         return new GalleryResource($gallery->fresh());
     }
