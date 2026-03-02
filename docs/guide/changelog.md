@@ -1,5 +1,89 @@
 # Changelog
 
+## Phase 4 — Deployment Preparation (March 2026)
+
+### API Tenancy Middleware
+- **`InitializeTenancyByUser`** middleware: initializes tenant context from authenticated user's `tenant_id` for all authenticated API routes
+- **`InitializeTenancyByHeader`** middleware: initializes tenant from `X-Tenant-ID` header for public routes (login, register)
+- Ensures proper tenant isolation on all API endpoints in production
+
+### Tenant Provisioning
+- **`php artisan tenant:create`** command: creates tenant with domain, subdomain, and initial admin user
+- Validates inputs (slug format, uniqueness, password strength)
+- Supports custom domain assignment and auto-generates subdomain
+
+### Demo Content Seeder
+- **`TenantContentSeeder`**: seeds realistic church content for any tenant
+- 10 sermons with Francophone African church context
+- 5 events (Sunday service, prayer vigil, women's conference, youth camp, baptism)
+- 4 announcements (pinned, active, expired, leader-targeted)
+- 25 members (20 active + 5 visiting)
+- 4 pages with block content (Accueil, À propos, Contact, Déclaration de foi)
+- Giving records linked to members + anonymous donations in XOF
+
+### Health Check
+- **`GET /health`** endpoint: checks database and cache connectivity
+- Returns `healthy` or `degraded` status with individual check details
+- Used by Docker HEALTHCHECK and load balancers
+
+### Docker & Deployment
+- **Dockerfile**: multi-stage build with FrankenPHP + PHP 8.4 + Laravel Octane
+- **docker-compose.yml**: app + PostgreSQL 16 + queue worker
+- Production PHP config with OPcache, upload limits, security settings
+- `.dockerignore` for lean production images
+
+### Stats
+- 194 tests passing (604 assertions)
+- PHPStan level 5, Rector PHP 8.4, Pint — all green
+
+## Phase 3 — API Layer (February 2026)
+
+### Authentication Endpoints
+- `POST /api/v1/auth/register` — create user account with tenant-scoped email uniqueness
+- `POST /api/v1/auth/login` — authenticate and receive Sanctum bearer token
+- `POST /api/v1/auth/logout` — revoke current token
+- `GET /api/v1/auth/me` — get authenticated user profile (no tenant_id or password exposed)
+
+### Token Management
+- `GET /api/v1/auth/tokens` — list user's active tokens
+- `DELETE /api/v1/auth/tokens/{id}` — revoke a specific token
+- `DELETE /api/v1/auth/tokens` — revoke all tokens
+
+### API Documentation
+- Installed `dedoc/scramble` for auto-generated OpenAPI documentation
+- Interactive docs available at `/docs/api` with Stoplight Elements UI
+- All 20 endpoints documented with request/response schemas
+
+### Cleanup
+- Extracted Gallery validation into `StoreGalleryRequest` and `UpdateGalleryRequest` form request classes
+- Added `lang/fr/auth.php` and `lang/en/auth.php` translation files
+- Auth endpoints use `throttle:auth` (5 req/min per IP)
+
+### Stats
+- 191 tests passing (593 assertions)
+- 16 new auth tests (register, login, logout, me, tokens, rate limiting, tenant isolation)
+
+## Phase 2.5 — Hardening Sprint (February 2026)
+
+### Code Quality Tooling
+- **Rector PHP** configured for PHP 8.4 with DeadCode, CodeQuality, TypeDeclaration, and EarlyReturn rule sets — 54 files auto-refactored
+- **PHPStan + Larastan** at level 5 with baseline for framework false positives — passes clean
+- **GitHub Actions CI** pipeline: Pint + PHPStan + Rector + Pest on every push/PR with PostgreSQL 16 service container
+
+### Security Hardening
+- **Security headers middleware** (`SecurityHeaders.php`): X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy, Permissions-Policy
+- **Tenant-aware rate limiting**: 60 req/min per tenant+IP on API, 5 req/min per IP on auth
+- **Sanctum hardening**: token expiration set to 24 hours, `ekklesia_` token prefix for secret scanning
+- **Tests:** 2 new security tests (headers verification + rate limiting 429 response)
+
+### Governance
+- `SECURITY.md` — vulnerability disclosure policy with 90-day responsible disclosure
+- `CONTRIBUTING.md` — development standards, PR checklist, code quality requirements
+
+### Stats
+- 175 tests passing (549 assertions)
+- PHPStan level 5, Rector PHP 8.4, Pint — all green
+
 ## Phase 2 — Core Content Types (February 2026)
 
 ### Session 6 — GivingRecord (2026-02-26)

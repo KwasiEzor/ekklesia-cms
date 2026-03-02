@@ -310,3 +310,6 @@ To work on a specific phase, tell Claude Code:
 - [x] Phase 2, Session 5 — Page content type (with block builder) COMPLETE
 - [x] Phase 2, Session 6 — GivingRecord content type COMPLETE
 - [x] **Phase 2 — Core Content Types COMPLETE** (all 6 content types built)
+- [x] Phase 2.5 — Hardening Sprint COMPLETE (Rector, PHPStan, CI, security headers, rate limiting, Sanctum, SECURITY.md, CONTRIBUTING.md)
+- [x] Phase 3 — API Layer COMPLETE (auth endpoints, token management, Scramble API docs, Gallery form requests)
+- [ ] Phase 4 — First Deployment IN PROGRESS (tenancy middleware, tenant:create, seeders, health check, Docker)
