@@ -23,4 +23,15 @@ return [
         'bank_transfer' => 'Bank Transfer',
         'card' => 'Card',
     ],
+
+    // Sections
+    'section_info' => 'Giving Information',
+    'section_info_desc' => 'Member, amount, currency and payment method',
+    'section_tracking' => 'Tracking',
+    'section_tracking_desc' => 'Transaction reference and associated campaign',
+
+    // Placeholders
+    'amount_placeholder' => 'E.g. 50000',
+    'reference_placeholder' => 'E.g. TX-2026-001',
+    'campaign_placeholder' => 'E.g. Temple construction',
 ];

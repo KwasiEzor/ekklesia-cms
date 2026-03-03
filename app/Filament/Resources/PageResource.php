@@ -7,8 +7,10 @@ use App\Models\Page;
 use BackedEnum;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -39,10 +41,13 @@ class PageResource extends Resource
     {
         return $schema
             ->components([
-                Components\Section::make(__('pages.details'))
+                Section::make(__('pages.section_details'))
+                    ->description(__('pages.section_details_desc'))
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         Components\TextInput::make('title')
                             ->label(__('pages.title'))
+                            ->placeholder(__('pages.title_placeholder'))
                             ->required()
                             ->maxLength(255),
 
@@ -54,7 +59,9 @@ class PageResource extends Resource
                     ])
                     ->columns(2),
 
-                Components\Section::make(__('pages.content_blocks'))
+                Section::make(__('pages.section_blocks'))
+                    ->description(__('pages.section_blocks_desc'))
+                    ->icon(Heroicon::OutlinedRectangleGroup)
                     ->schema([
                         Components\Builder::make('content_blocks')
                             ->label(__('pages.content_blocks'))
@@ -161,14 +168,20 @@ class PageResource extends Resource
                             ->reorderable(),
                     ]),
 
-                Components\Section::make(__('pages.seo_section'))
+                Section::make(__('pages.section_seo'))
+                    ->description(__('pages.section_seo_desc'))
+                    ->icon(Heroicon::OutlinedMagnifyingGlass)
+                    ->collapsible()
+                    ->collapsed()
                     ->schema([
                         Components\TextInput::make('seo_title')
                             ->label(__('pages.seo_title'))
+                            ->placeholder(__('pages.seo_title_placeholder'))
                             ->maxLength(255),
 
                         Components\TextInput::make('seo_description')
                             ->label(__('pages.seo_description'))
+                            ->placeholder(__('pages.seo_description_placeholder'))
                             ->maxLength(255),
 
                         Components\DateTimePicker::make('published_at')
@@ -216,12 +229,16 @@ class PageResource extends Resource
                     ->query(fn ($query) => $query->whereNull('published_at')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\ViewAction::make()
+                    ->iconButton(),
+                Actions\EditAction::make()
+                    ->iconButton(),
+                Actions\DeleteAction::make()
+                    ->iconButton(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

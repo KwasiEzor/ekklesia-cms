@@ -4,11 +4,14 @@ namespace App\Filament\Resources\MemberResource\Pages;
 
 use App\Filament\Resources\MemberResource;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Enums\Width;
 use Illuminate\Support\Arr;
 
 class CreateMember extends CreateRecord
 {
     protected static string $resource = MemberResource::class;
+
+    protected Width | string | null $maxContentWidth = Width::Full;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

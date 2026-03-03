@@ -4,11 +4,14 @@ namespace App\Filament\Resources\GalleryResource\Pages;
 
 use App\Filament\Resources\GalleryResource;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Enums\Width;
 use Illuminate\Support\Arr;
 
 class CreateGallery extends CreateRecord
 {
     protected static string $resource = GalleryResource::class;
+
+    protected Width | string | null $maxContentWidth = Width::Full;
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

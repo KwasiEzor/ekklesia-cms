@@ -5,11 +5,14 @@ namespace App\Filament\Resources\MemberResource\Pages;
 use App\Filament\Resources\MemberResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Enums\Width;
 use Illuminate\Support\Arr;
 
 class EditMember extends EditRecord
 {
     protected static string $resource = MemberResource::class;
+
+    protected Width | string | null $maxContentWidth = Width::Full;
 
     protected function getHeaderActions(): array
     {

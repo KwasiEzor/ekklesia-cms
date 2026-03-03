@@ -7,8 +7,10 @@ use App\Models\Announcement;
 use BackedEnum;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -39,10 +41,13 @@ class AnnouncementResource extends Resource
     {
         return $schema
             ->components([
-                Components\Section::make(__('announcements.details'))
+                Section::make(__('announcements.section_details'))
+                    ->description(__('announcements.section_details_desc'))
+                    ->icon(Heroicon::OutlinedMegaphone)
                     ->schema([
                         Components\TextInput::make('title')
                             ->label(__('announcements.title'))
+                            ->placeholder(__('announcements.title_placeholder'))
                             ->required()
                             ->maxLength(255),
 
@@ -74,7 +79,9 @@ class AnnouncementResource extends Resource
                     ])
                     ->columns(2),
 
-                Components\Section::make()
+                Section::make(__('announcements.section_body'))
+                    ->description(__('announcements.section_body_desc'))
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         Components\MarkdownEditor::make('body')
                             ->label(__('announcements.body'))
@@ -134,12 +141,16 @@ class AnnouncementResource extends Resource
                     ->label(__('announcements.pinned')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\ViewAction::make()
+                    ->iconButton(),
+                Actions\EditAction::make()
+                    ->iconButton(),
+                Actions\DeleteAction::make()
+                    ->iconButton(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

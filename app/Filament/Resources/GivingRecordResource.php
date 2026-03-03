@@ -8,8 +8,10 @@ use App\Models\Member;
 use BackedEnum;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -40,7 +42,9 @@ class GivingRecordResource extends Resource
     {
         return $schema
             ->components([
-                Components\Section::make(__('giving_records.details'))
+                Section::make(__('giving_records.section_info'))
+                    ->description(__('giving_records.section_info_desc'))
+                    ->icon(Heroicon::OutlinedBanknotes)
                     ->schema([
                         Components\Select::make('member_id')
                             ->label(__('giving_records.member'))
@@ -53,6 +57,7 @@ class GivingRecordResource extends Resource
 
                         Components\TextInput::make('amount')
                             ->label(__('giving_records.amount'))
+                            ->placeholder(__('giving_records.amount_placeholder'))
                             ->required()
                             ->numeric()
                             ->minValue(0)
@@ -85,13 +90,22 @@ class GivingRecordResource extends Resource
                                 'card' => __('giving_records.methods.card'),
                             ])
                             ->required(),
+                    ])
+                    ->columns(2),
 
+                Section::make(__('giving_records.section_tracking'))
+                    ->description(__('giving_records.section_tracking_desc'))
+                    ->icon(Heroicon::OutlinedReceiptPercent)
+                    ->collapsible()
+                    ->schema([
                         Components\TextInput::make('reference')
                             ->label(__('giving_records.reference'))
+                            ->placeholder(__('giving_records.reference_placeholder'))
                             ->maxLength(255),
 
                         Components\TextInput::make('campaign_id')
                             ->label(__('giving_records.campaign'))
+                            ->placeholder(__('giving_records.campaign_placeholder'))
                             ->maxLength(255),
                     ])
                     ->columns(2),
@@ -158,12 +172,16 @@ class GivingRecordResource extends Resource
                     ->query(fn ($query) => $query->whereNull('member_id')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\ViewAction::make()
+                    ->iconButton(),
+                Actions\EditAction::make()
+                    ->iconButton(),
+                Actions\DeleteAction::make()
+                    ->iconButton(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

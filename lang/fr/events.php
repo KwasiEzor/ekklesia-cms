@@ -20,4 +20,19 @@ return [
     'past' => 'Passé',
     'details' => 'Détails',
     'media' => 'Média',
+
+    // Sections
+    'section_details' => 'Détails de l\'événement',
+    'section_details_desc' => 'Informations principales : titre, dates, lieu et capacité',
+    'section_links' => 'Liens & Média',
+    'section_links_desc' => 'Image de couverture et lien d\'inscription',
+    'section_description' => 'Description',
+    'section_description_desc' => 'Description détaillée de l\'événement',
+
+    // Placeholders
+    'title_placeholder' => 'Ex : Conférence de la jeunesse 2026',
+    'location_placeholder' => 'Ex : Temple principal, Lomé',
+    'capacity_placeholder' => 'Ex : 500',
+    'image_placeholder' => 'https://example.com/image.jpg',
+    'registration_url_placeholder' => 'https://forms.google.com/...',
 ];

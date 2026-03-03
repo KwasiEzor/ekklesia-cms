@@ -23,4 +23,16 @@ return [
         'visiting' => 'Visiteur',
         'transferred' => 'Transféré',
     ],
+
+    // Sections
+    'section_avatar' => 'Photo de profil',
+    'section_avatar_desc' => 'Photo d\'identité du membre (JPEG, PNG ou WebP, max 2 Mo)',
+    'section_info' => 'Informations du membre',
+    'section_info_desc' => 'Coordonnées, statut et groupe de cellule',
+
+    // Placeholders
+    'first_name_placeholder' => 'Ex : Jean',
+    'last_name_placeholder' => 'Ex : Dupont',
+    'email_placeholder' => 'jean.dupont@email.com',
+    'phone_placeholder' => '+228 90 00 00 00',
 ];

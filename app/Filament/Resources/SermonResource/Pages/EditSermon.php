@@ -5,10 +5,13 @@ namespace App\Filament\Resources\SermonResource\Pages;
 use App\Filament\Resources\SermonResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Enums\Width;
 
 class EditSermon extends EditRecord
 {
     protected static string $resource = SermonResource::class;
+
+    protected Width | string | null $maxContentWidth = Width::Full;
 
     protected function getHeaderActions(): array
     {

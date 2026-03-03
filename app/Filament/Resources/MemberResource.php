@@ -8,8 +8,10 @@ use App\States\MemberStatus\MemberStatus;
 use BackedEnum;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -40,7 +42,10 @@ class MemberResource extends Resource
     {
         return $schema
             ->components([
-                Components\Section::make(__('members.avatar'))
+                Section::make(__('members.section_avatar'))
+                    ->description(__('members.section_avatar_desc'))
+                    ->icon(Heroicon::OutlinedCamera)
+                    ->collapsible()
                     ->schema([
                         Components\FileUpload::make('avatar')
                             ->label(__('members.avatar'))
@@ -50,28 +55,35 @@ class MemberResource extends Resource
                             ->directory('members/avatars')
                             ->maxSize(2048)
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
-                    ])
-                    ->collapsible(),
+                    ]),
 
-                Components\Section::make(__('members.details'))
+                Section::make(__('members.section_info'))
+                    ->description(__('members.section_info_desc'))
+                    ->icon(Heroicon::OutlinedUserCircle)
                     ->schema([
                         Components\TextInput::make('first_name')
                             ->label(__('members.first_name'))
+                            ->placeholder(__('members.first_name_placeholder'))
                             ->required()
                             ->maxLength(255),
 
                         Components\TextInput::make('last_name')
                             ->label(__('members.last_name'))
+                            ->placeholder(__('members.last_name_placeholder'))
                             ->required()
                             ->maxLength(255),
 
                         Components\TextInput::make('email')
                             ->label(__('members.email'))
+                            ->placeholder(__('members.email_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedEnvelope)
                             ->email()
                             ->maxLength(255),
 
                         Components\TextInput::make('phone')
                             ->label(__('members.phone'))
+                            ->placeholder(__('members.phone_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedPhone)
                             ->tel()
                             ->maxLength(255),
 
@@ -159,12 +171,16 @@ class MemberResource extends Resource
                     ->relationship('cellGroup', 'name'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\ViewAction::make()
+                    ->iconButton(),
+                Actions\EditAction::make()
+                    ->iconButton(),
+                Actions\DeleteAction::make()
+                    ->iconButton(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

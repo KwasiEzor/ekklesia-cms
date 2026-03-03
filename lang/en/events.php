@@ -20,4 +20,19 @@ return [
     'past' => 'Past',
     'details' => 'Details',
     'media' => 'Media',
+
+    // Sections
+    'section_details' => 'Event Details',
+    'section_details_desc' => 'Main information: title, dates, location and capacity',
+    'section_links' => 'Links & Media',
+    'section_links_desc' => 'Cover image and registration link',
+    'section_description' => 'Description',
+    'section_description_desc' => 'Detailed description of the event',
+
+    // Placeholders
+    'title_placeholder' => 'E.g. Youth Conference 2026',
+    'location_placeholder' => 'E.g. Main Temple, Lomé',
+    'capacity_placeholder' => 'E.g. 500',
+    'image_placeholder' => 'https://example.com/image.jpg',
+    'registration_url_placeholder' => 'https://forms.google.com/...',
 ];

@@ -40,4 +40,17 @@ return [
         'quote_text' => 'Texte',
         'quote_attribution' => 'Attribution',
     ],
+
+    // Sections
+    'section_details' => 'Détails de la page',
+    'section_details_desc' => 'Titre et identifiant URL de la page',
+    'section_blocks' => 'Blocs de contenu',
+    'section_blocks_desc' => 'Construisez le contenu de votre page en ajoutant des blocs',
+    'section_seo' => 'SEO & Publication',
+    'section_seo_desc' => 'Optimisation pour les moteurs de recherche et planification de publication',
+
+    // Placeholders
+    'title_placeholder' => 'Ex : À propos de notre église',
+    'seo_title_placeholder' => 'Titre affiché dans les résultats de recherche',
+    'seo_description_placeholder' => 'Description de 150-160 caractères pour les moteurs de recherche',
 ];

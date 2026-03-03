@@ -24,4 +24,13 @@ return [
         'men' => 'Hommes',
         'leaders' => 'Responsables',
     ],
+
+    // Sections
+    'section_details' => 'Détails de l\'annonce',
+    'section_details_desc' => 'Titre, dates de publication et groupe cible de l\'annonce',
+    'section_body' => 'Contenu de l\'annonce',
+    'section_body_desc' => 'Rédigez le contenu de votre annonce en utilisant le formatage Markdown',
+
+    // Placeholders
+    'title_placeholder' => 'Ex : Culte spécial dimanche prochain',
 ];

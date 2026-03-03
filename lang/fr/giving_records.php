@@ -23,4 +23,15 @@ return [
         'bank_transfer' => 'Virement bancaire',
         'card' => 'Carte bancaire',
     ],
+
+    // Sections
+    'section_info' => 'Informations du don',
+    'section_info_desc' => 'Membre, montant, devise et mode de paiement',
+    'section_tracking' => 'Suivi',
+    'section_tracking_desc' => 'Référence de transaction et campagne associée',
+
+    // Placeholders
+    'amount_placeholder' => 'Ex : 50000',
+    'reference_placeholder' => 'Ex : TX-2026-001',
+    'campaign_placeholder' => 'Ex : Construction du temple',
 ];

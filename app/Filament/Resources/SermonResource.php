@@ -7,8 +7,10 @@ use App\Models\Sermon;
 use BackedEnum;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -39,10 +41,13 @@ class SermonResource extends Resource
     {
         return $schema
             ->components([
-                Components\Section::make()
+                Section::make(__('sermons.section_info'))
+                    ->description(__('sermons.section_info_desc'))
+                    ->icon(Heroicon::OutlinedMicrophone)
                     ->schema([
                         Components\TextInput::make('title')
                             ->label(__('sermons.title'))
+                            ->placeholder(__('sermons.title_placeholder'))
                             ->required()
                             ->maxLength(255),
 
@@ -54,6 +59,8 @@ class SermonResource extends Resource
 
                         Components\TextInput::make('speaker')
                             ->label(__('sermons.speaker'))
+                            ->placeholder(__('sermons.speaker_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedUser)
                             ->required()
                             ->maxLength(255),
 
@@ -63,6 +70,7 @@ class SermonResource extends Resource
 
                         Components\TextInput::make('duration')
                             ->label(__('sermons.duration_seconds'))
+                            ->placeholder(__('sermons.duration_placeholder'))
                             ->numeric()
                             ->minValue(0),
 
@@ -75,21 +83,32 @@ class SermonResource extends Resource
                     ])
                     ->columns(2),
 
-                Components\Section::make('Média')
+                Section::make(__('sermons.section_media'))
+                    ->description(__('sermons.section_media_desc'))
+                    ->icon(Heroicon::OutlinedFilm)
+                    ->collapsible()
                     ->schema([
                         Components\TextInput::make('audio_url')
                             ->label(__('sermons.audio_url'))
+                            ->placeholder(__('sermons.audio_url_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedMusicalNote)
                             ->url()
                             ->maxLength(2048),
 
                         Components\TextInput::make('video_url')
                             ->label(__('sermons.video_url'))
+                            ->placeholder(__('sermons.video_url_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedVideoCamera)
                             ->url()
                             ->maxLength(2048),
                     ])
                     ->columns(2),
 
-                Components\Section::make()
+                Section::make(__('sermons.section_tags'))
+                    ->description(__('sermons.section_tags_desc'))
+                    ->icon(Heroicon::OutlinedTag)
+                    ->collapsible()
+                    ->collapsed()
                     ->schema([
                         Components\TagsInput::make('tags')
                             ->label(__('sermons.tags')),
@@ -142,12 +161,16 @@ class SermonResource extends Resource
                     ->relationship('series', 'title'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\ViewAction::make()
+                    ->iconButton(),
+                Actions\EditAction::make()
+                    ->iconButton(),
+                Actions\DeleteAction::make()
+                    ->iconButton(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

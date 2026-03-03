@@ -7,8 +7,10 @@ use App\Models\Event;
 use BackedEnum;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -39,10 +41,13 @@ class EventResource extends Resource
     {
         return $schema
             ->components([
-                Components\Section::make(__('events.details'))
+                Section::make(__('events.section_details'))
+                    ->description(__('events.section_details_desc'))
+                    ->icon(Heroicon::OutlinedCalendarDays)
                     ->schema([
                         Components\TextInput::make('title')
                             ->label(__('events.title'))
+                            ->placeholder(__('events.title_placeholder'))
                             ->required()
                             ->maxLength(255),
 
@@ -62,30 +67,42 @@ class EventResource extends Resource
 
                         Components\TextInput::make('location')
                             ->label(__('events.location'))
+                            ->placeholder(__('events.location_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedMapPin)
                             ->maxLength(255),
 
                         Components\TextInput::make('capacity')
                             ->label(__('events.capacity'))
+                            ->placeholder(__('events.capacity_placeholder'))
                             ->numeric()
                             ->minValue(1),
                     ])
                     ->columns(2),
 
-                Components\Section::make(__('events.media'))
+                Section::make(__('events.section_links'))
+                    ->description(__('events.section_links_desc'))
+                    ->icon(Heroicon::OutlinedLink)
+                    ->collapsible()
                     ->schema([
                         Components\TextInput::make('image')
                             ->label(__('events.image'))
+                            ->placeholder(__('events.image_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedPhoto)
                             ->url()
                             ->maxLength(2048),
 
                         Components\TextInput::make('registration_url')
                             ->label(__('events.registration_url'))
+                            ->placeholder(__('events.registration_url_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedLink)
                             ->url()
                             ->maxLength(2048),
                     ])
                     ->columns(2),
 
-                Components\Section::make()
+                Section::make(__('events.section_description'))
+                    ->description(__('events.section_description_desc'))
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->schema([
                         Components\MarkdownEditor::make('description')
                             ->label(__('events.description'))
@@ -134,19 +151,23 @@ class EventResource extends Resource
             ->filters([
                 Tables\Filters\Filter::make('upcoming')
                     ->label(__('events.upcoming'))
-                    ->query(fn ($query) => $query->where('start_at', '>', now())),
+                    ->query(fn($query) => $query->where('start_at', '>', now())),
 
                 Tables\Filters\Filter::make('past')
                     ->label(__('events.past'))
-                    ->query(fn ($query) => $query->where('start_at', '<=', now())),
+                    ->query(fn($query) => $query->where('start_at', '<=', now())),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\ViewAction::make()
+                    ->iconButton(),
+                Actions\EditAction::make()
+                    ->iconButton(),
+                Actions\DeleteAction::make()
+                    ->iconButton(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -7,8 +7,10 @@ use App\Models\Gallery;
 use BackedEnum;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -39,15 +41,19 @@ class GalleryResource extends Resource
     {
         return $schema
             ->components([
-                Components\Section::make(__('galleries.details'))
+                Section::make(__('galleries.section_details'))
+                    ->description(__('galleries.section_details_desc'))
+                    ->icon(Heroicon::OutlinedPhoto)
                     ->schema([
                         Components\TextInput::make('title')
                             ->label(__('galleries.title'))
+                            ->placeholder(__('galleries.title_placeholder'))
                             ->required()
                             ->maxLength(255),
 
                         Components\Textarea::make('description')
                             ->label(__('galleries.description'))
+                            ->placeholder(__('galleries.description_placeholder'))
                             ->rows(3)
                             ->maxLength(1000),
 
@@ -82,7 +88,9 @@ class GalleryResource extends Resource
                     ])
                     ->columns(2),
 
-                Components\Section::make(__('galleries.photos'))
+                Section::make(__('galleries.section_photos'))
+                    ->description(__('galleries.section_photos_desc'))
+                    ->icon(Heroicon::OutlinedCamera)
                     ->schema([
                         Components\FileUpload::make('photos')
                             ->label(__('galleries.photos'))
@@ -135,12 +143,16 @@ class GalleryResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\ViewAction::make()
+                    ->iconButton(),
+                Actions\EditAction::make()
+                    ->iconButton(),
+                Actions\DeleteAction::make()
+                    ->iconButton(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

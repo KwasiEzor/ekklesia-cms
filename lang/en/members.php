@@ -23,4 +23,16 @@ return [
         'visiting' => 'Visiting',
         'transferred' => 'Transferred',
     ],
+
+    // Sections
+    'section_avatar' => 'Profile Photo',
+    'section_avatar_desc' => 'Member photo (JPEG, PNG or WebP, max 2 MB)',
+    'section_info' => 'Member Information',
+    'section_info_desc' => 'Contact details, status and cell group',
+
+    // Placeholders
+    'first_name_placeholder' => 'E.g. John',
+    'last_name_placeholder' => 'E.g. Smith',
+    'email_placeholder' => 'john.smith@email.com',
+    'phone_placeholder' => '+228 90 00 00 00',
 ];

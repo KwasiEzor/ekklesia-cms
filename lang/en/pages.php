@@ -40,4 +40,17 @@ return [
         'quote_text' => 'Text',
         'quote_attribution' => 'Attribution',
     ],
+
+    // Sections
+    'section_details' => 'Page Details',
+    'section_details_desc' => 'Page title and URL slug',
+    'section_blocks' => 'Content Blocks',
+    'section_blocks_desc' => 'Build your page content by adding blocks',
+    'section_seo' => 'SEO & Publication',
+    'section_seo_desc' => 'Search engine optimization and publication scheduling',
+
+    // Placeholders
+    'title_placeholder' => 'E.g. About Our Church',
+    'seo_title_placeholder' => 'Title shown in search results',
+    'seo_description_placeholder' => '150-160 character description for search engines',
 ];

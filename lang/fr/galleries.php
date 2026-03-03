@@ -18,4 +18,14 @@ return [
         'event' => 'Événement',
         'member' => 'Membre',
     ],
+
+    // Sections
+    'section_details' => 'Détails de la galerie',
+    'section_details_desc' => 'Titre, description et association de la galerie',
+    'section_photos' => 'Photos',
+    'section_photos_desc' => 'Formats acceptés : JPEG, PNG, WebP, GIF — 50 photos maximum, 5 Mo par photo',
+
+    // Placeholders
+    'title_placeholder' => 'Ex : Baptême de Pâques 2026',
+    'description_placeholder' => 'Décrivez brièvement cette galerie',
 ];
