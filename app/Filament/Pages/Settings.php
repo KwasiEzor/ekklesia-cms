@@ -83,6 +83,7 @@ class Settings extends Page
                         $this->appearanceTab(),
                         $this->socialTab(),
                         $this->seoTab(),
+                        $this->aiTab(),
                         $this->notificationsTab(),
                         $this->modulesTab(),
                         $this->advancedTab(),
@@ -608,6 +609,84 @@ class Settings extends Page
                             ->default(true),
                     ])
                     ->columns(2),
+            ]);
+    }
+
+    protected function aiTab(): Tab
+    {
+        return Tab::make(__('settings.tab_ai'))
+            ->icon(Heroicon::OutlinedSparkles)
+            ->schema([
+                Section::make(__('settings.section_ai_provider'))
+                    ->description(__('settings.section_ai_provider_desc'))
+                    ->icon(Heroicon::OutlinedSparkles)
+                    ->schema([
+                        Components\Toggle::make('data.ai_enabled')
+                            ->label(__('settings.ai_enabled'))
+                            ->helperText(__('settings.ai_enabled_help'))
+                            ->default(true)
+                            ->columnSpanFull(),
+
+                        Components\Select::make('data.ai_provider')
+                            ->label(__('settings.ai_provider'))
+                            ->helperText(__('settings.ai_provider_help'))
+                            ->options([
+                                'claude' => 'Claude (Anthropic)',
+                                'openai' => 'OpenAI (GPT)',
+                                'gemini' => 'Google Gemini',
+                            ])
+                            ->default('claude')
+                            ->live(),
+
+                        Components\Select::make('data.ai_model')
+                            ->label(__('settings.ai_model'))
+                            ->helperText(__('settings.ai_model_help'))
+                            ->options(function (callable $get): array {
+                                return match ($get('data.ai_provider') ?? 'claude') {
+                                    'claude' => [
+                                        'claude-sonnet-4-6' => 'Claude Sonnet 4.6',
+                                        'claude-haiku-4-5-20251001' => 'Claude Haiku 4.5',
+                                        'claude-opus-4-6' => 'Claude Opus 4.6',
+                                    ],
+                                    'openai' => [
+                                        'gpt-4o' => 'GPT-4o',
+                                        'gpt-4o-mini' => 'GPT-4o Mini',
+                                        'gpt-4-turbo' => 'GPT-4 Turbo',
+                                    ],
+                                    'gemini' => [
+                                        'gemini-2.0-flash' => 'Gemini 2.0 Flash',
+                                        'gemini-2.0-pro' => 'Gemini 2.0 Pro',
+                                        'gemini-1.5-flash' => 'Gemini 1.5 Flash',
+                                    ],
+                                    default => [],
+                                };
+                            }),
+
+                        Components\Select::make('data.ai_max_tokens')
+                            ->label(__('settings.ai_max_tokens'))
+                            ->helperText(__('settings.ai_max_tokens_help'))
+                            ->options([
+                                '1024' => '1024',
+                                '2048' => '2048',
+                                '4096' => '4096',
+                            ])
+                            ->default('2048'),
+                    ])
+                    ->columns(2),
+
+                Section::make(__('settings.section_ai_api_key'))
+                    ->description(__('settings.section_ai_api_key_desc'))
+                    ->icon(Heroicon::OutlinedKey)
+                    ->collapsible()
+                    ->schema([
+                        Components\TextInput::make('data.ai_api_key')
+                            ->label(__('settings.ai_api_key'))
+                            ->helperText(__('settings.ai_api_key_help'))
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 

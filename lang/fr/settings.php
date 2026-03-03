@@ -181,6 +181,23 @@ return [
     'enable_galleries' => 'Galeries',
     'enable_galleries_help' => 'Albums photos et gestion de médias',
 
+    // Tab 5 - AI
+    'tab_ai' => 'Intelligence Artificielle',
+    'section_ai_provider' => 'Fournisseur IA',
+    'section_ai_provider_desc' => 'Configurez le fournisseur d\'intelligence artificielle pour votre assistant',
+    'ai_enabled' => 'Activer les fonctions IA',
+    'ai_enabled_help' => 'Active l\'assistant IA et l\'analyse de contenu automatique',
+    'ai_provider' => 'Fournisseur',
+    'ai_provider_help' => 'Choisissez le fournisseur d\'IA à utiliser pour votre église',
+    'ai_model' => 'Modèle',
+    'ai_model_help' => 'Le modèle d\'IA à utiliser (les modèles plus puissants consomment plus de crédits)',
+    'ai_max_tokens' => 'Longueur max. de réponse',
+    'ai_max_tokens_help' => 'Nombre maximum de tokens (mots) dans les réponses de l\'IA',
+    'section_ai_api_key' => 'Clé API personnalisée',
+    'section_ai_api_key_desc' => 'Optionnel : utilisez votre propre clé API au lieu de la clé de la plateforme',
+    'ai_api_key' => 'Clé API',
+    'ai_api_key_help' => 'Laissez vide pour utiliser la clé de la plateforme Ekklesia. Entrez votre propre clé pour un contrôle indépendant.',
+
     // Tab 7 - Advanced
     'tab_advanced' => 'Configuration avancée',
     'section_locale' => 'Langue & Région',

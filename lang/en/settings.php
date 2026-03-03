@@ -181,6 +181,23 @@ return [
     'enable_galleries' => 'Galleries',
     'enable_galleries_help' => 'Photo albums and media management',
 
+    // Tab 5 - AI
+    'tab_ai' => 'Artificial Intelligence',
+    'section_ai_provider' => 'AI Provider',
+    'section_ai_provider_desc' => 'Configure the AI provider for your assistant',
+    'ai_enabled' => 'Enable AI features',
+    'ai_enabled_help' => 'Enable the AI assistant and automatic content analysis',
+    'ai_provider' => 'Provider',
+    'ai_provider_help' => 'Choose the AI provider to use for your church',
+    'ai_model' => 'Model',
+    'ai_model_help' => 'The AI model to use (more powerful models consume more credits)',
+    'ai_max_tokens' => 'Max response length',
+    'ai_max_tokens_help' => 'Maximum number of tokens (words) in AI responses',
+    'section_ai_api_key' => 'Custom API Key',
+    'section_ai_api_key_desc' => 'Optional: use your own API key instead of the platform key',
+    'ai_api_key' => 'API Key',
+    'ai_api_key_help' => 'Leave empty to use the Ekklesia platform key. Enter your own key for independent control.',
+
     // Tab 7 - Advanced
     'tab_advanced' => 'Advanced Settings',
     'section_locale' => 'Language & Region',

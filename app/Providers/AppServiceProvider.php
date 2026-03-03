@@ -12,14 +12,19 @@ use App\Models\Member;
 use App\Models\Page;
 use App\Models\Sermon;
 use App\Observers\ContentObserver;
+use App\Services\Ai\AiManager;
+use App\Services\Ai\SkillRegistry;
 use Illuminate\Support\Facades\Event as EventFacade;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->singleton(SkillRegistry::class);
+        $this->app->singleton(AiManager::class, fn ($app) => new AiManager($app));
+        $this->app->alias(AiManager::class, 'ai');
     }
 
     public function boot(): void
@@ -33,5 +38,7 @@ class AppServiceProvider extends ServiceProvider
         GivingRecord::observe(ContentObserver::class);
 
         EventFacade::listen(ContentChanged::class, NotifyTenantAdmins::class);
+
+        Livewire::component('ai-chat', \App\Livewire\AiChat::class);
     }
 }

@@ -8,3 +8,6 @@ Broadcast::channel('App.Models.User.{id}', fn (User $user, $id): bool => (int) $
 
 // Tenant-scoped content channel — all admins in a tenant receive updates
 Broadcast::channel('tenant.{tenantId}', fn (User $user, string $tenantId): bool => $user->tenant_id === $tenantId);
+
+// AI chat channel — private per user
+Broadcast::channel('ai-chat.{userId}', fn (User $user, $userId): bool => (int) $user->id === (int) $userId);
