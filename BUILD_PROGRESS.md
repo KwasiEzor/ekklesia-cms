@@ -686,3 +686,38 @@ User message → ProcessAiMessage (queued job)
   - `tests/Feature/Filament/SettingsPageTest.php`
   - `BUILD_PROGRESS.md`
 - **Notes:** Access policy may still return 403 for unauthorized users, but the internal server error is eliminated.
+
+---
+
+## 2026-03-04 — CRUD Display Quality Upgrade (Filament Resources)
+
+- **Status:** Done
+- **Goal:** Fix design-quality and rendering consistency issues across all Filament CRUD resource screens.
+- **Summary:**
+  - Normalized all resource `List*` pages to full-width layouts so list/table screens match create/edit density and avoid cramped presentation.
+  - Hardened global CRUD UI styles in the shared Filament admin theme:
+    - Better header toolbar spacing and responsive behavior.
+    - Improved filter panel readability and visual grouping.
+    - Horizontal containment for wide tables with safer minimum widths.
+    - Better cell/column text wrapping to prevent overflow and clipping.
+    - Consistent table action button wrapping/alignment for row actions.
+    - Improved form field rhythm and label emphasis.
+  - Applied changes globally so all current and future resources inherit the same quality baseline.
+- **Tests:**
+  - Verified: `php artisan test` pass (`316 passed`, `896 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `app/Filament/Resources/AnnouncementResource/Pages/ListAnnouncements.php`
+  - `app/Filament/Resources/CampusResource/Pages/ListCampuses.php`
+  - `app/Filament/Resources/EventResource/Pages/ListEvents.php`
+  - `app/Filament/Resources/GalleryResource/Pages/ListGalleries.php`
+  - `app/Filament/Resources/GivingRecordResource/Pages/ListGivingRecords.php`
+  - `app/Filament/Resources/MemberResource/Pages/ListMembers.php`
+  - `app/Filament/Resources/NotificationDispatchResource/Pages/ListNotificationDispatches.php`
+  - `app/Filament/Resources/PageResource/Pages/ListPages.php`
+  - `app/Filament/Resources/PaymentTransactionResource/Pages/ListPaymentTransactions.php`
+  - `app/Filament/Resources/SermonResource/Pages/ListSermons.php`
+  - `BUILD_PROGRESS.md`
+- **Notes:** Next quality pass should target per-resource column semantics (e.g., explicit truncation/tooltips and priority-based responsive column visibility) for even stronger mobile ergonomics.

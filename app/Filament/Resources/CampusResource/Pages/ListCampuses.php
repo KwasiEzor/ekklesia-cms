@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\SermonResource\Pages;
+namespace App\Filament\Resources\CampusResource\Pages;
 
-use App\Filament\Resources\SermonResource;
+use App\Filament\Resources\CampusResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Width;
 
-class ListSermons extends ListRecords
+class ListCampuses extends ListRecords
 {
-    protected static string $resource = SermonResource::class;
+    protected static string $resource = CampusResource::class;
 
     protected Width|string|null $maxContentWidth = Width::Full;
 

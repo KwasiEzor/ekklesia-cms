@@ -156,6 +156,93 @@ body {
     color: var(--ekk-text-muted);
 }
 
+/* CRUD quality hardening across all Filament resources. */
+.fi-ta-header-toolbar {
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.fi-ta-header-toolbar > * {
+    min-width: 0;
+}
+
+.fi-ta-search-field {
+    min-width: min(24rem, 100%);
+}
+
+.fi-ta-filters {
+    border: 1px solid color-mix(in oklab, var(--ekk-border) 75%, transparent);
+    border-radius: 0.85rem;
+    background: color-mix(in oklab, var(--ekk-surface) 92%, transparent);
+}
+
+.fi-ta-filters-form {
+    gap: 0.875rem;
+}
+
+.fi-ta-content {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.fi-ta-table {
+    min-width: 56rem;
+}
+
+.fi-ta-header-cell {
+    white-space: nowrap;
+    color: color-mix(in oklab, var(--ekk-text) 82%, var(--ekk-text-muted));
+    letter-spacing: 0.01em;
+}
+
+.fi-ta-cell {
+    vertical-align: middle;
+}
+
+.fi-ta-col-wrp {
+    min-width: 0;
+}
+
+.fi-ta-text {
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.fi-ta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+}
+
+.fi-ta-actions .fi-icon-btn {
+    border-color: color-mix(in oklab, var(--ekk-border) 70%, transparent);
+    background: color-mix(in oklab, var(--ekk-surface) 92%, transparent);
+}
+
+.fi-fo {
+    row-gap: 1rem;
+}
+
+.fi-fo .fi-section-content,
+.fi-fo .fi-section-footer {
+    padding-top: 1rem;
+}
+
+.fi-fo-field-wrp {
+    gap: 0.4rem;
+}
+
+.fi-fo-field-wrp-label {
+    color: color-mix(in oklab, var(--ekk-text) 85%, var(--ekk-text-muted));
+    font-weight: 600;
+}
+
+.fi-ac-btn-action {
+    white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: no-preference) {
     .ekk-billing-card {
         transition: transform 180ms ease, box-shadow 180ms ease;
@@ -168,6 +255,22 @@ body {
 }
 
 @media (max-width: 768px) {
+    .fi-ta-header-toolbar {
+        align-items: stretch;
+    }
+
+    .fi-ta-search-field {
+        min-width: 100%;
+    }
+
+    .fi-ta-table {
+        min-width: 42rem;
+    }
+
+    .fi-ta-actions {
+        justify-content: flex-start;
+    }
+
     .fi-page-header-subheading {
         font-size: 0.875rem;
     }
