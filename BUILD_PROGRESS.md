@@ -721,3 +721,28 @@ User message → ProcessAiMessage (queued job)
   - `app/Filament/Resources/SermonResource/Pages/ListSermons.php`
   - `BUILD_PROGRESS.md`
 - **Notes:** Next quality pass should target per-resource column semantics (e.g., explicit truncation/tooltips and priority-based responsive column visibility) for even stronger mobile ergonomics.
+
+---
+
+## 2026-03-04 — Show Modal Quality Upgrade (ViewAction + Infolist Columns)
+
+- **Status:** Done
+- **Goal:** Fix low-quality visual rendering in Filament "show" modals, especially infolist column readability.
+- **Summary:**
+  - Applied global `ViewAction` defaults to improve modal composition consistency:
+    - Wider modal width (`5xl`) for better data density.
+    - Start-aligned modal layout for improved label/content scanning.
+  - Added premium modal and infolist styling in the shared admin theme:
+    - Upgraded modal surface, border contrast, and hierarchy.
+    - Better infolist row containers with spacing and structure.
+    - Improved inline label/content column behavior and multiline readability.
+    - Refined key-value and repeatable table presentation inside modals.
+    - Mobile fallback so columns collapse cleanly without visual breakage.
+- **Tests:**
+  - Verified: `php artisan test` pass (`316 passed`, `896 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`
+- **Notes:** Next step can add per-resource `ViewAction::infolist()` schemas for high-priority entities to control field ordering and semantic grouping, beyond global styling.

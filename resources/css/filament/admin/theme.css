@@ -243,6 +243,82 @@ body {
     white-space: nowrap;
 }
 
+/* Premium readability for ViewAction show modals and infolists. */
+.fi-modal > .fi-modal-window-ctn > .fi-modal-window {
+    border: 1px solid color-mix(in oklab, var(--ekk-border) 72%, transparent);
+    background: linear-gradient(180deg, var(--ekk-surface) 0%, var(--ekk-surface-elevated) 100%);
+    box-shadow: 0 22px 54px rgba(15, 23, 42, 0.2);
+}
+
+.fi-modal .fi-modal-header {
+    border-bottom: 1px solid color-mix(in oklab, var(--ekk-border) 70%, transparent);
+}
+
+.fi-modal .fi-modal-heading {
+    letter-spacing: -0.01em;
+}
+
+.fi-modal .fi-modal-content {
+    gap: 1rem;
+}
+
+.fi-modal .fi-modal-content .fi-in-entry {
+    gap: 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--ekk-border) 60%, transparent);
+    border-radius: 0.85rem;
+    padding: 0.8rem 0.9rem;
+    background: color-mix(in oklab, var(--ekk-surface) 92%, transparent);
+}
+
+.fi-modal .fi-modal-content .fi-in-entry.fi-in-entry-has-inline-label {
+    grid-template-columns: minmax(10rem, 13rem) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 1rem;
+}
+
+.fi-modal .fi-modal-content .fi-in-entry .fi-in-entry-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--ekk-text-muted) 92%, var(--ekk-text));
+}
+
+.fi-modal .fi-modal-content .fi-in-entry .fi-in-entry-content-ctn {
+    align-items: flex-start;
+    gap: 0.65rem;
+}
+
+.fi-modal .fi-modal-content .fi-in-entry .fi-in-entry-content {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--ekk-text);
+    overflow-wrap: anywhere;
+}
+
+.fi-modal .fi-modal-content .fi-in-key-value {
+    border-color: color-mix(in oklab, var(--ekk-border) 78%, transparent);
+    background: color-mix(in oklab, var(--ekk-surface) 90%, transparent);
+    box-shadow: none;
+}
+
+.fi-modal .fi-modal-content .fi-in-key-value th {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: color-mix(in oklab, var(--ekk-text-muted) 95%, var(--ekk-text));
+}
+
+.fi-modal .fi-modal-content .fi-in-key-value td {
+    color: var(--ekk-text);
+}
+
+.fi-modal .fi-modal-content .fi-in-table-repeatable > table {
+    border-color: color-mix(in oklab, var(--ekk-border) 78%, transparent);
+    background: color-mix(in oklab, var(--ekk-surface) 90%, transparent);
+}
+
 @media (prefers-reduced-motion: no-preference) {
     .ekk-billing-card {
         transition: transform 180ms ease, box-shadow 180ms ease;
@@ -269,6 +345,14 @@ body {
 
     .fi-ta-actions {
         justify-content: flex-start;
+    }
+
+    .fi-modal .fi-modal-content .fi-in-entry.fi-in-entry-has-inline-label {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .fi-modal .fi-modal-content .fi-in-entry {
+        padding: 0.75rem 0.8rem;
     }
 
     .fi-page-header-subheading {
