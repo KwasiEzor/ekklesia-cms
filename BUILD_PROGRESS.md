@@ -589,3 +589,33 @@ User message → ProcessAiMessage (queued job)
   - `composer quality`: pass (`pint`, `phpstan`, `rector --dry-run`)
 - **Files:** hardening updates across AI, billing, notification, payment, Filament pages/resources/widgets, and PHPStan config.
 - **Notes:** This milestone is a quality stabilization checkpoint; next slice can focus on premium UX upgrades and Phase 6 completion under the same TDD gates.
+
+---
+
+## 2026-03-04 — Premium UI Pass (Dashboard + Theme Foundation)
+
+- **Status:** Done
+- **Goal:** Raise visual quality for core admin experience with a stronger premium design system and dashboard identity.
+- **Summary:**
+  - TDD applied for dashboard metadata (title + subheading) with new unit tests.
+  - Added localized premium dashboard heading/subheading.
+  - Upgraded Filament admin theme with a deliberate visual foundation:
+    - design tokens (surface, border, primary, accent, typography contrast),
+    - atmospheric background gradients,
+    - elevated widget/section/table surfaces,
+    - stronger input focus treatments,
+    - polished topbar/sidebar glass effect,
+    - lightweight page entrance animation.
+  - Mobile-specific polish for card radius and subheading readability.
+- **Tests:**
+  - Added: `tests/Unit/Pages/DashboardPageTest.php`
+  - `composer test`: pass (`311 passed`, `890 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `app/Filament/Pages/Dashboard.php`
+  - `resources/css/filament/admin/theme.css`
+  - `lang/fr/dashboard.php`
+  - `lang/en/dashboard.php`
+  - `tests/Unit/Pages/DashboardPageTest.php`
+- **Notes:** Next premium slice should target settings form ergonomics and billing view refinement for stronger visual consistency.

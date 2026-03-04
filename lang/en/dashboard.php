@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'control_center' => 'Command Center',
+    'control_center_subheading' => 'Track church activity, giving, and publishing momentum in one premium workspace.',
     'active_members' => 'Active Members',
     'active_members_desc' => 'Members with active status',
     'giving_this_month' => 'Giving This Month',

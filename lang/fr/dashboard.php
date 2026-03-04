@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'control_center' => 'Centre de pilotage',
+    'control_center_subheading' => 'Suivez l\'activité de l\'église, les dons et la publication dans un espace premium unique.',
     'active_members' => 'Membres actifs',
     'active_members_desc' => 'Membres avec le statut actif',
     'giving_this_month' => 'Dons ce mois',
