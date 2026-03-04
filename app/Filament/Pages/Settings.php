@@ -22,9 +22,6 @@ use Filament\Support\Icons\Heroicon;
 
 class Settings extends Page
 {
-    /** @var Schema */
-    public $form;
-
     protected static \BackedEnum|string|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     protected static ?int $navigationSort = 99;
@@ -59,10 +56,10 @@ class Settings extends Page
             abort(404);
         }
 
-        $this->form->fill([
+        $this->data = [
             'name' => $tenant->name,
             'data' => $tenant->data ?? [],
-        ]);
+        ];
     }
 
     public function content(Schema $schema): Schema
@@ -122,15 +119,15 @@ class Settings extends Page
 
     public function save(): void
     {
-        $state = $this->form->getState();
+        $state = $this->data ?? [];
 
         $tenant = Filament::getTenant();
         if (! $tenant instanceof Tenant) {
             abort(404);
         }
 
-        $tenant->name = $state['name'];
-        $tenant->data = $state['data'] ?? [];
+        $tenant->name = (string) ($state['name'] ?? $tenant->name);
+        $tenant->data = is_array($state['data'] ?? null) ? $state['data'] : [];
         $tenant->save();
 
         Notification::make()

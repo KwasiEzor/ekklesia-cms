@@ -664,3 +664,25 @@ User message → ProcessAiMessage (queued job)
 - **Files:**
   - `resources/views/filament/pages/billing.blade.php`
 - **Notes:** This hotfix targets visual correctness from production-like rendering conditions and keeps existing billing behavior unchanged.
+
+---
+
+## 2026-03-04 — Settings Crash Fix (fill() on null)
+
+- **Status:** Done
+- **Goal:** Resolve internal server error on `/admin/{tenant}/settings` caused by null form object during mount.
+- **Summary:**
+  - Root cause: page-level `$form` handling conflicted with runtime lifecycle, leading to `fill()` on null in `Settings::mount()`.
+  - Refactored settings state initialization to use direct Livewire state (`$this->data`) in `mount()` instead of form object fill.
+  - Updated save flow to read from normalized state and safely persist tenant values.
+  - Added regression coverage to ensure tenant settings route no longer throws 500.
+- **Tests:**
+  - Added/updated: `tests/Feature/Filament/SettingsPageTest.php`
+  - Verified: `php artisan test` pass (`316 passed`, `896 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `app/Filament/Pages/Settings.php`
+  - `tests/Feature/Filament/SettingsPageTest.php`
+  - `BUILD_PROGRESS.md`
+- **Notes:** Access policy may still return 403 for unauthorized users, but the internal server error is eliminated.
