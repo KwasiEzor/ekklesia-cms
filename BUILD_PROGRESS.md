@@ -619,3 +619,31 @@ User message → ProcessAiMessage (queued job)
   - `lang/en/dashboard.php`
   - `tests/Unit/Pages/DashboardPageTest.php`
 - **Notes:** Next premium slice should target settings form ergonomics and billing view refinement for stronger visual consistency.
+
+---
+
+## 2026-03-04 — Premium UI Pass (Settings + Billing Refinement)
+
+- **Status:** Done
+- **Goal:** Improve premium UX for configuration-heavy screens and pricing presentation quality.
+- **Summary:**
+  - Added full-width layout behavior to Settings and Billing pages for better information density and usability.
+  - Improved Billing price rendering to be currency-aware (USD/EUR/GBP symbols, currency code fallback).
+  - Refined Billing page structure with a premium hero section and cleaner reusable icon sizing.
+  - Extended admin theme with billing-specific visual language (hero gradient, elevated cards, subtle motion, settings section accents).
+  - Removed inline view styling in favor of reusable theme classes.
+- **Tests:**
+  - Added: `tests/Unit/Pages/BillingPageTest.php`
+  - Added: `tests/Unit/Pages/SettingsPageTest.php`
+  - `composer test`: pass (`315 passed`, `895 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `app/Filament/Pages/Billing.php`
+  - `app/Filament/Pages/Settings.php`
+  - `resources/views/filament/pages/billing.blade.php`
+  - `resources/css/filament/admin/theme.css`
+  - `tests/Unit/Pages/BillingPageTest.php`
+  - `tests/Unit/Pages/SettingsPageTest.php`
+  - `BUILD_PROGRESS.md`
+- **Notes:** Next premium slice should target dashboard widgets + table density/accessibility tuning (focus states, empty states, and consistent data emphasis).

@@ -123,6 +123,50 @@ body {
     letter-spacing: 0.01em;
 }
 
+.ekk-icon-sm {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+.ekk-icon-md {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+}
+
+.ekk-billing-hero {
+    border: 1px solid color-mix(in oklab, var(--ekk-primary) 35%, transparent);
+    background:
+        linear-gradient(140deg, color-mix(in oklab, var(--ekk-primary) 90%, #020617) 0%, color-mix(in oklab, var(--ekk-primary-strong) 75%, #0f172a) 58%, color-mix(in oklab, var(--ekk-accent) 38%, #0f172a) 100%);
+    box-shadow: var(--ekk-shadow-soft);
+}
+
+.ekk-billing-card {
+    border: 1px solid var(--ekk-border);
+    background: linear-gradient(180deg, var(--ekk-surface) 0%, var(--ekk-surface-elevated) 100%);
+    box-shadow: var(--ekk-shadow-soft);
+}
+
+.fi-page-settings .fi-section {
+    border-left: 4px solid color-mix(in oklab, var(--ekk-primary) 55%, transparent);
+}
+
+.fi-page-settings .fi-section-description {
+    color: var(--ekk-text-muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .ekk-billing-card {
+        transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .ekk-billing-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+    }
+}
+
 @media (max-width: 768px) {
     .fi-page-header-subheading {
         font-size: 0.875rem;

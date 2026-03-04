@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use App\Services\Billing\PlanLimitsEnforcer;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -40,6 +41,11 @@ class Billing extends Page
     public function getSubheading(): ?string
     {
         return __('billing.description');
+    }
+
+    public function getMaxContentWidth(): Width|string|null
+    {
+        return Width::Full;
     }
 
     public function mount(): void
@@ -142,7 +148,16 @@ class Billing extends Page
             return __('billing.free');
         }
 
-        return '$'.number_format($plan->price_cents / 100, 0);
+        $amount = $plan->price_cents / 100;
+        $currency = strtoupper((string) ($plan->currency ?? 'USD'));
+        $formattedAmount = number_format($amount, 0);
+
+        return match ($currency) {
+            'USD' => '$'.$formattedAmount,
+            'EUR' => '€'.$formattedAmount,
+            'GBP' => '£'.$formattedAmount,
+            default => $formattedAmount.' '.$currency,
+        };
     }
 
     public function formatPlanLimit(PlanLimit $plan, string $field): string
