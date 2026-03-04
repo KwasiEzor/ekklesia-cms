@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\GalleryResource\Pages;
 
 use App\Filament\Resources\GalleryResource;
+use App\Filament\Resources\Pages\EditRecord;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Enums\Width;
 use Illuminate\Support\Arr;
 
@@ -12,7 +12,7 @@ class EditGallery extends EditRecord
 {
     protected static string $resource = GalleryResource::class;
 
-    protected Width | string | null $maxContentWidth = Width::Full;
+    protected Width|string|null $maxContentWidth = Width::Full;
 
     protected function getHeaderActions(): array
     {

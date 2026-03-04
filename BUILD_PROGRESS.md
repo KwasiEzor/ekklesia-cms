@@ -799,3 +799,30 @@ User message → ProcessAiMessage (queued job)
 - **Files:**
   - `resources/css/filament/admin/theme.css`
   - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Edit Pages Single-Column Layout (Global Resource Fix)
+
+- **Status:** Done
+- **Goal:** Change Filament resource edit pages from two columns to a single-column form layout.
+- **Summary:**
+  - Added a shared app-level edit page base class to override Filament `EditRecord` default form column behavior.
+  - Forced default edit form schema to `columns(1)` when the schema does not explicitly define custom columns.
+  - Updated all resource edit pages to extend the shared base class for consistent behavior across modules.
+  - Scope is edit pages only; create/list/show behavior remains unchanged.
+- **Validation:**
+  - `composer quality`: pass
+  - Targeted tests: `php artisan test tests/Unit/Pages tests/Feature/Filament`: pass
+  - `npm run build`: pass
+- **Files:**
+  - `app/Filament/Resources/Pages/EditRecord.php`
+  - `app/Filament/Resources/AnnouncementResource/Pages/EditAnnouncement.php`
+  - `app/Filament/Resources/CampusResource/Pages/EditCampus.php`
+  - `app/Filament/Resources/EventResource/Pages/EditEvent.php`
+  - `app/Filament/Resources/GalleryResource/Pages/EditGallery.php`
+  - `app/Filament/Resources/GivingRecordResource/Pages/EditGivingRecord.php`
+  - `app/Filament/Resources/MemberResource/Pages/EditMember.php`
+  - `app/Filament/Resources/PageResource/Pages/EditPage.php`
+  - `app/Filament/Resources/SermonResource/Pages/EditSermon.php`
+  - `BUILD_PROGRESS.md`
