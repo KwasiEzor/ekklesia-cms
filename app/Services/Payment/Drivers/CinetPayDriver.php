@@ -114,11 +114,14 @@ class CinetPayDriver implements PaymentDriverInterface
             );
         }
 
-        if ($this->secretKey !== '' && $signature !== null && $signature !== $this->secretKey) {
-            return new PaymentResponse(
-                status: 'failed',
-                failureReason: 'Invalid webhook signature',
-            );
+        if ($this->secretKey !== '' && $signature !== null) {
+            $expected = hash_hmac('sha256', $transactionId, $this->secretKey);
+            if (! hash_equals($expected, $signature)) {
+                return new PaymentResponse(
+                    status: 'failed',
+                    failureReason: 'Invalid webhook signature',
+                );
+            }
         }
 
         return $this->checkStatus($transactionId);

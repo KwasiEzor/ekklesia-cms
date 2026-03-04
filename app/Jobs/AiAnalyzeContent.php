@@ -70,7 +70,7 @@ class AiAnalyzeContent implements ShouldQueue
 
         return match ($this->analysisType) {
             'seo' => "Tu es un expert SEO. Analyse le contenu {$type} suivant et propose des améliorations SEO : titre optimisé, méta-description, mots-clés suggérés. Réponds en français.",
-            'translation' => "Tu es un traducteur professionnel. Le contenu suivant est en français. Propose une traduction en anglais fidèle au sens et au ton. Préserve le vocabulaire ecclésial.",
+            'translation' => 'Tu es un traducteur professionnel. Le contenu suivant est en français. Propose une traduction en anglais fidèle au sens et au ton. Préserve le vocabulaire ecclésial.',
             default => "Tu es un assistant éditorial pour une église. Analyse le contenu {$type} suivant et propose des améliorations : clarté, engagement, pertinence. Réponds en français de manière concise.",
         };
     }
@@ -86,7 +86,7 @@ class AiAnalyzeContent implements ShouldQueue
             $parts[] = "Corps : {$this->model->body}";
         }
         if (isset($this->model->content)) {
-            $parts[] = "Contenu : " . (is_array($this->model->content) ? json_encode($this->model->content) : $this->model->content);
+            $parts[] = 'Contenu : '.(is_array($this->model->content) ? json_encode($this->model->content) : $this->model->content);
         }
         if (isset($this->model->transcript)) {
             $parts[] = "Transcription : {$this->model->transcript}";

@@ -1,28 +1,10 @@
 <x-filament-panels::page>
-    <style>
-        .ekk-billing .ekk-icon-sm {
-            width: 1rem !important;
-            height: 1rem !important;
-            min-width: 1rem;
-            min-height: 1rem;
-            flex-shrink: 0;
-        }
-
-        .ekk-billing .ekk-icon-md {
-            width: 1.25rem !important;
-            height: 1.25rem !important;
-            min-width: 1.25rem;
-            min-height: 1.25rem;
-            flex-shrink: 0;
-        }
-    </style>
-
     <div class="ekk-billing space-y-8">
         <section class="ekk-billing-hero rounded-2xl px-6 py-6 lg:px-8 lg:py-7">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="space-y-2">
                     <p class="text-xs font-semibold uppercase tracking-[0.14em] text-blue-100/80">
-                        Ekklesia Premium
+                        {{ __('billing.hero_title') }}
                     </p>
                     <h2 class="text-2xl font-semibold tracking-tight text-white">
                         {{ __('billing.title') }}
@@ -137,7 +119,7 @@
                     {{ $currentPlan->name }}
                 </span>
                 <span class="text-gray-500 dark:text-gray-400 text-sm">
-                    {{ $currentPlan->formatted_price }}
+                    {{ $this->formatPlanPrice($currentPlan) }}
                 </span>
             </div>
 

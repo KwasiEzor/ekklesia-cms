@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasCampusScope;
 use App\Concerns\HasSoftVersioning;
 use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Event extends Model
 {
-    use BelongsToTenant, HasFactory, HasSlug, HasSoftVersioning, LogsActivityWithTenant;
+    use BelongsToTenant, HasCampusScope, HasFactory, HasSlug, HasSoftVersioning, LogsActivityWithTenant;
 
     public function getSlugOptions(): SlugOptions
     {
@@ -33,6 +34,7 @@ class Event extends Model
         'image',
         'registration_url',
         'capacity',
+        'campus_id',
         'custom_fields',
         'tenant_id',
     ];

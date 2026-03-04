@@ -68,7 +68,21 @@ class PlanLimitsEnforcer
 
     public function getStorageUsageMb(Tenant $tenant): float
     {
-        $bytes = \Spatie\MediaLibrary\MediaCollections\Models\Media::sum('size');
+        $modelTypes = [
+            \App\Models\Member::class,
+            \App\Models\Gallery::class,
+        ];
+
+        $bytes = \Spatie\MediaLibrary\MediaCollections\Models\Media::query()
+            ->where(function ($query) use ($modelTypes, $tenant) {
+                foreach ($modelTypes as $modelType) {
+                    $query->orWhere(function ($q) use ($modelType, $tenant) {
+                        $q->where('model_type', $modelType)
+                            ->whereIn('model_id', $modelType::where('tenant_id', $tenant->id)->select('id'));
+                    });
+                }
+            })
+            ->sum('size');
 
         return round($bytes / (1024 * 1024), 2);
     }

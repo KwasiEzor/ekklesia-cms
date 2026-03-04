@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasCampusScope;
 use App\Concerns\HasSoftVersioning;
 use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class GivingRecord extends Model
 {
-    use BelongsToTenant, HasFactory, HasSoftVersioning, LogsActivityWithTenant;
+    use BelongsToTenant, HasCampusScope, HasFactory, HasSoftVersioning, LogsActivityWithTenant;
 
     protected $fillable = [
         'member_id',
@@ -21,6 +22,7 @@ class GivingRecord extends Model
         'method',
         'reference',
         'campaign_id',
+        'campus_id',
         'custom_fields',
         'tenant_id',
     ];

@@ -156,6 +156,8 @@ class Billing extends Page
             'USD' => '$'.$formattedAmount,
             'EUR' => '€'.$formattedAmount,
             'GBP' => '£'.$formattedAmount,
+            'XOF', 'XAF' => $formattedAmount.' FCFA',
+            'CAD' => $formattedAmount.' CAD',
             default => $formattedAmount.' '.$currency,
         };
     }

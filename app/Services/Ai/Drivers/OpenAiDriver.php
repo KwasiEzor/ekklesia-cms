@@ -8,12 +8,12 @@ use OpenAI;
 
 class OpenAiDriver implements AiDriverInterface
 {
-    private \OpenAI\Client $client;
+    private readonly \OpenAI\Client $client;
 
     public function __construct(
-        private string $apiKey,
-        private string $model,
-        private int $maxTokens,
+        private readonly string $apiKey,
+        private readonly string $model,
+        private readonly int $maxTokens,
     ) {
         $this->client = OpenAI::client($this->apiKey);
     }

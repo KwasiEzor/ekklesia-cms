@@ -17,6 +17,10 @@ class MemberController extends Controller
     {
         $query = Member::query();
 
+        if ($request->has('campus_id')) {
+            $query->forCampus((int) $request->input('campus_id'));
+        }
+
         if ($request->has('status')) {
             $query->where('status', $request->input('status'));
         }

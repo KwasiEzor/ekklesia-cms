@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnforcePlanLimits;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Application;
@@ -28,6 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(SecurityHeaders::class);
+        $middleware->alias([
+            'plan' => EnforcePlanLimits::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

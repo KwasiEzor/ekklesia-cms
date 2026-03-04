@@ -17,6 +17,10 @@ class AnnouncementController extends Controller
     {
         $query = Announcement::query();
 
+        if ($request->has('campus_id')) {
+            $query->forCampus((int) $request->input('campus_id'));
+        }
+
         if ($request->has('pinned')) {
             $query->where('pinned', $request->boolean('pinned'));
         }

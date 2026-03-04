@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasCampusScope;
 use App\Concerns\HasSoftVersioning;
 use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Announcement extends Model
 {
-    use BelongsToTenant, HasFactory, HasSlug, HasSoftVersioning, LogsActivityWithTenant;
+    use BelongsToTenant, HasCampusScope, HasFactory, HasSlug, HasSoftVersioning, LogsActivityWithTenant;
 
     public function getSlugOptions(): SlugOptions
     {
@@ -30,6 +31,7 @@ class Announcement extends Model
         'expires_at',
         'pinned',
         'target_group',
+        'campus_id',
         'custom_fields',
         'tenant_id',
     ];

@@ -17,6 +17,10 @@ class EventController extends Controller
     {
         $query = Event::query();
 
+        if ($request->has('campus_id')) {
+            $query->forCampus((int) $request->input('campus_id'));
+        }
+
         if ($request->has('location')) {
             $query->where('location', 'ilike', '%'.$request->input('location').'%');
         }

@@ -6,12 +6,12 @@ use App\Filament\Resources\GivingRecordResource\Pages;
 use App\Models\GivingRecord;
 use App\Models\Member;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -107,6 +107,13 @@ class GivingRecordResource extends Resource
                             ->label(__('giving_records.campaign'))
                             ->placeholder(__('giving_records.campaign_placeholder'))
                             ->maxLength(255),
+
+                        Components\Select::make('campus_id')
+                            ->label(__('campuses.campus'))
+                            ->relationship('campus', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
                     ])
                     ->columns(2),
             ]);
@@ -170,6 +177,10 @@ class GivingRecordResource extends Resource
                 Tables\Filters\Filter::make('anonymous')
                     ->label(__('giving_records.anonymous'))
                     ->query(fn ($query) => $query->whereNull('member_id')),
+
+                Tables\Filters\SelectFilter::make('campus_id')
+                    ->label(__('campuses.campus'))
+                    ->relationship('campus', 'name'),
             ])
             ->actions([
                 Actions\ViewAction::make()

@@ -5,12 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\EventResource\Pages;
 use App\Models\Event;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -76,6 +76,13 @@ class EventResource extends Resource
                             ->placeholder(__('events.capacity_placeholder'))
                             ->numeric()
                             ->minValue(1),
+
+                        Components\Select::make('campus_id')
+                            ->label(__('campuses.campus'))
+                            ->relationship('campus', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
                     ])
                     ->columns(2),
 
@@ -151,11 +158,15 @@ class EventResource extends Resource
             ->filters([
                 Tables\Filters\Filter::make('upcoming')
                     ->label(__('events.upcoming'))
-                    ->query(fn($query) => $query->where('start_at', '>', now())),
+                    ->query(fn ($query) => $query->where('start_at', '>', now())),
 
                 Tables\Filters\Filter::make('past')
                     ->label(__('events.past'))
-                    ->query(fn($query) => $query->where('start_at', '<=', now())),
+                    ->query(fn ($query) => $query->where('start_at', '<=', now())),
+
+                Tables\Filters\SelectFilter::make('campus_id')
+                    ->label(__('campuses.campus'))
+                    ->relationship('campus', 'name'),
             ])
             ->actions([
                 Actions\ViewAction::make()

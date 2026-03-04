@@ -6,12 +6,12 @@ use App\Filament\Resources\MemberResource\Pages;
 use App\Models\Member;
 use App\States\MemberStatus\MemberStatus;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -96,6 +96,13 @@ class MemberResource extends Resource
                             ->searchable()
                             ->preload(),
 
+                        Components\Select::make('campus_id')
+                            ->label(__('campuses.campus'))
+                            ->relationship('campus', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
+
                         Components\Select::make('status')
                             ->label(__('members.status'))
                             ->options([
@@ -169,6 +176,10 @@ class MemberResource extends Resource
                 Tables\Filters\SelectFilter::make('cell_group_id')
                     ->label(__('members.cell_group'))
                     ->relationship('cellGroup', 'name'),
+
+                Tables\Filters\SelectFilter::make('campus_id')
+                    ->label(__('campuses.campus'))
+                    ->relationship('campus', 'name'),
             ])
             ->actions([
                 Actions\ViewAction::make()

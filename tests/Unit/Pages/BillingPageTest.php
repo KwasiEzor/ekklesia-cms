@@ -29,6 +29,6 @@ test('billing page formats paid plan with plan currency', function () {
         'currency' => 'XOF',
     ]);
 
-    expect($page->formatPlanPrice($plan))->toContain('XOF')
+    expect($page->formatPlanPrice($plan))->toContain('FCFA')
         ->and($page->formatPlanPrice($plan))->not->toStartWith('$');
 });

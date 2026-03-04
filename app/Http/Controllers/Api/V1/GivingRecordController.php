@@ -17,6 +17,10 @@ class GivingRecordController extends Controller
     {
         $query = GivingRecord::with('member');
 
+        if ($request->has('campus_id')) {
+            $query->forCampus((int) $request->input('campus_id'));
+        }
+
         if ($request->has('method')) {
             $query->where('method', $request->input('method'));
         }

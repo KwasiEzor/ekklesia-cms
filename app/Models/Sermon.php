@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasCampusScope;
 use App\Concerns\HasSoftVersioning;
 use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Sermon extends Model
 {
-    use BelongsToTenant, HasFactory, HasSlug, HasSoftVersioning, HasTags, LogsActivityWithTenant;
+    use BelongsToTenant, HasCampusScope, HasFactory, HasSlug, HasSoftVersioning, HasTags, LogsActivityWithTenant;
 
     public function getSlugOptions(): SlugOptions
     {
@@ -34,6 +35,7 @@ class Sermon extends Model
         'video_url',
         'transcript',
         'series_id',
+        'campus_id',
         'custom_fields',
         'tenant_id',
     ];

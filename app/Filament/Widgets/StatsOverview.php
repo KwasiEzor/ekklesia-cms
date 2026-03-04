@@ -14,9 +14,9 @@ class StatsOverview extends StatsOverviewWidget
 {
     protected static ?int $sort = -3;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
-    protected function getColumns(): int | array | null
+    protected function getColumns(): int|array|null
     {
         return 4;
     }
@@ -51,7 +51,7 @@ class StatsOverview extends StatsOverviewWidget
                 __('dashboard.giving_this_month'),
                 number_format((float) $givingThisMonth, 0, ',', ' '),
             )
-                ->description(($givingChange >= 0 ? '+' : '') . $givingChange . '% ' . __('dashboard.vs_last_month'))
+                ->description(($givingChange >= 0 ? '+' : '').$givingChange.'% '.__('dashboard.vs_last_month'))
                 ->descriptionIcon($givingChange >= 0 ? Heroicon::OutlinedArrowTrendingUp : Heroicon::OutlinedArrowTrendingDown)
                 ->color($givingChange >= 0 ? 'success' : 'danger')
                 ->chart($this->getMonthlyGivingChart()),

@@ -5,12 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SermonResource\Pages;
 use App\Models\Sermon;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -77,6 +77,13 @@ class SermonResource extends Resource
                         Components\Select::make('series_id')
                             ->label(__('sermons.series'))
                             ->relationship('series', 'title')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
+
+                        Components\Select::make('campus_id')
+                            ->label(__('campuses.campus'))
+                            ->relationship('campus', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable(),
@@ -159,6 +166,10 @@ class SermonResource extends Resource
                 Tables\Filters\SelectFilter::make('series_id')
                     ->label(__('sermons.series'))
                     ->relationship('series', 'title'),
+
+                Tables\Filters\SelectFilter::make('campus_id')
+                    ->label(__('campuses.campus'))
+                    ->relationship('campus', 'name'),
             ])
             ->actions([
                 Actions\ViewAction::make()

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasCampusScope;
 use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class CellGroup extends Model
 {
-    use BelongsToTenant, HasFactory, HasSlug, LogsActivityWithTenant;
+    use BelongsToTenant, HasCampusScope, HasFactory, HasSlug, LogsActivityWithTenant;
 
     public function getSlugOptions(): SlugOptions
     {
@@ -26,6 +27,7 @@ class CellGroup extends Model
         'name',
         'slug',
         'description',
+        'campus_id',
         'custom_fields',
         'tenant_id',
     ];

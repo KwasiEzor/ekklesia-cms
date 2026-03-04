@@ -56,9 +56,13 @@ class Settings extends Page
             abort(404);
         }
 
+        // VirtualColumn intercepts $tenant->data and returns null.
+        // Read the raw JSON column to populate the form.
+        $rawData = json_decode($tenant->getRawOriginal('data') ?? '{}', true) ?? [];
+
         $this->data = [
             'name' => $tenant->name,
-            'data' => $tenant->data ?? [],
+            'data' => $rawData,
         ];
     }
 
@@ -127,7 +131,12 @@ class Settings extends Page
         }
 
         $tenant->name = (string) ($state['name'] ?? $tenant->name);
-        $tenant->data = is_array($state['data'] ?? null) ? $state['data'] : [];
+
+        // VirtualColumn intercepts $tenant->data = [...] assignment.
+        // Set each virtual column attribute individually instead.
+        foreach ($state['data'] ?? [] as $key => $value) {
+            $tenant->$key = $value;
+        }
         $tenant->save();
 
         Notification::make()
@@ -780,27 +789,32 @@ class Settings extends Page
                             ->label(__('payments.cinetpay_api_key'))
                             ->password()
                             ->revealable()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->visible(fn (callable $get): bool => ($get('data.payment_provider') ?? 'cinetpay') === 'cinetpay'),
 
                         Components\TextInput::make('data.cinetpay_site_id')
                             ->label(__('payments.cinetpay_site_id'))
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->visible(fn (callable $get): bool => ($get('data.payment_provider') ?? 'cinetpay') === 'cinetpay'),
 
                         Components\TextInput::make('data.cinetpay_secret_key')
                             ->label(__('payments.cinetpay_secret_key'))
                             ->password()
                             ->revealable()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->visible(fn (callable $get): bool => ($get('data.payment_provider') ?? 'cinetpay') === 'cinetpay'),
 
                         Components\TextInput::make('data.stripe_secret_key')
                             ->label(__('payments.stripe_secret_key'))
                             ->password()
                             ->revealable()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->visible(fn (callable $get): bool => ($get('data.payment_provider') ?? 'cinetpay') === 'stripe'),
 
                         Components\TextInput::make('data.stripe_publishable_key')
                             ->label(__('payments.stripe_publishable_key'))
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->visible(fn (callable $get): bool => ($get('data.payment_provider') ?? 'cinetpay') === 'stripe'),
                     ])
                     ->columns(2),
             ]);

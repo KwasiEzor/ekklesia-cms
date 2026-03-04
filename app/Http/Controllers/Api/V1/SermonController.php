@@ -17,6 +17,10 @@ class SermonController extends Controller
     {
         $query = Sermon::query()->with('series');
 
+        if ($request->has('campus_id')) {
+            $query->forCampus((int) $request->input('campus_id'));
+        }
+
         if ($request->has('speaker')) {
             $query->where('speaker', $request->input('speaker'));
         }

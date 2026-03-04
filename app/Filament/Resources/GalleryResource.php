@@ -5,12 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\GalleryResource\Pages;
 use App\Models\Gallery;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 

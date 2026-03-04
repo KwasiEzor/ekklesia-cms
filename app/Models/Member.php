@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasCampusScope;
 use App\Concerns\HasSoftVersioning;
 use App\Concerns\LogsActivityWithTenant;
 use App\States\MemberStatus\MemberStatus;
@@ -17,7 +18,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Member extends Model implements HasMedia
 {
-    use BelongsToTenant, HasFactory, HasSoftVersioning, HasStates, InteractsWithMedia, LogsActivityWithTenant;
+    use BelongsToTenant, HasCampusScope, HasFactory, HasSoftVersioning, HasStates, InteractsWithMedia, LogsActivityWithTenant;
 
     protected $fillable = [
         'first_name',
@@ -26,6 +27,7 @@ class Member extends Model implements HasMedia
         'phone',
         'baptism_date',
         'cell_group_id',
+        'campus_id',
         'status',
         'custom_fields',
         'tenant_id',

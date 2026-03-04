@@ -5,12 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AnnouncementResource\Pages;
 use App\Models\Announcement;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Actions;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -76,6 +76,13 @@ class AnnouncementResource extends Resource
                                 'men' => __('announcements.groups.men'),
                                 'leaders' => __('announcements.groups.leaders'),
                             ]),
+
+                        Components\Select::make('campus_id')
+                            ->label(__('campuses.campus'))
+                            ->relationship('campus', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
                     ])
                     ->columns(2),
 
@@ -139,6 +146,10 @@ class AnnouncementResource extends Resource
 
                 Tables\Filters\TernaryFilter::make('pinned')
                     ->label(__('announcements.pinned')),
+
+                Tables\Filters\SelectFilter::make('campus_id')
+                    ->label(__('campuses.campus'))
+                    ->relationship('campus', 'name'),
             ])
             ->actions([
                 Actions\ViewAction::make()
