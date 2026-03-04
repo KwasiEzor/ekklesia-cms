@@ -826,3 +826,29 @@ User message → ProcessAiMessage (queued job)
   - `app/Filament/Resources/PageResource/Pages/EditPage.php`
   - `app/Filament/Resources/SermonResource/Pages/EditSermon.php`
   - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Create Pages Single-Column Layout (Global Resource Fix)
+
+- **Status:** Done
+- **Goal:** Change Filament resource create pages from two columns to a single-column form layout.
+- **Summary:**
+  - Added a shared app-level create page base class to override Filament `CreateRecord` default form column behavior.
+  - Forced default create form schema to `columns(1)` when the schema does not explicitly define custom columns.
+  - Updated all resource create pages to extend the shared base class for consistent behavior across modules.
+  - Scope is create pages only; edit/list/show behavior remains unchanged.
+- **Validation:**
+  - `composer quality`: pass
+  - Targeted tests: `php artisan test tests/Unit/Pages tests/Feature/Filament`: pass
+  - `npm run build`: pass
+- **Files:**
+  - `app/Filament/Resources/Pages/CreateRecord.php`
+  - `app/Filament/Resources/AnnouncementResource/Pages/CreateAnnouncement.php`
+  - `app/Filament/Resources/EventResource/Pages/CreateEvent.php`
+  - `app/Filament/Resources/GalleryResource/Pages/CreateGallery.php`
+  - `app/Filament/Resources/GivingRecordResource/Pages/CreateGivingRecord.php`
+  - `app/Filament/Resources/MemberResource/Pages/CreateMember.php`
+  - `app/Filament/Resources/PageResource/Pages/CreatePage.php`
+  - `app/Filament/Resources/SermonResource/Pages/CreateSermon.php`
+  - `BUILD_PROGRESS.md`
