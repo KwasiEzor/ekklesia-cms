@@ -290,6 +290,11 @@ body {
     --cols-nc2xl: minmax(0, 1fr) !important;
 }
 
+.fi-modal .fi-modal-content .fi-sc.fi-grid:not(.fi-grid-direction-col),
+.fi-modal .fi-modal-content .fi-grid:not(.fi-grid-direction-col) {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
 .fi-modal .fi-modal-content .fi-in-entry {
     gap: 0.5rem;
     border: 1px solid color-mix(in oklab, var(--ekk-border) 60%, transparent);
