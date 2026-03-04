@@ -50,18 +50,20 @@ class ProcessAiMessage implements ShouldQueue
         $skill = $skillRegistry->detectSkill($this->userMessage);
         $systemPrompt = $contextBuilder->buildSystemPrompt($conversation->locale ?? 'fr');
 
-        if ($skill) {
-            $systemPrompt .= "\n\n" . $skill->systemPromptAddition();
+        if ($skill instanceof \App\Services\Ai\AiSkill) {
+            $systemPrompt .= "\n\n".$skill->systemPromptAddition();
         }
 
         // Load conversation history (last 20 messages)
-        $history = $conversation->messages()
-            ->orderBy('created_at')
-            ->latest()
+        /** @var \Illuminate\Database\Eloquent\Collection<int, AiMessage> $historyMessages */
+        $historyMessages = $conversation->messages()
+            ->latest('created_at')
             ->limit(20)
             ->get()
-            ->reverse()
-            ->map(fn (AiMessage $msg) => [
+            ->reverse();
+
+        $history = $historyMessages
+            ->map(fn (AiMessage $msg): array => [
                 'role' => $msg->role,
                 'content' => $msg->content,
             ])
@@ -75,7 +77,7 @@ class ProcessAiMessage implements ShouldQueue
             $response = $driver->chatStream(
                 system: $systemPrompt,
                 messages: $history,
-                onChunk: function (string $chunk) use ($conversation) {
+                onChunk: function (string $chunk) use ($conversation): void {
                     broadcast(new AiResponseChunk(
                         userId: $this->userId,
                         conversationId: $conversation->id,

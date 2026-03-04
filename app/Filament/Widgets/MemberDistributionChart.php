@@ -9,10 +9,7 @@ class MemberDistributionChart extends ChartWidget
 {
     protected static ?int $sort = -1;
 
-    protected int | string | array $columnSpan = [
-        'default' => 'full',
-        'lg' => 1,
-    ];
+    protected int|string|array $columnSpan = 'full';
 
     protected ?string $maxHeight = '300px';
 

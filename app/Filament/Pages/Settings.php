@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Tenant;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
@@ -20,6 +21,9 @@ use Filament\Support\Icons\Heroicon;
 
 class Settings extends Page
 {
+    /** @var Schema */
+    public $form;
+
     protected static \BackedEnum|string|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     protected static ?int $navigationSort = 99;
@@ -45,6 +49,9 @@ class Settings extends Page
     public function mount(): void
     {
         $tenant = Filament::getTenant();
+        if (! $tenant instanceof Tenant) {
+            abort(404);
+        }
 
         $this->form->fill([
             'name' => $tenant->name,
@@ -84,6 +91,7 @@ class Settings extends Page
                         $this->socialTab(),
                         $this->seoTab(),
                         $this->aiTab(),
+                        $this->paymentsTab(),
                         $this->notificationsTab(),
                         $this->modulesTab(),
                         $this->advancedTab(),
@@ -111,6 +119,10 @@ class Settings extends Page
         $state = $this->form->getState();
 
         $tenant = Filament::getTenant();
+        if (! $tenant instanceof Tenant) {
+            abort(404);
+        }
+
         $tenant->name = $state['name'];
         $tenant->data = $state['data'] ?? [];
         $tenant->save();
@@ -561,6 +573,61 @@ class Settings extends Page
                             ->maxLength(2000)
                             ->columnSpanFull(),
                     ]),
+
+                Section::make(__('notification_dispatches.settings_section_sms'))
+                    ->description(__('notification_dispatches.settings_section_sms_desc'))
+                    ->icon(Heroicon::OutlinedDevicePhoneMobile)
+                    ->collapsible()
+                    ->schema([
+                        Components\TextInput::make('data.sms_api_key')
+                            ->label(__('notification_dispatches.sms_api_key'))
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255),
+
+                        Components\TextInput::make('data.sms_username')
+                            ->label(__('notification_dispatches.sms_username'))
+                            ->maxLength(255),
+
+                        Components\TextInput::make('data.sms_sender_id')
+                            ->label(__('notification_dispatches.sms_sender_id'))
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
+
+                Section::make(__('notification_dispatches.settings_section_whatsapp'))
+                    ->description(__('notification_dispatches.settings_section_whatsapp_desc'))
+                    ->icon(Heroicon::OutlinedChatBubbleLeftRight)
+                    ->collapsible()
+                    ->schema([
+                        Components\TextInput::make('data.whatsapp_account_sid')
+                            ->label(__('notification_dispatches.whatsapp_account_sid'))
+                            ->maxLength(255),
+
+                        Components\TextInput::make('data.whatsapp_auth_token')
+                            ->label(__('notification_dispatches.whatsapp_auth_token'))
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255),
+
+                        Components\TextInput::make('data.whatsapp_from_number')
+                            ->label(__('notification_dispatches.whatsapp_from_number'))
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
+
+                Section::make(__('notification_dispatches.settings_section_telegram'))
+                    ->description(__('notification_dispatches.settings_section_telegram_desc'))
+                    ->icon(Heroicon::OutlinedPaperAirplane)
+                    ->collapsible()
+                    ->schema([
+                        Components\TextInput::make('data.telegram_bot_token')
+                            ->label(__('notification_dispatches.telegram_bot_token'))
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -641,25 +708,23 @@ class Settings extends Page
                         Components\Select::make('data.ai_model')
                             ->label(__('settings.ai_model'))
                             ->helperText(__('settings.ai_model_help'))
-                            ->options(function (callable $get): array {
-                                return match ($get('data.ai_provider') ?? 'claude') {
-                                    'claude' => [
-                                        'claude-sonnet-4-6' => 'Claude Sonnet 4.6',
-                                        'claude-haiku-4-5-20251001' => 'Claude Haiku 4.5',
-                                        'claude-opus-4-6' => 'Claude Opus 4.6',
-                                    ],
-                                    'openai' => [
-                                        'gpt-4o' => 'GPT-4o',
-                                        'gpt-4o-mini' => 'GPT-4o Mini',
-                                        'gpt-4-turbo' => 'GPT-4 Turbo',
-                                    ],
-                                    'gemini' => [
-                                        'gemini-2.0-flash' => 'Gemini 2.0 Flash',
-                                        'gemini-2.0-pro' => 'Gemini 2.0 Pro',
-                                        'gemini-1.5-flash' => 'Gemini 1.5 Flash',
-                                    ],
-                                    default => [],
-                                };
+                            ->options(fn (callable $get): array => match ($get('data.ai_provider') ?? 'claude') {
+                                'claude' => [
+                                    'claude-sonnet-4-6' => 'Claude Sonnet 4.6',
+                                    'claude-haiku-4-5-20251001' => 'Claude Haiku 4.5',
+                                    'claude-opus-4-6' => 'Claude Opus 4.6',
+                                ],
+                                'openai' => [
+                                    'gpt-4o' => 'GPT-4o',
+                                    'gpt-4o-mini' => 'GPT-4o Mini',
+                                    'gpt-4-turbo' => 'GPT-4 Turbo',
+                                ],
+                                'gemini' => [
+                                    'gemini-2.0-flash' => 'Gemini 2.0 Flash',
+                                    'gemini-2.0-pro' => 'Gemini 2.0 Pro',
+                                    'gemini-1.5-flash' => 'Gemini 1.5 Flash',
+                                ],
+                                default => [],
                             }),
 
                         Components\Select::make('data.ai_max_tokens')
@@ -690,6 +755,54 @@ class Settings extends Page
             ]);
     }
 
+    protected function paymentsTab(): Tab
+    {
+        return Tab::make(__('payments.settings_tab'))
+            ->icon(Heroicon::OutlinedCreditCard)
+            ->schema([
+                Section::make(__('payments.settings_section'))
+                    ->description(__('payments.settings_section_desc'))
+                    ->icon(Heroicon::OutlinedCreditCard)
+                    ->schema([
+                        Components\Select::make('data.payment_provider')
+                            ->label(__('payments.payment_provider'))
+                            ->options([
+                                'cinetpay' => 'CinetPay (Mobile Money)',
+                                'stripe' => 'Stripe (Carte bancaire)',
+                            ])
+                            ->default('cinetpay')
+                            ->live(),
+
+                        Components\TextInput::make('data.cinetpay_api_key')
+                            ->label(__('payments.cinetpay_api_key'))
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255),
+
+                        Components\TextInput::make('data.cinetpay_site_id')
+                            ->label(__('payments.cinetpay_site_id'))
+                            ->maxLength(255),
+
+                        Components\TextInput::make('data.cinetpay_secret_key')
+                            ->label(__('payments.cinetpay_secret_key'))
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255),
+
+                        Components\TextInput::make('data.stripe_secret_key')
+                            ->label(__('payments.stripe_secret_key'))
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255),
+
+                        Components\TextInput::make('data.stripe_publishable_key')
+                            ->label(__('payments.stripe_publishable_key'))
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
+            ]);
+    }
+
     protected function advancedTab(): Tab
     {
         return Tab::make(__('settings.tab_advanced'))
@@ -711,7 +824,7 @@ class Settings extends Page
                             ->label(__('settings.timezone'))
                             ->options(
                                 collect(timezone_identifiers_list())
-                                    ->mapWithKeys(fn (string $tz) => [$tz => $tz])
+                                    ->mapWithKeys(fn (string $tz): array => [$tz => $tz])
                                     ->toArray()
                             )
                             ->searchable()

@@ -10,18 +10,23 @@ use Gemini\Enums\Role;
 
 class GeminiDriver implements AiDriverInterface
 {
-    private \Gemini\Client $client;
+    private readonly \Gemini\Client $client;
 
     public function __construct(
-        private string $apiKey,
-        private string $model,
-        private int $maxTokens,
+        private readonly string $apiKey,
+        private readonly string $model,
+        private readonly int $maxTokens,
     ) {
         $this->client = Gemini::client($this->apiKey);
     }
 
     public function chat(string $system, array $messages, ?int $maxTokens = null): AiResponse
     {
+        $effectiveMaxTokens = $maxTokens ?? $this->maxTokens;
+        if ($effectiveMaxTokens < 1) {
+            $effectiveMaxTokens = 1;
+        }
+
         $generativeModel = $this->client->generativeModel(model: $this->model)
             ->withSystemInstruction(Content::parse(part: $system, role: Role::USER));
 
@@ -36,12 +41,17 @@ class GeminiDriver implements AiDriverInterface
             tokensInput: $result->usageMetadata->promptTokenCount ?? 0,
             tokensOutput: $result->usageMetadata->candidatesTokenCount ?? 0,
             model: $this->model,
-            stopReason: $result->candidates[0]->finishReason?->value ?? null,
+            stopReason: (string) ($result->candidates[0]->finishReason ?? ''),
         );
     }
 
     public function chatStream(string $system, array $messages, callable $onChunk, ?int $maxTokens = null): AiResponse
     {
+        $effectiveMaxTokens = $maxTokens ?? $this->maxTokens;
+        if ($effectiveMaxTokens < 1) {
+            $effectiveMaxTokens = 1;
+        }
+
         $generativeModel = $this->client->generativeModel(model: $this->model)
             ->withSystemInstruction(Content::parse(part: $system, role: Role::USER));
 
@@ -97,7 +107,7 @@ class GeminiDriver implements AiDriverInterface
      */
     private function formatHistory(array $messages): array
     {
-        return array_map(fn (array $msg) => Content::parse(
+        return array_map(fn (array $msg): \Gemini\Data\Content => Content::parse(
             part: $msg['content'],
             role: $msg['role'] === 'user' ? Role::USER : Role::MODEL,
         ), $messages);

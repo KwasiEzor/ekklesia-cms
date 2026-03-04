@@ -35,6 +35,13 @@ trait HasSoftVersioning
         }
 
         $snapshot = $this->previous_version;
+        if (is_string($snapshot)) {
+            $snapshot = json_decode($snapshot, true);
+        }
+        if (! is_array($snapshot)) {
+            return false;
+        }
+
         unset($snapshot['_versioned_at']);
 
         foreach ($snapshot as $key => $value) {

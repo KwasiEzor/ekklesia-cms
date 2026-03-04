@@ -571,3 +571,21 @@ User message → ProcessAiMessage (queued job)
   - `CLAUDE.md` updated with startup command to load collaboration docs
 - **Quality checks:** Not applicable (documentation/process setup task)
 - **Notes:** Future implementation tasks must follow `composer test` + `composer quality` gate before each completion and must append progress in this report.
+
+---
+
+## 2026-03-04 — Hardening Sprint (Quality Gate Recovery)
+
+- **Status:** Done
+- **Goal:** Restore strict code-quality gates for the active Phase 6 codebase and remove static-analysis debt blocking CI.
+- **Summary:**
+  - Resolved PHPStan blockers (65 -> 0 errors) across tenancy-safe billing, AI manager/drivers, notification/payment managers, soft versioning, and Livewire chat typing.
+  - Applied Rector-compatible refactors and type signatures required by the current ruleset.
+  - Cleaned stale PHPStan ignore patterns and updated baseline alignment.
+  - Ensured optional SMS SDK path is handled safely when dependency is absent.
+- **Tests:**
+  - `composer test`: pass (`309 passed`, `888 assertions`)
+- **Quality:**
+  - `composer quality`: pass (`pint`, `phpstan`, `rector --dry-run`)
+- **Files:** hardening updates across AI, billing, notification, payment, Filament pages/resources/widgets, and PHPStan config.
+- **Notes:** This milestone is a quality stabilization checkpoint; next slice can focus on premium UX upgrades and Phase 6 completion under the same TDD gates.

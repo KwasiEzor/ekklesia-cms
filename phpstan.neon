@@ -9,9 +9,6 @@ parameters:
     level: 5
 
     ignoreErrors:
-        # Filament v5 — Forms/Tables/Actions classes are resolved at runtime
-        - '#Call to static method .+ on an unknown class Filament\\(Forms|Tables|Actions|Infolists)\\#'
-
         # Spatie Activity Log — dynamic properties on Activity model
         - '#Access to an undefined property Spatie\\Activitylog\\Models\\Activity::#'
 

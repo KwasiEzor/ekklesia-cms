@@ -21,7 +21,7 @@ use Illuminate\Support\Collection;
 class SkillRegistry
 {
     /** @var Collection<string, AiSkill> */
-    private Collection $skills;
+    private readonly Collection $skills;
 
     public function __construct()
     {
@@ -48,7 +48,13 @@ class SkillRegistry
     /** @return Collection<string, Collection<string, AiSkill>> */
     public function byCategory(): Collection
     {
-        return $this->skills->groupBy(fn (AiSkill $skill) => $skill->category());
+        return $this->skills
+            ->groupBy(fn (AiSkill $skill): string => $skill->category())
+            ->map(
+                fn (Collection $skills): Collection => $skills
+                    ->filter(fn ($skill): bool => $skill instanceof AiSkill)
+                    ->mapWithKeys(fn (AiSkill $skill): array => [$skill->slug() => $skill])
+            );
     }
 
     public function detectSkill(string $message): ?AiSkill

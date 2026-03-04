@@ -11,10 +11,7 @@ class UpcomingEventsWidget extends TableWidget
 {
     protected static ?int $sort = 0;
 
-    protected int | string | array $columnSpan = [
-        'default' => 'full',
-        'lg' => 2,
-    ];
+    protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {

@@ -11,12 +11,12 @@ use App\Services\Ai\AiResponse;
 
 class ClaudeDriver implements AiDriverInterface
 {
-    private Client $client;
+    private readonly Client $client;
 
     public function __construct(
-        private string $apiKey,
-        private string $model,
-        private int $maxTokens,
+        private readonly string $apiKey,
+        private readonly string $model,
+        private readonly int $maxTokens,
     ) {
         $this->client = new Client(apiKey: $this->apiKey);
     }
@@ -31,7 +31,7 @@ class ClaudeDriver implements AiDriverInterface
         );
 
         $content = collect($message->content)
-            ->filter(fn ($block) => isset($block->text))
+            ->filter(fn ($block): bool => isset($block->text))
             ->map(fn ($block) => $block->text)
             ->implode('');
 
@@ -40,7 +40,7 @@ class ClaudeDriver implements AiDriverInterface
             tokensInput: $message->usage->inputTokens,
             tokensOutput: $message->usage->outputTokens,
             model: $this->model,
-            stopReason: $message->stopReason?->value ?? $message->stopReason,
+            stopReason: is_string($message->stopReason) ? $message->stopReason : null,
         );
     }
 
@@ -80,7 +80,7 @@ class ClaudeDriver implements AiDriverInterface
             tokensInput: $inputTokens,
             tokensOutput: $outputTokens,
             model: $this->model,
-            stopReason: is_string($stopReason) ? $stopReason : ($stopReason?->value ?? null),
+            stopReason: is_string($stopReason) ? $stopReason : null,
         );
     }
 
@@ -99,7 +99,7 @@ class ClaudeDriver implements AiDriverInterface
      */
     private function formatMessages(array $messages): array
     {
-        return array_map(fn (array $msg) => [
+        return array_map(fn (array $msg): array => [
             'role' => $msg['role'],
             'content' => $msg['content'],
         ], $messages);

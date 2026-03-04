@@ -9,10 +9,7 @@ class GivingChart extends ChartWidget
 {
     protected static ?int $sort = -2;
 
-    protected int | string | array $columnSpan = [
-        'default' => 'full',
-        'lg' => 2,
-    ];
+    protected int|string|array $columnSpan = 'full';
 
     protected ?string $maxHeight = '300px';
 

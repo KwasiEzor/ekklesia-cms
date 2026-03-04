@@ -91,12 +91,6 @@ parameters:
 			path: app/Models/Announcement.php
 
 		-
-			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
-			identifier: unset.offset
-			count: 1
-			path: app/Models/Announcement.php
-
-		-
 			message: '#^Cannot call method isFuture\(\) on string\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -109,43 +103,7 @@ parameters:
 			path: app/Models/Event.php
 
 		-
-			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
-			identifier: unset.offset
-			count: 1
-			path: app/Models/Event.php
-
-		-
-			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
-			identifier: unset.offset
-			count: 1
-			path: app/Models/Gallery.php
-
-		-
-			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
-			identifier: unset.offset
-			count: 1
-			path: app/Models/GivingRecord.php
-
-		-
-			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
-			identifier: unset.offset
-			count: 1
-			path: app/Models/Member.php
-
-		-
 			message: '#^Cannot call method isPast\(\) on string\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: app/Models/Page.php
-
-		-
-			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
-			identifier: unset.offset
-			count: 1
-			path: app/Models/Page.php
-
-		-
-			message: '#^Cannot unset offset ''_versioned_at'' on string\|null\.$#'
-			identifier: unset.offset
-			count: 1
-			path: app/Models/Sermon.php

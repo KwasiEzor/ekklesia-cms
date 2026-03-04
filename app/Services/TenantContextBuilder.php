@@ -9,11 +9,12 @@ use App\Models\Member;
 use App\Models\Page;
 use App\Models\Sermon;
 use App\Services\Ai\SkillRegistry;
+use Illuminate\Support\Carbon;
 
 class TenantContextBuilder
 {
     public function __construct(
-        private SkillRegistry $skillRegistry,
+        private readonly SkillRegistry $skillRegistry,
     ) {}
 
     public function buildSystemPrompt(string $locale = 'fr'): string
@@ -107,7 +108,7 @@ PROMPT;
         if ($sermons->isNotEmpty()) {
             $lines[] = '## Dernières prédications';
             foreach ($sermons as $sermon) {
-                $date = $sermon->date?->format('d/m/Y') ?? '';
+                $date = $sermon->date ? Carbon::parse($sermon->date)->format('d/m/Y') : '';
                 $lines[] = "- {$sermon->title} — {$sermon->speaker} ({$date})";
             }
         }
@@ -120,13 +121,13 @@ PROMPT;
         if ($events->isNotEmpty()) {
             $lines[] = '## Événements à venir';
             foreach ($events as $event) {
-                $date = $event->start_at?->format('d/m/Y H:i') ?? '';
+                $date = $event->start_at ? Carbon::parse($event->start_at)->format('d/m/Y H:i') : '';
                 $lines[] = "- {$event->title} ({$date})";
             }
         }
 
         // Active announcements
-        $announcements = Announcement::where(function ($q) {
+        $announcements = Announcement::where(function ($q): void {
             $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
         })
             ->whereNotNull('published_at')

@@ -4,10 +4,11 @@ namespace App\Livewire;
 
 use App\Jobs\ProcessAiMessage;
 use App\Models\AiConversation;
+use App\Models\Tenant;
+use App\Models\User;
 use App\Services\Ai\SkillRegistry;
 use Filament\Facades\Filament;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -36,7 +37,7 @@ class AiChat extends Component
         $this->loadSkills();
 
         // Select most recent conversation if available
-        if (! empty($this->conversations)) {
+        if ($this->conversations !== []) {
             $this->selectConversation($this->conversations[0]['id']);
         }
     }
@@ -54,6 +55,9 @@ class AiChat extends Component
 
         $user = Filament::auth()->user();
         $tenant = Filament::getTenant();
+        if (! $user instanceof User || ! $tenant instanceof Tenant) {
+            return;
+        }
 
         // Create conversation if needed
         if (! $this->conversationId) {
@@ -68,6 +72,13 @@ class AiChat extends Component
 
         // Store user message
         $conversation = AiConversation::find($this->conversationId);
+        if (! $conversation instanceof AiConversation) {
+            $this->isProcessing = false;
+
+            return;
+        }
+
+        /** @var \App\Models\AiMessage $userMsg */
         $userMsg = $conversation->messages()->create([
             'tenant_id' => $tenant->id,
             'role' => 'user',
@@ -134,10 +145,13 @@ class AiChat extends Component
         }
 
         $this->conversationId = $conversation->id;
-        $this->messages = $conversation->messages()
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\AiMessage> $conversationMessages */
+        $conversationMessages = $conversation->messages()
             ->orderBy('created_at')
-            ->get()
-            ->map(fn ($msg) => [
+            ->get();
+
+        $this->messages = $conversationMessages
+            ->map(fn ($msg): array => [
                 'id' => $msg->id,
                 'role' => $msg->role,
                 'content' => $msg->content,
@@ -163,7 +177,7 @@ class AiChat extends Component
 
     public function getUserIdProperty(): int
     {
-        return Filament::auth()->id();
+        return Filament::auth()->id() ?? 0;
     }
 
     public function render(): View
@@ -173,11 +187,14 @@ class AiChat extends Component
 
     private function loadConversations(): void
     {
-        $this->conversations = AiConversation::where('user_id', Filament::auth()->id())
+        /** @var \Illuminate\Database\Eloquent\Collection<int, AiConversation> $conversations */
+        $conversations = AiConversation::where('user_id', Filament::auth()->id())
             ->orderByDesc('updated_at')
             ->limit(50)
-            ->get()
-            ->map(fn ($c) => [
+            ->get();
+
+        $this->conversations = $conversations
+            ->map(fn ($c): array => [
                 'id' => $c->id,
                 'title' => $c->title ?? __('ai.untitled_conversation'),
             ])
@@ -190,7 +207,7 @@ class AiChat extends Component
         $locale = app()->getLocale();
 
         $this->skills = $registry->all()
-            ->map(fn ($skill) => [
+            ->map(fn ($skill): array => [
                 'slug' => $skill->slug(),
                 'name' => $skill->name($locale),
             ])
