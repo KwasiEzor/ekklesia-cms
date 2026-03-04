@@ -746,3 +746,33 @@ User message → ProcessAiMessage (queued job)
   - `resources/css/filament/admin/theme.css`
   - `BUILD_PROGRESS.md`
 - **Notes:** Next step can add per-resource `ViewAction::infolist()` schemas for high-priority entities to control field ordering and semantic grouping, beyond global styling.
+
+---
+
+## 2026-03-04 — Show Modal Single-Column Hotfix
+
+- **Status:** Done
+- **Goal:** Enforce single-column display for show-view modal entries.
+- **Summary:**
+  - Removed two-column inline label/content layout in modal infolist entries.
+  - Forced `.fi-in-entry-has-inline-label` to render as one column across all breakpoints for cleaner, consistent reading flow.
+- **Tests:**
+  - Verified: `composer quality` pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Show Modal Grid Columns Fix (Screenshot Follow-up)
+
+- **Status:** Done
+- **Goal:** Remove remaining two-per-row field layout in show modals (resource sections still rendering as multi-column).
+- **Summary:**
+  - Added modal-scoped overrides for Filament schema grid variables (`--cols-*`) to force one-column rendering in modal content at all breakpoints.
+  - Fix directly targets the layout seen in Event and Sermon show screenshots where section fields were still displayed in two columns.
+- **Tests:**
+  - Verified: `composer quality` pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`

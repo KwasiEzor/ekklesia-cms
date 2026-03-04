@@ -262,6 +262,34 @@ body {
     gap: 1rem;
 }
 
+/* Force single-column schema layout inside show modals. */
+.fi-modal .fi-modal-content .fi-grid {
+    --cols-default: minmax(0, 1fr) !important;
+    --cols-sm: minmax(0, 1fr) !important;
+    --cols-md: minmax(0, 1fr) !important;
+    --cols-lg: minmax(0, 1fr) !important;
+    --cols-xl: minmax(0, 1fr) !important;
+    --cols-2xl: minmax(0, 1fr) !important;
+    --cols-c3xs: minmax(0, 1fr) !important;
+    --cols-c2xs: minmax(0, 1fr) !important;
+    --cols-cxs: minmax(0, 1fr) !important;
+    --cols-csm: minmax(0, 1fr) !important;
+    --cols-cmd: minmax(0, 1fr) !important;
+    --cols-clg: minmax(0, 1fr) !important;
+    --cols-cxl: minmax(0, 1fr) !important;
+    --cols-c2xl: minmax(0, 1fr) !important;
+    --cols-c3xl: minmax(0, 1fr) !important;
+    --cols-c4xl: minmax(0, 1fr) !important;
+    --cols-c5xl: minmax(0, 1fr) !important;
+    --cols-c6xl: minmax(0, 1fr) !important;
+    --cols-c7xl: minmax(0, 1fr) !important;
+    --cols-ncsm: minmax(0, 1fr) !important;
+    --cols-ncmd: minmax(0, 1fr) !important;
+    --cols-nclg: minmax(0, 1fr) !important;
+    --cols-ncxl: minmax(0, 1fr) !important;
+    --cols-nc2xl: minmax(0, 1fr) !important;
+}
+
 .fi-modal .fi-modal-content .fi-in-entry {
     gap: 0.5rem;
     border: 1px solid color-mix(in oklab, var(--ekk-border) 60%, transparent);
@@ -271,9 +299,9 @@ body {
 }
 
 .fi-modal .fi-modal-content .fi-in-entry.fi-in-entry-has-inline-label {
-    grid-template-columns: minmax(10rem, 13rem) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
-    column-gap: 1rem;
+    row-gap: 0.45rem;
 }
 
 .fi-modal .fi-modal-content .fi-in-entry .fi-in-entry-label {
@@ -345,10 +373,6 @@ body {
 
     .fi-ta-actions {
         justify-content: flex-start;
-    }
-
-    .fi-modal .fi-modal-content .fi-in-entry.fi-in-entry-has-inline-label {
-        grid-template-columns: minmax(0, 1fr);
     }
 
     .fi-modal .fi-modal-content .fi-in-entry {
