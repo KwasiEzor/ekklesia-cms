@@ -280,6 +280,16 @@ Start every Claude Code session by referencing this file:
 claude --prompt CLAUDE.md
 ```
 
+For Codex + Claude collaboration mode, load these companion instructions too:
+- `AI_COLLABORATION_PLAN.md`
+- `CLAUDE_COLLAB_INSTRUCTIONS.md`
+
+Suggested session start command:
+
+```bash
+claude --prompt CLAUDE.md --append AI_COLLABORATION_PLAN.md --append CLAUDE_COLLAB_INSTRUCTIONS.md
+```
+
 Or place this file at the root of the repository as `CLAUDE.md` and Claude Code will load it automatically as project context at the start of every session.
 
 To work on a specific phase, tell Claude Code:
@@ -312,5 +322,7 @@ To work on a specific phase, tell Claude Code:
 - [x] **Phase 2 — Core Content Types COMPLETE** (all 6 content types built)
 - [x] Phase 2.5 — Hardening Sprint COMPLETE (Rector, PHPStan, CI, security headers, rate limiting, Sanctum, SECURITY.md, CONTRIBUTING.md)
 - [x] Phase 3 — API Layer COMPLETE (auth endpoints, token management, Scramble API docs, Gallery form requests)
-- [ ] Phase 4 — First Deployment IN PROGRESS (tenancy middleware, tenant:create, seeders, health check, Docker)
+- [x] Phase 4 — First Deployment COMPLETE (tenancy middleware, tenant:create, seeders, health check, Docker)
 - [x] UI Refonte — Premium admin redesign COMPLETE (dashboard widgets, settings page, resource form redesign, translations, icon buttons, full-width forms)
+- [x] Phase 5 — AI Layer COMPLETE (multi-provider assistant, 14 skills, tenant-scoped context pipeline, streaming via Reverb)
+- [ ] Phase 6 — Premium Modules IN PROGRESS

@@ -22,7 +22,7 @@
 | 3 | API Layer | Done | 2026-03-01 |
 | 4 | First Deployment (prep) | In Progress | 2026-03-02 |
 | — | UI Refonte — Premium Admin | Done | 2026-03-03 |
-| 5 | AI Layer | Pending | — |
+| 5 | AI Layer | Done | 2026-03-03 |
 | 6 | Premium Modules | Pending | — |
 
 ---
@@ -491,3 +491,83 @@ All 14 Create and Edit pages set to `Width::Full` (`protected Width|string|null 
 | Migration | `alter_notifications_data_to_jsonb.php` |
 
 ### Tests: 194 passing (604 assertions) — all green
+
+---
+
+## Phase 5 — AI Layer
+
+**Commit:** `1e047c0` — `feat: Phase 5 AI layer — multi-provider assistant, 14 skills, tenant-scoped context pipeline`
+**Date:** 2026-03-03
+
+### What Was Built
+
+Multi-provider AI assistant with tenant-scoped context pipeline and 14 specialized skills.
+
+### Architecture — Multi-Provider Driver Pattern
+
+```
+AiManager (extends Illuminate\Support\Manager)
+├── ClaudeDriver    → anthropic-ai/sdk
+├── OpenAiDriver    → openai-php/client
+└── GeminiDriver    → google-gemini-php/client
+```
+
+Per-tenant config stored in `data` JSONB: `ai_provider`, `ai_api_key`, `ai_model`, `ai_max_tokens`.
+
+### AI Skills System — 14 Skills in 5 Categories
+
+| Category | Skills |
+|----------|--------|
+| Content Creation | sermon-outline, content-write, translate, seo-optimize, proofread |
+| Church Management | event-plan, comm-draft, giving-insights, dashboard-narrate |
+| Design & Branding | brand-advise, social-create |
+| Security & Maintenance | content-audit, data-quality |
+| AI Guidance | strategy-advise |
+
+### Streaming Architecture
+
+```
+User message → ProcessAiMessage (queued job)
+  → AiManager resolves driver per tenant
+  → TenantContextBuilder builds system prompt (no PII)
+  → Driver streams response → AiResponseChunk (ShouldBroadcastNow)
+  → Private channel ai-chat.{userId} → Livewire/Echo
+```
+
+### New Files (40+)
+
+| Category | Files |
+|----------|-------|
+| Config | `config/ai.php` |
+| Driver Pattern | AiDriverInterface, AiResponse, AiManager, ClaudeDriver, OpenAiDriver, GeminiDriver |
+| Skills | AiSkill base, SkillRegistry, 14 skill classes |
+| Context | TenantContextBuilder |
+| Models | AiConversation, AiMessage + migrations + factories |
+| Chat | AiResponseChunk event, ProcessAiMessage job, AiChat Livewire, AiAssistant page |
+| Analysis | AiAnalyzeContent job, AiAnalyzeAction |
+| Translations | `lang/{fr,en}/ai.php` |
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `AppServiceProvider.php` | AiManager singleton, SkillRegistry singleton, Livewire registration |
+| `Settings.php` | AI configuration tab (provider, model, API key, max tokens) |
+| `routes/channels.php` | `ai-chat.{userId}` channel authorization |
+| `.env.example` | AI provider env vars |
+| `lang/{fr,en}/settings.php` | AI settings translations |
+
+### Tests: 228 passing (34 new + 194 existing) — all green
+
+---
+
+## 2026-03-04 — Codex x Claude Collaboration Setup
+
+- **Status:** Done
+- **Goal:** Establish strict TDD collaboration workflow, premium UI quality bar, and mandatory progress-saving protocol for ongoing development.
+- **Deliverables:**
+  - `AI_COLLABORATION_PLAN.md` — execution plan, TDD lifecycle, DoD, premium UI checklist, progress and commit protocol
+  - `CLAUDE_COLLAB_INSTRUCTIONS.md` — Claude-operating instructions for Codex collaboration
+  - `CLAUDE.md` updated with startup command to load collaboration docs
+- **Quality checks:** Not applicable (documentation/process setup task)
+- **Notes:** Future implementation tasks must follow `composer test` + `composer quality` gate before each completion and must append progress in this report.
