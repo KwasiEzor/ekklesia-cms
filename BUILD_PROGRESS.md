@@ -776,3 +776,26 @@ User message → ProcessAiMessage (queued job)
 - **Files:**
   - `resources/css/filament/admin/theme.css`
   - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Premium CRUD List Visual Pass (Global Table UX)
+
+- **Status:** Done
+- **Goal:** Elevate Filament CRUD list pages (Members and all other table-based resources) with stronger premium visual quality and usability.
+- **Summary:**
+  - Improved table visual hierarchy: stronger heading styles, clearer header metadata, and better body text readability.
+  - Upgraded toolbar/search/filter prominence with bordered elevated toolbar container and clearer search field treatment.
+  - Improved row interaction clarity with refined row borders and subtle hover states.
+  - Redesigned row action controls for accessibility and precision:
+    - Larger hit areas.
+    - Better icon sizing and hover feedback.
+  - Strengthened pagination clarity and active-state treatment (buttons, overview text, and page emphasis).
+  - Improved sidebar navigation emphasis with clearer active/current state styling and stronger group label readability.
+  - Verified shared-class coverage so changes apply across all Filament CRUD list screens using common `fi-ta-*`, `fi-pagination*`, and `fi-sidebar*` components.
+- **Validation:**
+  - `composer quality`: pass
+  - `npm run build`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`
