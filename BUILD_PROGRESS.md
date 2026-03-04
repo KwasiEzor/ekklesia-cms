@@ -852,3 +852,28 @@ User message → ProcessAiMessage (queued job)
   - `app/Filament/Resources/PageResource/Pages/CreatePage.php`
   - `app/Filament/Resources/SermonResource/Pages/CreateSermon.php`
   - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Global Border Softening Pass (Transparent Premium Edges)
+
+- **Status:** Done
+- **Goal:** Reduce heavy border appearance across Filament components by making border treatment more transparent and premium.
+- **Summary:**
+  - Introduced shared border tone tokens:
+    - `--ekk-border-soft`
+    - `--ekk-border-faint`
+  - Replaced heavy component border colors with transparent soft variants across:
+    - sections/widgets/tables
+    - table toolbar/filters/row dividers/action buttons
+    - pagination wrappers/buttons
+    - input/select/text fields
+    - modal shells/headers/infolist containers
+    - billing cards
+  - Preserved structure using shadows and spacing so readability remains strong while visual noise is reduced.
+- **Validation:**
+  - `composer quality`: pass
+  - `npm run build`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`

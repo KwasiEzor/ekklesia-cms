@@ -31,7 +31,10 @@
     --ekk-success: #10b981;
     --ekk-text: #0f172a;
     --ekk-text-muted: #475569;
+    --ekk-text-soft: #334155;
     --ekk-shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
+    --ekk-border-soft: color-mix(in oklab, var(--ekk-border) 30%, transparent);
+    --ekk-border-faint: color-mix(in oklab, var(--ekk-border) 18%, transparent);
 }
 
 .dark {
@@ -45,7 +48,10 @@
     --ekk-success: #34d399;
     --ekk-text: #e2e8f0;
     --ekk-text-muted: #a8b4ca;
+    --ekk-text-soft: #c6d1e4;
     --ekk-shadow-soft: 0 18px 34px rgba(2, 8, 23, 0.45);
+    --ekk-border-soft: color-mix(in oklab, var(--ekk-border) 38%, transparent);
+    --ekk-border-faint: color-mix(in oklab, var(--ekk-border) 24%, transparent);
 }
 
 body {
@@ -80,27 +86,27 @@ body {
 }
 
 .fi-page-header-subheading {
-    color: var(--ekk-text-muted);
+    color: var(--ekk-text-soft);
     max-width: 72ch;
 }
 
 .fi-section,
 .fi-wi,
 .fi-ta {
-    border: 1px solid var(--ekk-border);
+    border: 1px solid var(--ekk-border-soft);
     background: linear-gradient(180deg, var(--ekk-surface) 0%, var(--ekk-surface-elevated) 100%);
     box-shadow: var(--ekk-shadow-soft);
     border-radius: 1rem;
 }
 
 .fi-section-header {
-    border-bottom: 1px solid color-mix(in oklab, var(--ekk-border) 70%, transparent);
+    border-bottom: 1px solid var(--ekk-border-faint);
 }
 
 .fi-input-wrp,
 .fi-select-input,
 .fi-text-input {
-    border-color: color-mix(in oklab, var(--ekk-border) 80%, transparent);
+    border-color: var(--ekk-border-soft);
 }
 
 .fi-input-wrp:focus-within,
@@ -143,7 +149,7 @@ body {
 }
 
 .ekk-billing-card {
-    border: 1px solid var(--ekk-border);
+    border: 1px solid var(--ekk-border-soft);
     background: linear-gradient(180deg, var(--ekk-surface) 0%, var(--ekk-surface-elevated) 100%);
     box-shadow: var(--ekk-shadow-soft);
 }
@@ -153,7 +159,7 @@ body {
 }
 
 .fi-page-settings .fi-section-description {
-    color: var(--ekk-text-muted);
+    color: var(--ekk-text-soft);
 }
 
 /* CRUD quality hardening across all Filament resources. */
@@ -161,7 +167,7 @@ body {
     gap: 0.75rem;
     align-items: center;
     padding: 0.5rem;
-    border: 1px solid color-mix(in oklab, var(--ekk-border) 70%, transparent);
+    border: 1px solid var(--ekk-border-soft);
     border-radius: 0.85rem;
     background: color-mix(in oklab, var(--ekk-surface) 94%, transparent);
 }
@@ -179,7 +185,7 @@ body {
 }
 
 .fi-ta-filters {
-    border: 1px solid color-mix(in oklab, var(--ekk-border) 75%, transparent);
+    border: 1px solid var(--ekk-border-soft);
     border-radius: 0.85rem;
     background: color-mix(in oklab, var(--ekk-surface) 92%, transparent);
 }
@@ -205,12 +211,12 @@ body {
 }
 
 .fi-ta-header-description {
-    color: var(--ekk-text-muted);
+    color: var(--ekk-text-soft);
 }
 
 .fi-ta-header-cell {
     white-space: nowrap;
-    color: color-mix(in oklab, var(--ekk-text) 82%, var(--ekk-text-muted));
+    color: color-mix(in oklab, var(--ekk-text) 88%, var(--ekk-text-muted));
     letter-spacing: 0.01em;
     font-size: 0.78rem;
     font-weight: 700;
@@ -220,11 +226,11 @@ body {
 .fi-ta-cell {
     vertical-align: middle;
     font-size: 0.915rem;
-    color: color-mix(in oklab, var(--ekk-text) 92%, var(--ekk-text-muted));
+    color: color-mix(in oklab, var(--ekk-text) 96%, var(--ekk-text-muted));
 }
 
 .fi-ta-row {
-    border-bottom-color: color-mix(in oklab, var(--ekk-border) 64%, transparent);
+    border-bottom-color: var(--ekk-border-faint);
 }
 
 .fi-ta-row:hover {
@@ -248,11 +254,27 @@ body {
     gap: 0.35rem;
 }
 
+.fi-ta-cell .fi-ta-actions {
+    width: fit-content;
+    max-width: 100%;
+    margin-inline-start: auto;
+    overflow: clip;
+    flex-wrap: nowrap;
+}
+
+.fi-ta-cell .fi-ta-actions.fi-ta-actions-before-columns-position {
+    margin-inline-start: 0;
+}
+
 .fi-ta-actions .fi-icon-btn {
-    border-color: color-mix(in oklab, var(--ekk-border) 70%, transparent);
+    border-color: var(--ekk-border-soft);
     background: color-mix(in oklab, var(--ekk-surface) 92%, transparent);
     min-width: 2rem;
     min-height: 2rem;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    padding: 0;
     border-radius: 0.6rem;
 }
 
@@ -266,20 +288,82 @@ body {
     border-color: color-mix(in oklab, var(--ekk-primary) 24%, var(--ekk-border));
 }
 
+.fi-ta-actions .fi-icon-btn.fi-color-gray {
+    color: color-mix(in oklab, var(--ekk-text-soft) 85%, var(--ekk-text));
+}
+
+.fi-ta-actions .fi-icon-btn.fi-color-primary {
+    color: color-mix(in oklab, var(--ekk-primary) 85%, var(--ekk-text));
+}
+
+.fi-ta-actions .fi-icon-btn.fi-color-danger {
+    color: color-mix(in oklab, #dc2626 84%, var(--ekk-text));
+}
+
+.fi-ta-header-toolbar .fi-icon-btn,
+.fi-ta-filters-trigger-action-ctn .fi-icon-btn,
+.fi-ta-col-manager .fi-icon-btn,
+.fi-ta-record-collapse-btn.fi-icon-btn,
+.fi-ta-group-header .fi-icon-btn,
+.fi-ta-filter-indicators > :nth-child(2).fi-icon-btn {
+    width: 2.1rem;
+    height: 2.1rem;
+    min-width: 2.1rem;
+    min-height: 2.1rem;
+    margin: 0;
+    border: 1px solid var(--ekk-border-soft);
+    border-radius: 0.65rem;
+    background: color-mix(in oklab, var(--ekk-surface) 95%, transparent);
+    color: color-mix(in oklab, var(--ekk-text-soft) 85%, var(--ekk-text));
+}
+
+.fi-ta-header-toolbar .fi-icon-btn .fi-icon,
+.fi-ta-filters-trigger-action-ctn .fi-icon-btn .fi-icon,
+.fi-ta-col-manager .fi-icon-btn .fi-icon,
+.fi-ta-record-collapse-btn.fi-icon-btn .fi-icon,
+.fi-ta-group-header .fi-icon-btn .fi-icon,
+.fi-ta-filter-indicators > :nth-child(2).fi-icon-btn .fi-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.fi-ta-header-toolbar .fi-icon-btn:hover,
+.fi-ta-filters-trigger-action-ctn .fi-icon-btn:hover,
+.fi-ta-col-manager .fi-icon-btn:hover,
+.fi-ta-record-collapse-btn.fi-icon-btn:hover,
+.fi-ta-group-header .fi-icon-btn:hover,
+.fi-ta-filter-indicators > :nth-child(2).fi-icon-btn:hover {
+    background: color-mix(in oklab, var(--ekk-primary) 9%, var(--ekk-surface));
+    border-color: color-mix(in oklab, var(--ekk-primary) 24%, var(--ekk-border));
+    color: color-mix(in oklab, var(--ekk-primary) 82%, var(--ekk-text));
+}
+
+.fi-ta-header-toolbar .fi-btn,
+.fi-ta-filters-trigger-action-ctn .fi-btn {
+    border-color: var(--ekk-border-soft);
+    background: color-mix(in oklab, var(--ekk-surface) 96%, transparent);
+}
+
+.fi-ta-header-toolbar .fi-btn .fi-icon,
+.fi-ta-filters-trigger-action-ctn .fi-btn .fi-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
 .fi-pagination {
-    border-top: 1px solid color-mix(in oklab, var(--ekk-border) 65%, transparent);
+    border-top: 1px solid var(--ekk-border-faint);
     padding-top: 0.9rem;
 }
 
 .fi-pagination-overview {
-    color: var(--ekk-text-muted);
+    color: var(--ekk-text-soft);
     font-weight: 500;
 }
 
 .fi-pagination-item-btn,
 .fi-pagination-next-btn,
 .fi-pagination-previous-btn {
-    border-color: color-mix(in oklab, var(--ekk-border) 70%, transparent);
+    border-color: var(--ekk-border-soft);
     background: color-mix(in oklab, var(--ekk-surface) 96%, transparent);
     min-width: 2rem;
     min-height: 2rem;
@@ -303,7 +387,7 @@ body {
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
 .fi-sidebar-item.fi-sidebar-item-has-active-child-items > .fi-sidebar-item-btn {
     background: color-mix(in oklab, var(--ekk-primary) 14%, var(--ekk-surface));
-    color: var(--ekk-text);
+    color: color-mix(in oklab, var(--ekk-text) 98%, var(--ekk-text-soft));
 }
 
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label {
@@ -311,7 +395,7 @@ body {
 }
 
 .fi-sidebar-group-label {
-    color: color-mix(in oklab, var(--ekk-text-muted) 88%, var(--ekk-text));
+    color: color-mix(in oklab, var(--ekk-text-soft) 92%, var(--ekk-text));
     font-weight: 600;
 }
 
@@ -339,13 +423,13 @@ body {
 
 /* Premium readability for ViewAction show modals and infolists. */
 .fi-modal > .fi-modal-window-ctn > .fi-modal-window {
-    border: 1px solid color-mix(in oklab, var(--ekk-border) 72%, transparent);
+    border: 1px solid var(--ekk-border-soft);
     background: linear-gradient(180deg, var(--ekk-surface) 0%, var(--ekk-surface-elevated) 100%);
     box-shadow: 0 22px 54px rgba(15, 23, 42, 0.2);
 }
 
 .fi-modal .fi-modal-header {
-    border-bottom: 1px solid color-mix(in oklab, var(--ekk-border) 70%, transparent);
+    border-bottom: 1px solid var(--ekk-border-faint);
 }
 
 .fi-modal .fi-modal-heading {
@@ -391,7 +475,7 @@ body {
 
 .fi-modal .fi-modal-content .fi-in-entry {
     gap: 0.5rem;
-    border: 1px solid color-mix(in oklab, var(--ekk-border) 60%, transparent);
+    border: 1px solid var(--ekk-border-soft);
     border-radius: 0.85rem;
     padding: 0.8rem 0.9rem;
     background: color-mix(in oklab, var(--ekk-surface) 92%, transparent);
@@ -408,7 +492,7 @@ body {
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: color-mix(in oklab, var(--ekk-text-muted) 92%, var(--ekk-text));
+    color: color-mix(in oklab, var(--ekk-text-soft) 94%, var(--ekk-text));
 }
 
 .fi-modal .fi-modal-content .fi-in-entry .fi-in-entry-content-ctn {
@@ -424,7 +508,7 @@ body {
 }
 
 .fi-modal .fi-modal-content .fi-in-key-value {
-    border-color: color-mix(in oklab, var(--ekk-border) 78%, transparent);
+    border-color: var(--ekk-border-soft);
     background: color-mix(in oklab, var(--ekk-surface) 90%, transparent);
     box-shadow: none;
 }
@@ -434,7 +518,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: color-mix(in oklab, var(--ekk-text-muted) 95%, var(--ekk-text));
+    color: color-mix(in oklab, var(--ekk-text-soft) 95%, var(--ekk-text));
 }
 
 .fi-modal .fi-modal-content .fi-in-key-value td {
@@ -442,7 +526,7 @@ body {
 }
 
 .fi-modal .fi-modal-content .fi-in-table-repeatable > table {
-    border-color: color-mix(in oklab, var(--ekk-border) 78%, transparent);
+    border-color: var(--ekk-border-soft);
     background: color-mix(in oklab, var(--ekk-surface) 90%, transparent);
 }
 
@@ -472,6 +556,12 @@ body {
 
     .fi-ta-actions {
         justify-content: flex-start;
+    }
+
+    .fi-ta-cell .fi-ta-actions {
+        width: auto;
+        margin-inline-start: 0;
+        flex-wrap: wrap;
     }
 
     .fi-modal .fi-modal-content .fi-in-entry {
