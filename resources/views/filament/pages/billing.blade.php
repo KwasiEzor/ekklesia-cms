@@ -1,4 +1,22 @@
 <x-filament-panels::page>
+    <style>
+        .ekk-billing .ekk-icon-sm {
+            width: 1rem !important;
+            height: 1rem !important;
+            min-width: 1rem;
+            min-height: 1rem;
+            flex-shrink: 0;
+        }
+
+        .ekk-billing .ekk-icon-md {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            min-width: 1.25rem;
+            min-height: 1.25rem;
+            flex-shrink: 0;
+        }
+    </style>
+
     <div class="ekk-billing space-y-8">
         <section class="ekk-billing-hero rounded-2xl px-6 py-6 lg:px-8 lg:py-7">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

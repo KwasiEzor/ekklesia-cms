@@ -647,3 +647,20 @@ User message → ProcessAiMessage (queued job)
   - `tests/Unit/Pages/SettingsPageTest.php`
   - `BUILD_PROGRESS.md`
 - **Notes:** Next premium slice should target dashboard widgets + table density/accessibility tuning (focus states, empty states, and consistent data emphasis).
+
+---
+
+## 2026-03-04 — Billing UI Hotfix (Icon Scaling Regression)
+
+- **Status:** Done
+- **Goal:** Correct oversized icon rendering in Billing page cards and feature lists.
+- **Summary:**
+  - Added resilient icon sizing rules directly in Billing view scope (`.ekk-billing`) to prevent SVG expansion when utility classes are not reliably available.
+  - Enforced fixed dimensions for both small and medium icon variants with explicit min-size constraints.
+- **Tests:**
+  - `php artisan test tests/Unit/Pages/BillingPageTest.php`: pass
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `resources/views/filament/pages/billing.blade.php`
+- **Notes:** This hotfix targets visual correctness from production-like rendering conditions and keeps existing billing behavior unchanged.
