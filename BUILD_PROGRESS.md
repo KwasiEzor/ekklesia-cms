@@ -965,3 +965,29 @@ User message → ProcessAiMessage (queued job)
   - `app/Models/GivingRecord.php` (Rector)
   - `app/Models/PaymentTransaction.php` (Rector)
   - `tests/Feature/Api/V1/GivingRecordApiTest.php`
+
+---
+
+## 2026-03-06 — RBAC & Security Wave A
+
+- **Status:** Done
+- **Goal:** Implement granular Role-Based Access Control (RBAC) across the platform and API.
+- **Summary:**
+  - **Filament Shield Integration:**
+    - Installed `bezhansalleh/filament-shield` v4 (Filament v5 compatible).
+    - Configured multi-tenancy support for permissions using `stancl/tenancy`.
+    - Migrated `spatie/laravel-permission` with `team_id` as `string` to match tenant slugs.
+  - **RBAC Foundation:**
+    - Created `RolesAndPermissionsSeeder` defining 4 base roles: `Super Admin`, `Pastor`, `Treasurer`, `Volunteer`.
+    - Generated policies for all 10 core resources.
+  - **API Authorization:**
+    - Updated all API V1 Controllers to enforce model policies via `$this->authorize()`.
+    - Verified that unauthorized users (e.g., Volunteers) receive `403 Forbidden` on sensitive endpoints like Giving/Payments.
+- **Validation:**
+  - `php artisan test tests/Feature/Filament/RbacTest.php`: pass (4 passed)
+- **Files:**
+  - `config/filament-shield.php`, `config/permission.php`
+  - `app/Http/Controllers/Api/V1/*.php`
+  - `app/Policies/*.php`
+  - `database/seeders/RolesAndPermissionsSeeder.php`
+  - `tests/Feature/Filament/RbacTest.php`
