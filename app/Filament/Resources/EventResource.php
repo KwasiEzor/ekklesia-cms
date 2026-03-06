@@ -115,7 +115,8 @@ class EventResource extends Resource
                             ->label(__('events.description'))
                             ->columnSpanFull(),
                     ]),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

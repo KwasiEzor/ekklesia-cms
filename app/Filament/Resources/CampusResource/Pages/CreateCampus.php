@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\CampusResource\Pages;
 
 use App\Filament\Resources\CampusResource;
-use App\Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Enums\Width;
 
 class CreateCampus extends CreateRecord

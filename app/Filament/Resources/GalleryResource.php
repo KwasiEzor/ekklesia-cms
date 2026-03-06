@@ -102,7 +102,8 @@ class GalleryResource extends Resource
                             ->maxFiles(50)
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
                     ]),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

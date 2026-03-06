@@ -188,7 +188,8 @@ class PageResource extends Resource
                             ->label(__('pages.published_at')),
                     ])
                     ->columns(2),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

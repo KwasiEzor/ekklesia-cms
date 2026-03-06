@@ -164,20 +164,24 @@ body {
 
 /* CRUD quality hardening across all Filament resources. */
 .fi-ta-header-toolbar {
-    gap: 0.75rem;
+    display: flex;
     align-items: center;
-    padding: 0.5rem;
-    border: 1px solid var(--ekk-border-soft);
-    border-radius: 0.85rem;
-    background: color-mix(in oklab, var(--ekk-surface) 94%, transparent);
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--ekk-border-faint);
+    background: color-mix(in oklab, var(--ekk-surface) 40%, transparent);
 }
 
-.fi-ta-header-toolbar > * {
-    min-width: 0;
+.fi-ta-header-toolbar > div {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .fi-ta-search-field {
-    min-width: min(24rem, 100%);
+    width: 100%;
+    max-width: 28rem;
 }
 
 .fi-ta-search-field .fi-input-wrp {
@@ -185,9 +189,7 @@ body {
 }
 
 .fi-ta-filters {
-    border: 1px solid var(--ekk-border-soft);
-    border-radius: 0.85rem;
-    background: color-mix(in oklab, var(--ekk-surface) 92%, transparent);
+    margin-bottom: 1rem;
 }
 
 .fi-ta-filters-form {
@@ -213,7 +215,6 @@ body {
 .fi-ta-header-description {
     color: var(--ekk-text-soft);
 }
-
 .fi-ta-header-cell {
     white-space: nowrap;
     color: color-mix(in oklab, var(--ekk-text) 88%, var(--ekk-text-muted));
@@ -221,12 +222,53 @@ body {
     font-size: 0.78rem;
     font-weight: 700;
     text-transform: uppercase;
+    padding: 0.85rem 0.5rem;
 }
 
+.fi-ta-header-cell .fi-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex-shrink: 0;
+}
 .fi-ta-cell {
     vertical-align: middle;
     font-size: 0.915rem;
     color: color-mix(in oklab, var(--ekk-text) 96%, var(--ekk-text-muted));
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.fi-ta-col-wrp {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.fi-ta-icon-column {
+    display: flex;
+    justify-content: center;
+}
+
+.fi-ta-icon-column .fi-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+}
+
+.fi-ta-image-column .fi-image-column-ctn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    border: 1px solid var(--ekk-border-faint);
+}
+
+.fi-ta-image-column.fi-ta-image-column-circular .fi-image-column-ctn {
+    border-radius: 9999px;
 }
 
 .fi-ta-row {
@@ -237,10 +279,6 @@ body {
     background: color-mix(in oklab, var(--ekk-primary) 5%, var(--ekk-surface));
 }
 
-.fi-ta-col-wrp {
-    min-width: 0;
-}
-
 .fi-ta-text {
     line-height: 1.35;
     overflow-wrap: anywhere;
@@ -248,18 +286,16 @@ body {
 
 .fi-ta-actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-end;
     gap: 0.35rem;
 }
 
 .fi-ta-cell .fi-ta-actions {
-    width: fit-content;
-    max-width: 100%;
-    margin-inline-start: auto;
-    overflow: clip;
-    flex-wrap: nowrap;
+    width: 100%;
+    justify-content: flex-end;
+    margin-inline-start: 0;
 }
 
 .fi-ta-cell .fi-ta-actions.fi-ta-actions-before-columns-position {
@@ -305,11 +341,7 @@ body {
 .fi-ta-col-manager .fi-icon-btn,
 .fi-ta-record-collapse-btn.fi-icon-btn,
 .fi-ta-group-header .fi-icon-btn,
-.fi-ta-filter-indicators > :nth-child(2).fi-icon-btn {
-    width: 2.1rem;
-    height: 2.1rem;
-    min-width: 2.1rem;
-    min-height: 2.1rem;
+.fi-ta-filter-indicators .fi-icon-btn {
     margin: 0;
     border: 1px solid var(--ekk-border-soft);
     border-radius: 0.65rem;
@@ -322,7 +354,7 @@ body {
 .fi-ta-col-manager .fi-icon-btn .fi-icon,
 .fi-ta-record-collapse-btn.fi-icon-btn .fi-icon,
 .fi-ta-group-header .fi-icon-btn .fi-icon,
-.fi-ta-filter-indicators > :nth-child(2).fi-icon-btn .fi-icon {
+.fi-ta-filter-indicators .fi-icon-btn .fi-icon {
     width: 1rem;
     height: 1rem;
 }
@@ -332,7 +364,7 @@ body {
 .fi-ta-col-manager .fi-icon-btn:hover,
 .fi-ta-record-collapse-btn.fi-icon-btn:hover,
 .fi-ta-group-header .fi-icon-btn:hover,
-.fi-ta-filter-indicators > :nth-child(2).fi-icon-btn:hover {
+.fi-ta-filter-indicators .fi-icon-btn:hover {
     background: color-mix(in oklab, var(--ekk-primary) 9%, var(--ekk-surface));
     border-color: color-mix(in oklab, var(--ekk-primary) 24%, var(--ekk-border));
     color: color-mix(in oklab, var(--ekk-primary) 82%, var(--ekk-text));
@@ -438,39 +470,6 @@ body {
 
 .fi-modal .fi-modal-content {
     gap: 1rem;
-}
-
-/* Force single-column schema layout inside show modals. */
-.fi-modal .fi-modal-content .fi-grid {
-    --cols-default: minmax(0, 1fr) !important;
-    --cols-sm: minmax(0, 1fr) !important;
-    --cols-md: minmax(0, 1fr) !important;
-    --cols-lg: minmax(0, 1fr) !important;
-    --cols-xl: minmax(0, 1fr) !important;
-    --cols-2xl: minmax(0, 1fr) !important;
-    --cols-c3xs: minmax(0, 1fr) !important;
-    --cols-c2xs: minmax(0, 1fr) !important;
-    --cols-cxs: minmax(0, 1fr) !important;
-    --cols-csm: minmax(0, 1fr) !important;
-    --cols-cmd: minmax(0, 1fr) !important;
-    --cols-clg: minmax(0, 1fr) !important;
-    --cols-cxl: minmax(0, 1fr) !important;
-    --cols-c2xl: minmax(0, 1fr) !important;
-    --cols-c3xl: minmax(0, 1fr) !important;
-    --cols-c4xl: minmax(0, 1fr) !important;
-    --cols-c5xl: minmax(0, 1fr) !important;
-    --cols-c6xl: minmax(0, 1fr) !important;
-    --cols-c7xl: minmax(0, 1fr) !important;
-    --cols-ncsm: minmax(0, 1fr) !important;
-    --cols-ncmd: minmax(0, 1fr) !important;
-    --cols-nclg: minmax(0, 1fr) !important;
-    --cols-ncxl: minmax(0, 1fr) !important;
-    --cols-nc2xl: minmax(0, 1fr) !important;
-}
-
-.fi-modal .fi-modal-content .fi-sc.fi-grid:not(.fi-grid-direction-col),
-.fi-modal .fi-modal-content .fi-grid:not(.fi-grid-direction-col) {
-    grid-template-columns: minmax(0, 1fr) !important;
 }
 
 .fi-modal .fi-modal-content .fi-in-entry {

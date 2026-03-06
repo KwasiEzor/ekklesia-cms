@@ -1,0 +1,14 @@
+{
+  "allowlist": [],
+  "thresholds": {
+    "tenant_isolation": {
+      "fail_on": ["high", "critical"]
+    },
+    "security_review": {
+      "fail_on": ["high"]
+    },
+    "test_gaps": {
+      "min_coverage": 85
+    }
+  }
+}

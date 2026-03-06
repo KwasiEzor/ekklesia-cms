@@ -94,7 +94,8 @@ class AnnouncementResource extends Resource
                             ->label(__('announcements.body'))
                             ->columnSpanFull(),
                     ]),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

@@ -109,7 +109,8 @@ class CampusResource extends Resource
                             ->maxLength(255),
                     ])
                     ->columns(2),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

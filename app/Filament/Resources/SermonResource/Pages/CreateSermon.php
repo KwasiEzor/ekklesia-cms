@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\SermonResource\Pages;
 
-use App\Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\SermonResource;
+use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Enums\Width;
 
 class CreateSermon extends CreateRecord

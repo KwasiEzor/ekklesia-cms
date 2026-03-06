@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\AnnouncementResource\Pages;
 
 use App\Filament\Resources\AnnouncementResource;
-use App\Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Enums\Width;
 
 class CreateAnnouncement extends CreateRecord

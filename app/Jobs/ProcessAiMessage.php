@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\RateLimiter;
 
 class ProcessAiMessage implements ShouldQueue
 {
@@ -39,6 +40,35 @@ class ProcessAiMessage implements ShouldQueue
         if (! $tenant) {
             return;
         }
+
+        $rateLimitKey = 'ai-messages:tenant:'.$this->tenantId;
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 10)) { // 10 messages per minute per tenant
+            $conversation = AiConversation::find($this->conversationId);
+            if ($conversation) {
+                $errorMessage = __('ai.rate_limit_exceeded') !== 'ai.rate_limit_exceeded'
+                    ? __('ai.rate_limit_exceeded')
+                    : 'Limite de messages atteinte. Veuillez patienter une minute.';
+
+                $conversation->messages()->create([
+                    'tenant_id' => $this->tenantId,
+                    'role' => 'assistant',
+                    'content' => $errorMessage,
+                ]);
+
+                broadcast(new AiResponseChunk(
+                    userId: $this->userId,
+                    conversationId: $conversation->id,
+                    chunk: $errorMessage,
+                    isComplete: true,
+                ));
+            }
+
+            return;
+        }
+
+        RateLimiter::hit($rateLimitKey, 60);
+
         tenancy()->initialize($tenant);
 
         $conversation = AiConversation::find($this->conversationId);

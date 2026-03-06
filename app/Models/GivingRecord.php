@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Concerns\HasCampusScope;
-use App\Concerns\HasSoftVersioning;
 use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +11,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class GivingRecord extends Model
 {
-    use BelongsToTenant, HasCampusScope, HasFactory, HasSoftVersioning, LogsActivityWithTenant;
+    use BelongsToTenant, HasCampusScope, HasFactory, LogsActivityWithTenant;
 
     protected $fillable = [
         'member_id',
@@ -37,7 +36,6 @@ class GivingRecord extends Model
             'amount' => 'decimal:2',
             'date' => 'date',
             'custom_fields' => 'array',
-            'previous_version' => 'array',
         ];
     }
 

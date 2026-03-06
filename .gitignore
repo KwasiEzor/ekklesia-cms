@@ -34,3 +34,10 @@ database/database.sqlite
 
 # Generated API docs
 api.json
+
+# AI gate artifacts (local/CI generated)
+artifacts/*.md
+artifacts/*.sarif
+artifacts/*.xml
+artifacts/*.json
+!artifacts/.gitkeep

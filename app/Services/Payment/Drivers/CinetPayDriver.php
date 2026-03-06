@@ -115,7 +115,7 @@ class CinetPayDriver implements PaymentDriverInterface
         }
 
         if ($this->secretKey !== '' && $signature !== null) {
-            $expected = hash_hmac('sha256', $transactionId, $this->secretKey);
+            $expected = hash_hmac('sha256', (string) $transactionId, $this->secretKey);
             if (! hash_equals($expected, $signature)) {
                 return new PaymentResponse(
                     status: 'failed',

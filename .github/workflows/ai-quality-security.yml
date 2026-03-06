@@ -1,0 +1,401 @@
+name: AI Quality and Security
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '15 2 * * *'
+    - cron: '30 2 * * 1'
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  policy_validation:
+    name: ai/policy-validation
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, json
+          coverage: none
+
+      - name: Validate gate policy
+        run: scripts/ai-gates/validate_policy.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: policy-validation
+          path: artifacts/policy-validation.md
+
+  tenant_isolation_audit:
+    name: ai/tenant-isolation-audit
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    needs: policy_validation
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, dom
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+      - name: Run tenant isolation audit
+        run: scripts/ai-gates/tenant_isolation_audit.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tenant-audit
+          path: |
+            artifacts/tenant-audit.md
+            artifacts/tenant-audit.sarif
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: artifacts/tenant-audit.sarif
+          category: ai/tenant-isolation-audit
+
+  security_review:
+    name: ai/security-review
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    needs: policy_validation
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, dom
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+      - name: Run security review
+        run: scripts/ai-gates/security_review.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-review
+          path: |
+            artifacts/security-review.md
+            artifacts/security-review.sarif
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: artifacts/security-review.sarif
+          category: ai/security-review
+
+  prompt_safety:
+    name: ai/prompt-safety
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run prompt safety guard
+        run: scripts/ai-gates/prompt_safety.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prompt-safety
+          path: artifacts/prompt-safety.md
+
+  api_contract_guardian:
+    name: ai/api-contract-guardian
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run API contract guardian
+        run: scripts/ai-gates/api_contract_guardian.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-contract
+          path: artifacts/api-contract.md
+
+  pr_risk_and_tests:
+    name: ai/pr-risk-and-tests
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run PR risk and tests review
+        run: scripts/ai-gates/pr_risk_and_tests.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-risk
+          path: artifacts/pr-risk.md
+
+  test_gaps:
+    name: ai/test-gaps
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ekklesia_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: ekklesia_test
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP with coverage
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, pgsql, mbstring, xml, bcmath, dom
+          coverage: xdebug
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run tests with coverage
+        run: php artisan test --coverage-clover=artifacts/clover.xml
+
+      - name: Run test gaps gate
+        run: scripts/ai-gates/test_gaps.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-gaps
+          path: |
+            artifacts/test-gaps.md
+            artifacts/clover.xml
+
+  ux_consistency:
+    name: ai/ux-consistency
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run UX consistency critic
+        run: scripts/ai-gates/ux_consistency.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-review
+          path: artifacts/ux-review.md
+
+  docs_sync:
+    name: ai/docs-sync
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run docs sync gate
+        run: scripts/ai-gates/docs_sync.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-sync
+          path: artifacts/docs-sync.md
+
+  dependency_watch:
+    name: ai/dependency-watch
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'schedule' && github.event.schedule == '15 2 * * *') || github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run dependency watch
+        run: scripts/ai-gates/dependency_watch.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-watch
+          path: artifacts/dependency-watch.md
+
+  drift_report:
+    name: ai/drift-report
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'schedule' && github.event.schedule == '30 2 * * 1') || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, dom, json
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+      - name: Run drift report
+        run: scripts/ai-gates/drift_report.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-report
+          path: |
+            artifacts/drift-report.md
+            artifacts/drift-report.json
+
+  pr_summary_comment:
+    name: ai/pr-summary-comment
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'pull_request'
+    needs:
+      - policy_validation
+      - tenant_isolation_audit
+      - security_review
+      - prompt_safety
+      - api_contract_guardian
+      - pr_risk_and_tests
+      - test_gaps
+      - ux_consistency
+      - docs_sync
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Render PR summary
+        run: scripts/ai-gates/render_pr_summary.sh artifacts
+
+      - name: Upsert PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('artifacts/pr-summary.md', 'utf8');
+            const marker = '<!-- ai-gates-summary -->';
+            const issue_number = context.issue.number;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body,
+              });
+            }

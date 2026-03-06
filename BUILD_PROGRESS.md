@@ -877,3 +877,29 @@ User message → ProcessAiMessage (queued job)
 - **Files:**
   - `resources/css/filament/admin/theme.css`
   - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-06 — High-Quality Architecture & Security Hardening
+
+- **Status:** Done
+- **Goal:** Implement high-priority architecture fixes, design improvements, and security hardening (AI rate limiting, robust multi-tenant design).
+- **Summary:**
+  - Removed `HasSoftVersioning` from `GivingRecord` to secure financial ledgers (they should be immutable/append-only).
+  - Implemented AI Rate Limiting using Laravel `RateLimiter` inside `ProcessAiMessage` (10 messages/minute scoped by `tenant_id`) to protect from API quota abuse.
+  - Refactored Filament Form Layouts:
+    - Removed hacky global CSS forcing single columns.
+    - Deleted custom `CreateRecord` and `EditRecord` base class overrides.
+    - Updated all 8 resource `Create*.php` and `Edit*.php` files to use native Filament base classes.
+    - Re-applied `->columns(1)` natively and cleanly across all 10 `*Resource.php` schema builders.
+- **Validation:**
+  - `php artisan test`: pass (319 passed, 917 assertions)
+  - `composer quality`: pass
+- **Files:**
+  - `app/Models/GivingRecord.php`
+  - `app/Jobs/ProcessAiMessage.php`
+  - `resources/css/filament/admin/theme.css`
+  - `app/Filament/Resources/*Resource.php` (10 files)
+  - `app/Filament/Resources/*Resource/Pages/Create*.php` (8 files)
+  - `app/Filament/Resources/*Resource/Pages/Edit*.php` (8 files)
+  - `BUILD_PROGRESS.md`

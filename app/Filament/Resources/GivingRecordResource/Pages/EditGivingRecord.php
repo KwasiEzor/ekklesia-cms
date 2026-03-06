@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\GivingRecordResource\Pages;
 
 use App\Filament\Resources\GivingRecordResource;
-use App\Filament\Resources\Pages\EditRecord;
 use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Enums\Width;
 
 class EditGivingRecord extends EditRecord

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\GalleryResource\Pages;
 
 use App\Filament\Resources\GalleryResource;
-use App\Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Enums\Width;
 use Illuminate\Support\Arr;
 

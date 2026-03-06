@@ -48,7 +48,8 @@ class NotificationDispatchResource extends Resource
                 Section::make(__('notification_dispatches.label'))
                     ->icon(Heroicon::OutlinedBellAlert)
                     ->schema([]),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

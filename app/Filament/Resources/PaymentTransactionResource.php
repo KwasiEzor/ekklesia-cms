@@ -48,7 +48,8 @@ class PaymentTransactionResource extends Resource
                 Section::make(__('payments.label'))
                     ->icon(Heroicon::OutlinedCreditCard)
                     ->schema([]),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

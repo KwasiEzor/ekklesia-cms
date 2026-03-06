@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\SermonResource\Pages;
 
-use App\Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\SermonResource;
 use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Enums\Width;
 
 class EditSermon extends EditRecord

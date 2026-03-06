@@ -74,9 +74,9 @@ class PlanLimitsEnforcer
         ];
 
         $bytes = \Spatie\MediaLibrary\MediaCollections\Models\Media::query()
-            ->where(function ($query) use ($modelTypes, $tenant) {
+            ->where(function ($query) use ($modelTypes, $tenant): void {
                 foreach ($modelTypes as $modelType) {
-                    $query->orWhere(function ($q) use ($modelType, $tenant) {
+                    $query->orWhere(function ($q) use ($modelType, $tenant): void {
                         $q->where('model_type', $modelType)
                             ->whereIn('model_id', $modelType::where('tenant_id', $tenant->id)->select('id'));
                     });

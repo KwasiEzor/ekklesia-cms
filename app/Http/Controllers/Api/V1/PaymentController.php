@@ -106,7 +106,7 @@ class PaymentController extends Controller
             // No tenant context on webhook routes (external providers don't send X-Tenant-ID).
             // Query without BelongsToTenant scope, then initialize tenant from the transaction.
             $transaction = PaymentTransaction::withoutGlobalScopes()
-                ->where(function ($q) use ($transactionId) {
+                ->where(function ($q) use ($transactionId): void {
                     $q->where('uuid', $transactionId)
                         ->orWhere('provider_reference', $transactionId);
                 })->first();

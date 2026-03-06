@@ -2,6 +2,22 @@
 
 ## Phase 4 — Deployment Preparation (March 2026)
 
+### AI Quality & Security Governance
+- Added architecture runbook: [AI Skill Operations Plan](/architecture/ai-skill-ops)
+- Defines AI quality/security gates for tenant isolation, security review, prompt safety, API contract drift, PR risk, test coverage, UX consistency, dependency watch, docs sync, and policy validation
+- Introduces blocking vs non-blocking AI checks and rollout phases with measurable KPIs
+- Added workflow `.github/workflows/ai-quality-security.yml` with separate AI gate status checks
+- Upgraded tenant/security gates to AST-based PHP analysis and added changed-lines coverage gate (`ai/test-gaps`)
+- Added policy-driven allowlist file (`scripts/ai-gates/policy.json`) and inline CI annotations for unsuppressed findings
+- Added strict policy validation gate (`ai/policy-validation`) and starter template (`scripts/ai-gates/policy.template.json`)
+- Added SARIF export/upload for tenant and security gates to feed GitHub code scanning alerts
+- Added sticky PR summary comment job (`ai/pr-summary-comment`) aggregating all gate statuses and artifact references
+- Added team runbook: `docs/guide/ai-gates-self-test.md` for safe end-to-end gate verification
+- Added baseline snapshot support (`scripts/ai-gates/baseline.json`) and updater (`scripts/ai-gates/update_baseline.sh`)
+- Added policy-driven thresholds for tenant/security severity and diff-coverage minimum
+- Added weekly drift reporting job (`ai/drift-report`) with artifact snapshot output
+- Added analyzer unit tests for policy validation, baseline suppression, and SARIF conversion
+
 ### API Tenancy Middleware
 - **`InitializeTenancyByUser`** middleware: initializes tenant context from authenticated user's `tenant_id` for all authenticated API routes
 - **`InitializeTenancyByHeader`** middleware: initializes tenant from `X-Tenant-ID` header for public routes (login, register)

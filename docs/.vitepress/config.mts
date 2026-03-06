@@ -39,6 +39,7 @@ export default defineConfig({
             { text: 'Introduction', link: '/guide/introduction' },
             { text: 'Why Ekklesia?', link: '/guide/why-ekklesia' },
             { text: 'Quick Start', link: '/guide/quick-start' },
+            { text: 'AI Gates Self-Test', link: '/guide/ai-gates-self-test' },
             { text: 'Roadmap', link: '/guide/roadmap' },
             { text: 'Changelog', link: '/guide/changelog' },
           ]
@@ -54,6 +55,7 @@ export default defineConfig({
             { text: 'Multi-Tenancy', link: '/architecture/multi-tenancy' },
             { text: 'Content Types', link: '/architecture/content-types' },
             { text: 'AI Architecture', link: '/architecture/ai' },
+            { text: 'AI Skill Ops', link: '/architecture/ai-skill-ops' },
             { text: 'Deployment', link: '/architecture/deployment' },
             { text: 'Business Model', link: '/architecture/business-model' },
             { text: 'Open Questions', link: '/architecture/open-questions' },

@@ -124,7 +124,8 @@ class SermonResource extends Resource
                             ->label(__('sermons.transcript'))
                             ->columnSpanFull(),
                     ]),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

@@ -1,0 +1,28 @@
+{
+  "allowlist": [
+    {
+      "gate": "tenant_isolation",
+      "code": "TENANCY_SCOPE_BYPASS",
+      "path_pattern": "^app/Console/Commands/",
+      "reason": "Console-only maintenance path with explicit tenant argument checks."
+    },
+    {
+      "gate": "security_review",
+      "code": "SEC_FILE_MOVE",
+      "path_pattern": "^app/Services/Media/",
+      "line": 42,
+      "reason": "Validated upload flow with MIME and size checks already enforced upstream."
+    }
+  ],
+  "thresholds": {
+    "tenant_isolation": {
+      "fail_on": ["high", "critical"]
+    },
+    "security_review": {
+      "fail_on": ["high"]
+    },
+    "test_gaps": {
+      "min_coverage": 85
+    }
+  }
+}
