@@ -15,6 +15,8 @@ class SermonController extends Controller
 {
     public function index(Request $request): SermonCollection
     {
+        $this->authorize('viewAny', Sermon::class);
+
         $query = Sermon::query()->with('series');
 
         if ($request->has('campus_id')) {
@@ -42,6 +44,8 @@ class SermonController extends Controller
 
     public function store(StoreSermonRequest $request): SermonResource
     {
+        $this->authorize('create', Sermon::class);
+
         $validated = $request->validated();
         $tags = $validated['tags'] ?? [];
         unset($validated['tags']);
@@ -60,11 +64,15 @@ class SermonController extends Controller
 
     public function show(Sermon $sermon): SermonResource
     {
+        $this->authorize('view', $sermon);
+
         return new SermonResource($sermon->load('series'));
     }
 
     public function update(UpdateSermonRequest $request, Sermon $sermon): SermonResource
     {
+        $this->authorize('update', $sermon);
+
         $validated = $request->validated();
         $tags = $validated['tags'] ?? null;
         unset($validated['tags']);
@@ -80,6 +88,8 @@ class SermonController extends Controller
 
     public function destroy(Sermon $sermon): JsonResponse
     {
+        $this->authorize('delete', $sermon);
+
         $sermon->delete();
 
         return response()->json(null, 204);

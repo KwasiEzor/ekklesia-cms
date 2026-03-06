@@ -15,6 +15,8 @@ class CampusController extends Controller
 {
     public function index(Request $request): CampusCollection
     {
+        $this->authorize('viewAny', Campus::class);
+
         $query = Campus::query();
 
         if ($request->has('city')) {
@@ -34,6 +36,8 @@ class CampusController extends Controller
 
     public function store(StoreCampusRequest $request): CampusResource
     {
+        $this->authorize('create', Campus::class);
+
         $campus = Campus::create([
             ...$request->validated(),
             'tenant_id' => tenant('id'),
@@ -44,11 +48,15 @@ class CampusController extends Controller
 
     public function show(Campus $campus): CampusResource
     {
+        $this->authorize('view', $campus);
+
         return new CampusResource($campus);
     }
 
     public function update(UpdateCampusRequest $request, Campus $campus): CampusResource
     {
+        $this->authorize('update', $campus);
+
         $campus->update($request->validated());
 
         return new CampusResource($campus->fresh());
@@ -56,6 +64,8 @@ class CampusController extends Controller
 
     public function destroy(Campus $campus): JsonResponse
     {
+        $this->authorize('delete', $campus);
+
         $campus->delete();
 
         return response()->json(null, 204);

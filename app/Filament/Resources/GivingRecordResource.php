@@ -186,15 +186,9 @@ class GivingRecordResource extends Resource
             ->actions([
                 Actions\ViewAction::make()
                     ->iconButton(),
-                Actions\EditAction::make()
-                    ->iconButton(),
-                Actions\DeleteAction::make()
-                    ->iconButton(),
             ])
             ->bulkActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
-                ]),
+                // No bulk actions to ensure immutability
             ]);
     }
 
@@ -208,7 +202,6 @@ class GivingRecordResource extends Resource
         return [
             'index' => Pages\ListGivingRecords::route('/'),
             'create' => Pages\CreateGivingRecord::route('/create'),
-            'edit' => Pages\EditGivingRecord::route('/{record}/edit'),
         ];
     }
 }

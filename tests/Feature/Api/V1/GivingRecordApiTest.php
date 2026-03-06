@@ -105,7 +105,7 @@ test('authenticated user can view a giving record', function () {
         ->assertJsonPath('data.id', $record->id);
 });
 
-test('authenticated user can update a giving record', function () {
+test('authenticated user cannot update a giving record via api', function () {
     $tenant = Tenant::factory()->create();
     tenancy()->initialize($tenant);
 
@@ -120,11 +120,10 @@ test('authenticated user can update a giving record', function () {
         ->putJson("/api/v1/giving-records/{$record->id}", [
             'amount' => 50000,
         ])
-        ->assertOk()
-        ->assertJsonPath('data.amount', '50000.00');
+        ->assertStatus(405);
 });
 
-test('authenticated user can delete a giving record', function () {
+test('authenticated user cannot delete a giving record via api', function () {
     $tenant = Tenant::factory()->create();
     tenancy()->initialize($tenant);
 
@@ -133,9 +132,9 @@ test('authenticated user can delete a giving record', function () {
 
     $this->actingAs($user, 'sanctum')
         ->deleteJson("/api/v1/giving-records/{$record->id}")
-        ->assertNoContent();
+        ->assertStatus(405);
 
-    expect(GivingRecord::find($record->id))->toBeNull();
+    expect(GivingRecord::find($record->id))->not->toBeNull();
 });
 
 test('giving records list is paginated', function () {

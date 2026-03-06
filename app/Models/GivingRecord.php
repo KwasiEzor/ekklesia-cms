@@ -13,6 +13,8 @@ class GivingRecord extends Model
 {
     use BelongsToTenant, HasCampusScope, HasFactory, LogsActivityWithTenant;
 
+    protected string $logName = 'financial';
+
     protected $fillable = [
         'member_id',
         'amount',
@@ -23,8 +25,20 @@ class GivingRecord extends Model
         'campaign_id',
         'campus_id',
         'custom_fields',
-        'tenant_id',
     ];
+
+    protected static function booted(): void
+    {
+        static::updating(function ($record): void {
+            if ($record->isDirty(['amount', 'currency', 'date', 'member_id', 'method'])) {
+                throw new \Exception('Financial records are immutable. Corrections must be handled via new records.');
+            }
+        });
+
+        static::deleting(function ($record): void {
+            throw new \Exception('Financial records are immutable and cannot be deleted.');
+        });
+    }
 
     protected $hidden = [
         'tenant_id',

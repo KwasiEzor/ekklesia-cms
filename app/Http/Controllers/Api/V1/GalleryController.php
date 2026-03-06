@@ -15,6 +15,8 @@ class GalleryController extends Controller
 {
     public function index(Request $request): GalleryCollection
     {
+        $this->authorize('viewAny', Gallery::class);
+
         $query = Gallery::query();
 
         if ($request->has('galleryable_type') && $request->has('galleryable_id')) {
@@ -36,6 +38,8 @@ class GalleryController extends Controller
 
     public function store(StoreGalleryRequest $request): GalleryResource
     {
+        $this->authorize('create', Gallery::class);
+
         $gallery = Gallery::create([
             ...$request->validated(),
             'tenant_id' => tenant('id'),
@@ -46,11 +50,15 @@ class GalleryController extends Controller
 
     public function show(Gallery $gallery): GalleryResource
     {
+        $this->authorize('view', $gallery);
+
         return new GalleryResource($gallery);
     }
 
     public function update(UpdateGalleryRequest $request, Gallery $gallery): GalleryResource
     {
+        $this->authorize('update', $gallery);
+
         $gallery->update($request->validated());
 
         return new GalleryResource($gallery->fresh());
@@ -58,6 +66,8 @@ class GalleryController extends Controller
 
     public function destroy(Gallery $gallery): JsonResponse
     {
+        $this->authorize('delete', $gallery);
+
         $gallery->delete();
 
         return response()->json(null, 204);

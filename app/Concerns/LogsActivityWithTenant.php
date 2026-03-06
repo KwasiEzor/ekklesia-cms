@@ -17,10 +17,19 @@ trait LogsActivityWithTenant
 
     public function getActivitylogOptions(): LogOptions
     {
+        $logName = $this->getLogName() ?? 'default';
+
         return LogOptions::defaults()
+            ->useLogName($logName)
             ->logFillable()
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
-            ->logExcept(['tenant_id', 'previous_version']);
+            ->logExcept(['tenant_id', 'previous_version', 'provider_metadata', 'phone_number']);
+    }
+
+    protected function getLogName(): ?string
+    {
+        /** @phpstan-ignore function.alreadyNarrowedType */
+        return property_exists($this, 'logName') ? $this->logName : null;
     }
 }

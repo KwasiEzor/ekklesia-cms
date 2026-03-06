@@ -15,6 +15,8 @@ class EventController extends Controller
 {
     public function index(Request $request): EventCollection
     {
+        $this->authorize('viewAny', Event::class);
+
         $query = Event::query();
 
         if ($request->has('campus_id')) {
@@ -42,6 +44,8 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request): EventResource
     {
+        $this->authorize('create', Event::class);
+
         $event = Event::create([
             ...$request->validated(),
             'tenant_id' => tenant('id'),
@@ -52,11 +56,15 @@ class EventController extends Controller
 
     public function show(Event $event): EventResource
     {
+        $this->authorize('view', $event);
+
         return new EventResource($event);
     }
 
     public function update(UpdateEventRequest $request, Event $event): EventResource
     {
+        $this->authorize('update', $event);
+
         $event->update($request->validated());
 
         return new EventResource($event->fresh());
@@ -64,6 +72,8 @@ class EventController extends Controller
 
     public function destroy(Event $event): JsonResponse
     {
+        $this->authorize('delete', $event);
+
         $event->delete();
 
         return response()->json(null, 204);

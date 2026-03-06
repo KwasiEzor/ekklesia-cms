@@ -15,6 +15,8 @@ class GivingRecordController extends Controller
 {
     public function index(Request $request): GivingRecordCollection
     {
+        $this->authorize('viewAny', GivingRecord::class);
+
         $query = GivingRecord::with('member');
 
         if ($request->has('campus_id')) {
@@ -58,6 +60,8 @@ class GivingRecordController extends Controller
 
     public function store(StoreGivingRecordRequest $request): GivingRecordResource
     {
+        $this->authorize('create', GivingRecord::class);
+
         $record = GivingRecord::create([
             ...$request->validated(),
             'tenant_id' => tenant('id'),
@@ -68,11 +72,15 @@ class GivingRecordController extends Controller
 
     public function show(GivingRecord $givingRecord): GivingRecordResource
     {
+        $this->authorize('view', $givingRecord);
+
         return new GivingRecordResource($givingRecord->load('member'));
     }
 
     public function update(UpdateGivingRecordRequest $request, GivingRecord $givingRecord): GivingRecordResource
     {
+        $this->authorize('update', $givingRecord);
+
         $givingRecord->update($request->validated());
 
         return new GivingRecordResource($givingRecord->fresh()->load('member'));
@@ -80,6 +88,8 @@ class GivingRecordController extends Controller
 
     public function destroy(GivingRecord $givingRecord): JsonResponse
     {
+        $this->authorize('delete', $givingRecord);
+
         $givingRecord->delete();
 
         return response()->json(null, 204);

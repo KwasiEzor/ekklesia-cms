@@ -15,6 +15,8 @@ class MemberController extends Controller
 {
     public function index(Request $request): MemberCollection
     {
+        $this->authorize('viewAny', Member::class);
+
         $query = Member::query();
 
         if ($request->has('campus_id')) {
@@ -47,6 +49,8 @@ class MemberController extends Controller
 
     public function store(StoreMemberRequest $request): MemberResource
     {
+        $this->authorize('create', Member::class);
+
         $member = Member::create([
             ...$request->validated(),
             'tenant_id' => tenant('id'),
@@ -57,11 +61,15 @@ class MemberController extends Controller
 
     public function show(Member $member): MemberResource
     {
+        $this->authorize('view', $member);
+
         return new MemberResource($member);
     }
 
     public function update(UpdateMemberRequest $request, Member $member): MemberResource
     {
+        $this->authorize('update', $member);
+
         $member->update($request->validated());
 
         return new MemberResource($member->fresh());
@@ -69,6 +77,8 @@ class MemberController extends Controller
 
     public function destroy(Member $member): JsonResponse
     {
+        $this->authorize('delete', $member);
+
         $member->delete();
 
         return response()->json(null, 204);

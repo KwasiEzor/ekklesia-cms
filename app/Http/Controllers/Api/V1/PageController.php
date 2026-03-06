@@ -15,6 +15,8 @@ class PageController extends Controller
 {
     public function index(Request $request): PageCollection
     {
+        $this->authorize('viewAny', Page::class);
+
         $query = Page::query();
 
         if ($request->boolean('published', false)) {
@@ -35,6 +37,8 @@ class PageController extends Controller
 
     public function store(StorePageRequest $request): PageResource
     {
+        $this->authorize('create', Page::class);
+
         $page = Page::create([
             ...$request->validated(),
             'tenant_id' => tenant('id'),
@@ -45,11 +49,15 @@ class PageController extends Controller
 
     public function show(Page $page): PageResource
     {
+        $this->authorize('view', $page);
+
         return new PageResource($page);
     }
 
     public function update(UpdatePageRequest $request, Page $page): PageResource
     {
+        $this->authorize('update', $page);
+
         $page->update($request->validated());
 
         return new PageResource($page->fresh());
@@ -57,6 +65,8 @@ class PageController extends Controller
 
     public function destroy(Page $page): JsonResponse
     {
+        $this->authorize('delete', $page);
+
         $page->delete();
 
         return response()->json(null, 204);

@@ -43,7 +43,7 @@ Route::prefix('v1')->group(function (): void {
         Route::apiResource('members', MemberController::class);
         Route::apiResource('galleries', GalleryController::class);
         Route::apiResource('pages', PageController::class);
-        Route::apiResource('giving-records', GivingRecordController::class);
+        Route::apiResource('giving-records', GivingRecordController::class)->except(['update', 'destroy']);
 
         // Payments — requires plan with payments feature
         Route::middleware(['plan:payments'])->group(function (): void {

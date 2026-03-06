@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\LogsActivityWithTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,9 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class PaymentTransaction extends Model
 {
-    use BelongsToTenant, HasFactory;
+    use BelongsToTenant, HasFactory, LogsActivityWithTenant;
+
+    protected string $logName = 'financial';
 
     protected $fillable = [
         'uuid',
@@ -53,6 +56,16 @@ class PaymentTransaction extends Model
             if (empty($transaction->uuid)) {
                 $transaction->uuid = (string) Str::uuid();
             }
+        });
+
+        static::updating(function ($record): void {
+            if ($record->status !== 'pending' && $record->isDirty(['amount', 'currency', 'member_id', 'provider'])) {
+                throw new \Exception('Payment transactions are immutable once processed.');
+            }
+        });
+
+        static::deleting(function ($record): void {
+            throw new \Exception('Payment transactions are immutable and cannot be deleted.');
         });
     }
 

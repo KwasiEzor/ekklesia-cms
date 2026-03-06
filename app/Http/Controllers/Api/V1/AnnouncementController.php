@@ -15,6 +15,8 @@ class AnnouncementController extends Controller
 {
     public function index(Request $request): AnnouncementCollection
     {
+        $this->authorize('viewAny', Announcement::class);
+
         $query = Announcement::query();
 
         if ($request->has('campus_id')) {
@@ -47,6 +49,8 @@ class AnnouncementController extends Controller
 
     public function store(StoreAnnouncementRequest $request): AnnouncementResource
     {
+        $this->authorize('create', Announcement::class);
+
         $announcement = Announcement::create([
             ...$request->validated(),
             'tenant_id' => tenant('id'),
@@ -57,11 +61,15 @@ class AnnouncementController extends Controller
 
     public function show(Announcement $announcement): AnnouncementResource
     {
+        $this->authorize('view', $announcement);
+
         return new AnnouncementResource($announcement);
     }
 
     public function update(UpdateAnnouncementRequest $request, Announcement $announcement): AnnouncementResource
     {
+        $this->authorize('update', $announcement);
+
         $announcement->update($request->validated());
 
         return new AnnouncementResource($announcement->fresh());
@@ -69,6 +77,8 @@ class AnnouncementController extends Controller
 
     public function destroy(Announcement $announcement): JsonResponse
     {
+        $this->authorize('delete', $announcement);
+
         $announcement->delete();
 
         return response()->json(null, 204);
