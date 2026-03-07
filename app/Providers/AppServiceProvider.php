@@ -19,6 +19,7 @@ use App\Services\Billing\PlanLimitsEnforcer;
 use App\Services\Notification\NotificationChannelManager;
 use App\Services\Payment\PaymentManager;
 use Illuminate\Support\Facades\Event as EventFacade;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
@@ -38,6 +39,23 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Gate::before(function ($user, $ability) {
+            // Check if super_admin role exists globally or in current team
+            // We use a direct DB query to avoid any caching or scoping issues with Spatie's hasRole
+            $hasSuperAdmin = \Illuminate\Support\Facades\DB::table(config('permission.table_names.model_has_roles'))
+                ->join(config('permission.table_names.roles'), 'role_id', '=', 'id')
+                ->where('model_id', $user->id)
+                ->where('model_type', get_class($user))
+                ->where('name', 'super_admin')
+                ->exists();
+
+            if ($hasSuperAdmin) {
+                return true;
+            }
+            
+            return null;
+        });
+
         Campus::observe(ContentObserver::class);
         Sermon::observe(ContentObserver::class);
         Event::observe(ContentObserver::class);

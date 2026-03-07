@@ -12,12 +12,11 @@ test('unauthenticated request to campuses returns 401', function () {
 
 test('authenticated user can list campuses', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     Campus::factory()->count(3)->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->getJson('/api/v1/campuses')
         ->assertOk()
         ->assertJsonCount(3, 'data')
@@ -32,12 +31,11 @@ test('authenticated user can list campuses', function () {
 
 test('campuses response does not expose tenant_id', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     Campus::factory()->create(['tenant_id' => $tenant->id]);
 
-    $response = $this->actingAs($user, 'sanctum')
+    $response = $this->actingAsSuperAdmin($user, $tenant)
         ->getJson('/api/v1/campuses')
         ->assertOk();
 
@@ -46,11 +44,9 @@ test('campuses response does not expose tenant_id', function () {
 
 test('authenticated user can create a campus', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
-
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->postJson('/api/v1/campuses', [
             'name' => 'Campus Nord',
             'slug' => 'campus-nord',
@@ -68,12 +64,11 @@ test('authenticated user can create a campus', function () {
 
 test('authenticated user can view a campus', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     $campus = Campus::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->getJson("/api/v1/campuses/{$campus->id}")
         ->assertOk()
         ->assertJsonPath('data.id', $campus->id);
@@ -81,12 +76,11 @@ test('authenticated user can view a campus', function () {
 
 test('authenticated user can update a campus', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     $campus = Campus::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->putJson("/api/v1/campuses/{$campus->id}", [
             'name' => 'Campus Sud',
             'city' => 'Kpalimé',
@@ -98,12 +92,11 @@ test('authenticated user can update a campus', function () {
 
 test('authenticated user can delete a campus', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     $campus = Campus::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->deleteJson("/api/v1/campuses/{$campus->id}")
         ->assertNoContent();
 
@@ -112,12 +105,11 @@ test('authenticated user can delete a campus', function () {
 
 test('campuses list is paginated', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     Campus::factory()->count(20)->create(['tenant_id' => $tenant->id]);
 
-    $response = $this->actingAs($user, 'sanctum')
+    $response = $this->actingAsSuperAdmin($user, $tenant)
         ->getJson('/api/v1/campuses?per_page=5')
         ->assertOk();
 
@@ -127,13 +119,12 @@ test('campuses list is paginated', function () {
 
 test('campuses can be filtered by city', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     Campus::factory()->create(['tenant_id' => $tenant->id, 'city' => 'Lomé']);
     Campus::factory()->create(['tenant_id' => $tenant->id, 'city' => 'Kpalimé']);
 
-    $response = $this->actingAs($user, 'sanctum')
+    $response = $this->actingAsSuperAdmin($user, $tenant)
         ->getJson('/api/v1/campuses?city=Lomé')
         ->assertOk();
 
@@ -142,13 +133,12 @@ test('campuses can be filtered by city', function () {
 
 test('campuses can be filtered by is_main', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     Campus::factory()->main()->create(['tenant_id' => $tenant->id]);
     Campus::factory()->create(['tenant_id' => $tenant->id]);
 
-    $response = $this->actingAs($user, 'sanctum')
+    $response = $this->actingAsSuperAdmin($user, $tenant)
         ->getJson('/api/v1/campuses?is_main=true')
         ->assertOk();
 
@@ -157,7 +147,6 @@ test('campuses can be filtered by is_main', function () {
 
 test('events can be filtered by campus_id', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     $campus = Campus::factory()->create(['tenant_id' => $tenant->id]);
@@ -165,7 +154,7 @@ test('events can be filtered by campus_id', function () {
     Event::factory()->count(2)->create(['tenant_id' => $tenant->id, 'campus_id' => $campus->id]);
     Event::factory()->create(['tenant_id' => $tenant->id, 'campus_id' => null]);
 
-    $response = $this->actingAs($user, 'sanctum')
+    $response = $this->actingAsSuperAdmin($user, $tenant)
         ->getJson("/api/v1/events?campus_id={$campus->id}")
         ->assertOk();
 
@@ -174,12 +163,11 @@ test('events can be filtered by campus_id', function () {
 
 test('campus slug must be unique per tenant', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
 
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     Campus::factory()->create(['tenant_id' => $tenant->id, 'slug' => 'campus-nord']);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->postJson('/api/v1/campuses', [
             'name' => 'Autre Campus Nord',
             'slug' => 'campus-nord',

@@ -56,11 +56,17 @@ class User extends Authenticatable implements HasTenants
 
     public function getTenants(Panel $panel): Collection
     {
-        return collect([$this->tenant]);
+        if ($this->hasRole('super_admin')) {
+            return Tenant::all();
+        }
+        return collect([$this->tenant])->filter();
     }
 
     public function canAccessTenant(Model $tenant): bool
     {
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
         return $this->tenant_id === $tenant->getKey();
     }
 }

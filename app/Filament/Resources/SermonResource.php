@@ -131,29 +131,35 @@ class SermonResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateIcon(Heroicon::OutlinedMicrophone)
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('sermons.title'))
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('speaker')
                     ->label(__('sermons.speaker'))
+                    ->icon(Heroicon::OutlinedUser)
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('date')
                     ->label(__('sermons.date'))
+                    ->icon(Heroicon::OutlinedCalendar)
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('series.title')
                     ->label(__('sermons.series'))
+                    ->icon(Heroicon::OutlinedRectangleGroup)
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('formatted_duration')
                     ->label(__('sermons.duration'))
+                    ->icon(Heroicon::OutlinedClock)
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -174,10 +180,13 @@ class SermonResource extends Resource
             ])
             ->actions([
                 Actions\ViewAction::make()
+                    ->icon(Heroicon::OutlinedEye)
                     ->iconButton(),
                 Actions\EditAction::make()
+                    ->icon(Heroicon::OutlinedPencil)
                     ->iconButton(),
                 Actions\DeleteAction::make()
+                    ->icon(Heroicon::OutlinedTrash)
                     ->iconButton(),
             ])
             ->bulkActions([

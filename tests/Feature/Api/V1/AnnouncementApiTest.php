@@ -11,12 +11,12 @@ test('unauthenticated request to announcements returns 401', function () {
 
 test('authenticated user can list announcements', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
-
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
+    
+    tenancy()->initialize($tenant);
     Announcement::factory()->count(3)->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->getJson('/api/v1/announcements')
         ->assertOk()
         ->assertJsonCount(3, 'data')
@@ -31,12 +31,9 @@ test('authenticated user can list announcements', function () {
 
 test('announcements response does not expose tenant_id', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
-
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
-    Announcement::factory()->create(['tenant_id' => $tenant->id]);
 
-    $response = $this->actingAs($user, 'sanctum')
+    $response = $this->actingAsSuperAdmin($user, $tenant)
         ->getJson('/api/v1/announcements')
         ->assertOk();
 
@@ -45,11 +42,9 @@ test('announcements response does not expose tenant_id', function () {
 
 test('authenticated user can create an announcement', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
-
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $response = $this->actingAsSuperAdmin($user, $tenant)
         ->postJson('/api/v1/announcements', [
             'title' => 'Veillée de prière',
             'slug' => 'veillee-de-priere',
@@ -70,7 +65,7 @@ test('authenticated user can view an announcement', function () {
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     $announcement = Announcement::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->getJson("/api/v1/announcements/{$announcement->id}")
         ->assertOk()
         ->assertJsonPath('data.id', $announcement->id);
@@ -83,7 +78,7 @@ test('authenticated user can update an announcement', function () {
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     $announcement = Announcement::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->putJson("/api/v1/announcements/{$announcement->id}", [
             'title' => 'Annonce mise à jour',
             'pinned' => false,
@@ -100,7 +95,7 @@ test('authenticated user can delete an announcement', function () {
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
     $announcement = Announcement::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $this->actingAsSuperAdmin($user, $tenant)
         ->deleteJson("/api/v1/announcements/{$announcement->id}")
         ->assertNoContent();
 
@@ -169,11 +164,9 @@ test('announcements can be filtered by target_group', function () {
 
 test('announcement expires_at must be after published_at', function () {
     $tenant = Tenant::factory()->create();
-    tenancy()->initialize($tenant);
-
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
 
-    $this->actingAs($user, 'sanctum')
+    $response = $this->actingAsSuperAdmin($user, $tenant)
         ->postJson('/api/v1/announcements', [
             'title' => 'Invalid Announcement',
             'slug' => 'invalid-announcement',

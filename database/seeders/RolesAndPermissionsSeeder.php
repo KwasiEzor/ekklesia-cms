@@ -2,17 +2,20 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Enums\UserRole;
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Generate permissions first
+        // 1. Generate permissions first via Shield
+        // This ensures all resource-based permissions exist in the DB
+        $this->command->info('Generating permissions via Shield...');
         Artisan::call('shield:generate', [
             '--all' => true,
             '--panel' => 'admin',
@@ -20,42 +23,44 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // 1. Super Admin
-        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
-        $allPermissions = Permission::all();
-        $superAdmin->syncPermissions($allPermissions);
+        // 2. Iterate through UserRole enum to create roles and assign permissions
+        foreach (UserRole::cases() as $roleEnum) {
+            $this->command->info("Processing role: {$roleEnum->value}...");
 
-        // 2. Pastor
-        $pastor = Role::firstOrCreate(['name' => 'pastor']);
-        $pastorPermissions = [
-            'ViewAny:Sermon', 'View:Sermon', 'Create:Sermon', 'Update:Sermon', 'Delete:Sermon',
-            'ViewAny:Event', 'View:Event', 'Create:Event', 'Update:Event', 'Delete:Event',
-            'ViewAny:Announcement', 'View:Announcement', 'Create:Announcement', 'Update:Announcement', 'Delete:Announcement',
-            'ViewAny:Page', 'View:Page', 'Create:Page', 'Update:Page', 'Delete:Page',
-            'ViewAny:Gallery', 'View:Gallery', 'Create:Gallery', 'Update:Gallery', 'Delete:Gallery',
-            'ViewAny:Campus', 'View:Campus', 'Create:Campus', 'Update:Campus', 'Delete:Campus',
-            'ViewAny:Member', 'View:Member',
-        ];
-        $pastor->syncPermissions($pastorPermissions);
+            // Super Admin is always global (team_id is null)
+            // Other roles are also created globally here as templates,
+            // but can be assigned per tenant.
+            setPermissionsTeamId(null);
 
-        // 3. Treasurer
-        $treasurer = Role::firstOrCreate(['name' => 'treasurer']);
-        $treasurerPermissions = [
-            'ViewAny:GivingRecord', 'View:GivingRecord', 'Create:GivingRecord',
-            'ViewAny:PaymentTransaction', 'View:PaymentTransaction',
-            'ViewAny:Member', 'View:Member',
-        ];
-        $treasurer->syncPermissions($treasurerPermissions);
+            $role = Role::firstOrCreate([
+                'name' => $roleEnum->value,
+                'guard_name' => 'web',
+                'team_id' => null,
+            ]);
 
-        // 4. Volunteer
-        $volunteer = Role::firstOrCreate(['name' => 'volunteer']);
-        $volunteerPermissions = [
-            'ViewAny:Sermon', 'View:Sermon',
-            'ViewAny:Event', 'View:Event',
-            'ViewAny:Announcement', 'View:Announcement',
-        ];
-        $volunteer->syncPermissions($volunteerPermissions);
+            if ($roleEnum === UserRole::SUPER_ADMIN) {
+                // Super Admin gets everything
+                $role->syncPermissions(Permission::all());
+                $this->command->info("  - Assigned all " . Permission::count() . " permissions to Super Admin.");
+            } else {
+                // Other roles get their specific subset defined in the Enum
+                $permissions = $roleEnum->getPermissions();
+                
+                // Verify permissions exist before syncing (to avoid errors)
+                $existingPermissions = Permission::whereIn('name', $permissions)->pluck('name')->toArray();
+                $missingPermissions = array_diff($permissions, $existingPermissions);
+                
+                if (!empty($missingPermissions)) {
+                    $this->command->warn("  - Missing permissions for {$roleEnum->value}: " . implode(', ', $missingPermissions));
+                }
+
+                $role->syncPermissions($existingPermissions);
+                $this->command->info("  - Assigned " . count($existingPermissions) . " permissions to {$roleEnum->value}.");
+            }
+        }
+
+        $this->command->info('Roles and permissions seeding completed successfully.');
     }
 }

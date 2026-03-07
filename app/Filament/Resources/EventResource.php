@@ -122,30 +122,36 @@ class EventResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->emptyStateIcon(Heroicon::OutlinedCalendarDays)
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('events.title'))
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('start_at')
                     ->label(__('events.start_at'))
+                    ->icon(Heroicon::OutlinedCalendarDays)
                     ->dateTime('d M Y H:i')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('end_at')
                     ->label(__('events.end_at'))
+                    ->icon(Heroicon::OutlinedClock)
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('location')
                     ->label(__('events.location'))
+                    ->icon(Heroicon::OutlinedMapPin)
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('capacity')
                     ->label(__('events.capacity'))
+                    ->icon(Heroicon::OutlinedUserGroup)
                     ->numeric()
                     ->toggleable(),
 
@@ -171,10 +177,13 @@ class EventResource extends Resource
             ])
             ->actions([
                 Actions\ViewAction::make()
+                    ->icon(Heroicon::OutlinedEye)
                     ->iconButton(),
                 Actions\EditAction::make()
+                    ->icon(Heroicon::OutlinedPencil)
                     ->iconButton(),
                 Actions\DeleteAction::make()
+                    ->icon(Heroicon::OutlinedTrash)
                     ->iconButton(),
             ])
             ->bulkActions([
