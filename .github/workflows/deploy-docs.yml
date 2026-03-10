@@ -6,6 +6,7 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/deploy-docs.yml'
+      - 'api.json'
   workflow_dispatch:
 
 permissions:
@@ -36,6 +37,11 @@ jobs:
       - name: Install dependencies
         working-directory: docs
         run: npm ci
+
+      - name: Copy API Spec to Public Directory
+        run: |
+          mkdir -p docs/public
+          cp api.json docs/public/api.json || echo "api.json not found, skipping."
 
       - name: Build docs
         working-directory: docs

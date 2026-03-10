@@ -20,6 +20,7 @@ export default defineConfig({
 
     nav: [
       { text: 'Guide', link: '/guide/introduction' },
+      { text: 'API', link: '/api' },
       { text: 'Architecture', link: '/architecture/overview' },
       { text: 'Decisions', link: '/architecture/decisions' },
       {
