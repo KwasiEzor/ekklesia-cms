@@ -18,7 +18,7 @@ class Role extends SpatieRole
 
         static::addGlobalScope('tenant', function (Builder $builder) {
             if (tenant('id')) {
-                $table = (new static)->getTable();
+                $table = $builder->getModel()->getTable();
                 $builder->where(function ($query) use ($table) {
                     $query->where("{$table}.team_id", tenant('id'))
                         ->orWhereNull("{$table}.team_id");

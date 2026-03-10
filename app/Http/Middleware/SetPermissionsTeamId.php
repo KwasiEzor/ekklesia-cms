@@ -12,7 +12,7 @@ class SetPermissionsTeamId
     {
         if (tenant('id')) {
             setPermissionsTeamId(tenant('id'));
-            \Illuminate\Support\Facades\Log::info("SetPermissionsTeamId middleware: " . tenant('id'));
+            \Illuminate\Support\Facades\Log::info('SetPermissionsTeamId middleware: '.tenant('id'));
         }
 
         return $next($request);

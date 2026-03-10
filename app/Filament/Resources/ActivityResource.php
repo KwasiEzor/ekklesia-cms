@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Models\Activity;
-use BackedEnum;
 use Filament\Actions;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;

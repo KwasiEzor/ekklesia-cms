@@ -59,6 +59,7 @@ class User extends Authenticatable implements HasTenants
         if ($this->hasRole('super_admin')) {
             return Tenant::all();
         }
+
         return collect([$this->tenant])->filter();
     }
 
@@ -67,6 +68,7 @@ class User extends Authenticatable implements HasTenants
         if ($this->hasRole('super_admin')) {
             return true;
         }
+
         return $this->tenant_id === $tenant->getKey();
     }
 }

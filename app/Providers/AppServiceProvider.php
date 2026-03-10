@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
             if ($hasSuperAdmin) {
                 return true;
             }
-            
+
             return null;
         });
 

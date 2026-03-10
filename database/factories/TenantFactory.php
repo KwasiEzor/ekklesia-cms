@@ -12,7 +12,7 @@ class TenantFactory extends Factory
 
     public function definition(): array
     {
-        $name = $this->faker->company();
+        $name = $this->faker->unique()->company();
         $slug = Str::slug($name);
 
         return [

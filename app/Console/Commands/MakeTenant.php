@@ -22,19 +22,20 @@ class MakeTenant extends Command
 
         // 1. Get Inputs
         $name = $this->ask('Enter the Church/Tenant Name', 'Demo Church');
-        $email = $this->ask('Enter the Super Admin Email', 'admin@' . Str::slug($name) . '.localhost');
+        $email = $this->ask('Enter the Super Admin Email', 'admin@'.Str::slug($name).'.localhost');
         $password = $this->secret('Enter the Super Admin Password (default: password)') ?? 'password';
 
         // 2. Automated Slug Generation
         $slug = Str::slug($name);
-        
+
         // Handle slug collisions automatically
         if (Tenant::where('slug', $slug)->exists()) {
-            $slug = $slug . '-' . Str::random(4);
+            $slug = $slug.'-'.Str::random(4);
         }
 
         if (User::where('email', $email)->exists()) {
             $this->error("A user with email '{$email}' already exists.");
+
             return;
         }
 
@@ -61,7 +62,7 @@ class MakeTenant extends Command
 
         // 5. Initialize Tenancy context
         tenancy()->initialize($tenant);
-        
+
         // 6. Ensure super_admin role exists and has all permissions
         setPermissionsTeamId(null);
         $superAdminRole = Role::firstOrCreate(['name' => UserRole::SUPER_ADMIN->value, 'guard_name' => 'web', 'team_id' => null]);
@@ -72,8 +73,9 @@ class MakeTenant extends Command
         $user->assignRole(UserRole::SUPER_ADMIN->value);
 
         // Verify assignment immediately
-        if (!$user->hasRole(UserRole::SUPER_ADMIN->value)) {
+        if (! $user->hasRole(UserRole::SUPER_ADMIN->value)) {
             $this->error('Failed to assign super_admin role.');
+
             return;
         }
 

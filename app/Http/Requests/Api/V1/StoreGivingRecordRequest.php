@@ -15,16 +15,23 @@ class StoreGivingRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example 1 */
             'member_id' => [
                 'nullable',
                 'integer',
                 Rule::exists('members', 'id')->where('tenant_id', tenant('id')),
             ],
+            /** @example 50.00 */
             'amount' => ['required', 'numeric', 'min:0'],
+            /** @example "USD" */
             'currency' => ['required', 'string', 'size:3'],
+            /** @example "2024-05-12" */
             'date' => ['required', 'date'],
+            /** @example "card" */
             'method' => ['required', 'string', Rule::in(['mobile_money', 'cash', 'bank_transfer', 'card'])],
+            /** @example "TXN-12345" */
             'reference' => ['nullable', 'string', 'max:255'],
+            /** @example "tithe" */
             'campaign_id' => ['nullable', 'string', 'max:255'],
             'custom_fields' => ['nullable', 'array'],
         ];

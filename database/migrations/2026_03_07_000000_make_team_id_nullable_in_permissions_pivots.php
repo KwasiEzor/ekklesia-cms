@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::table($tableNames['model_has_roles'], function (Blueprint $table) use ($teamKey, $pivotRole, $modelMorphKey) {
             $table->dropPrimary('model_has_roles_role_model_type_primary');
             $table->string($teamKey)->nullable()->change();
-            
+
             // We can't have NULL in a primary key in PostgreSQL.
             // We use a unique index instead, and leave the table without a primary key (not ideal but works for Spatie).
             // Or we could add an auto-incrementing ID but Spatie doesn't use it.
@@ -28,7 +28,7 @@ return new class extends Migration
         Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) use ($teamKey, $pivotPermission, $modelMorphKey) {
             $table->dropPrimary('model_has_permissions_permission_model_type_primary');
             $table->string($teamKey)->nullable()->change();
-            
+
             $table->unique([$teamKey, $pivotPermission, $modelMorphKey, 'model_type'], 'model_has_permissions_permission_model_type_unique');
         });
     }

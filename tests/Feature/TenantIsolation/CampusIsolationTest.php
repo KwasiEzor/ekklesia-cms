@@ -44,6 +44,7 @@ test('API returns only campuses for authenticated tenant', function () {
 
     tenancy()->initialize($tenant1);
     $user1 = User::factory()->create(['tenant_id' => $tenant1->id]);
+
     Campus::factory()->count(3)->create(['tenant_id' => $tenant1->id]);
 
     tenancy()->initialize($tenant2);

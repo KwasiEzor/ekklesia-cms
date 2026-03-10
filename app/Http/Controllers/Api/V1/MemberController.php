@@ -13,6 +13,17 @@ use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
+    /**
+     * List members.
+     *
+     * Retrieve a paginated list of church members.
+     *
+     * @queryParam campus_id int Filter by campus ID.
+     * @queryParam status string Filter by membership status. Example: active
+     * @queryParam cell_group_id int Filter by cell group ID.
+     * @queryParam search string Search by first name, last name, or email.
+     * @queryParam per_page int Number of items per page. Example: 15
+     */
     public function index(Request $request): MemberCollection
     {
         $this->authorize('viewAny', Member::class);
@@ -47,6 +58,11 @@ class MemberController extends Controller
         return new MemberCollection($members);
     }
 
+    /**
+     * Create member.
+     *
+     * Register a new church member.
+     */
     public function store(StoreMemberRequest $request): MemberResource
     {
         $this->authorize('create', Member::class);
@@ -59,6 +75,11 @@ class MemberController extends Controller
         return new MemberResource($member);
     }
 
+    /**
+     * Retrieve member.
+     *
+     * Get the details of a specific member.
+     */
     public function show(Member $member): MemberResource
     {
         $this->authorize('view', $member);
@@ -66,6 +87,11 @@ class MemberController extends Controller
         return new MemberResource($member);
     }
 
+    /**
+     * Update member.
+     *
+     * Update the details of an existing member.
+     */
     public function update(UpdateMemberRequest $request, Member $member): MemberResource
     {
         $this->authorize('update', $member);
@@ -75,6 +101,11 @@ class MemberController extends Controller
         return new MemberResource($member->fresh());
     }
 
+    /**
+     * Delete member.
+     *
+     * Remove a church member from the system.
+     */
     public function destroy(Member $member): JsonResponse
     {
         $this->authorize('delete', $member);

@@ -12,7 +12,7 @@ test('unauthenticated request to announcements returns 401', function () {
 test('authenticated user can list announcements', function () {
     $tenant = Tenant::factory()->create();
     $user = User::factory()->create(['tenant_id' => $tenant->id]);
-    
+
     tenancy()->initialize($tenant);
     Announcement::factory()->count(3)->create(['tenant_id' => $tenant->id]);
 

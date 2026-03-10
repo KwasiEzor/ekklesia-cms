@@ -2,12 +2,12 @@
 
 namespace App\Enums;
 
-use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasDescription;
 use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
 
-enum UserRole: string implements HasLabel, HasColor, HasDescription, HasIcon
+enum UserRole: string implements HasColor, HasDescription, HasIcon, HasLabel
 {
     case SUPER_ADMIN = 'super_admin';
     case ADMIN = 'admin';

@@ -13,6 +13,17 @@ use Illuminate\Http\Request;
 
 class SermonController extends Controller
 {
+    /**
+     * List sermons.
+     *
+     * Retrieve a paginated list of sermons.
+     *
+     * @queryParam campus_id int Filter sermons by campus ID.
+     * @queryParam speaker string Filter sermons by speaker name.
+     * @queryParam series_id int Filter sermons by series ID.
+     * @queryParam tag string Filter sermons to those containing a specific tag.
+     * @queryParam per_page int Number of items per page. Example: 15
+     */
     public function index(Request $request): SermonCollection
     {
         $this->authorize('viewAny', Sermon::class);
@@ -42,6 +53,11 @@ class SermonController extends Controller
         return new SermonCollection($sermons);
     }
 
+    /**
+     * Create sermon.
+     *
+     * Create a new sermon for the tenant.
+     */
     public function store(StoreSermonRequest $request): SermonResource
     {
         $this->authorize('create', Sermon::class);
@@ -62,6 +78,11 @@ class SermonController extends Controller
         return new SermonResource($sermon->load('series'));
     }
 
+    /**
+     * Retrieve sermon.
+     *
+     * Get the details of a specific sermon along with its series.
+     */
     public function show(Sermon $sermon): SermonResource
     {
         $this->authorize('view', $sermon);
@@ -69,6 +90,11 @@ class SermonController extends Controller
         return new SermonResource($sermon->load('series'));
     }
 
+    /**
+     * Update sermon.
+     *
+     * Update an existing sermon.
+     */
     public function update(UpdateSermonRequest $request, Sermon $sermon): SermonResource
     {
         $this->authorize('update', $sermon);
@@ -86,6 +112,11 @@ class SermonController extends Controller
         return new SermonResource($sermon->fresh()->load('series'));
     }
 
+    /**
+     * Delete sermon.
+     *
+     * Remove a sermon from the system.
+     */
     public function destroy(Sermon $sermon): JsonResponse
     {
         $this->authorize('delete', $sermon);

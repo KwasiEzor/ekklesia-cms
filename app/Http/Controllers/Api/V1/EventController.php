@@ -13,6 +13,17 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    /**
+     * List events.
+     *
+     * Retrieve a paginated list of events.
+     *
+     * @queryParam campus_id int Filter events by a specific campus ID.
+     * @queryParam location string Filter events by location (partial match).
+     * @queryParam upcoming boolean Filter to show only upcoming events. Example: true
+     * @queryParam past boolean Filter to show only past events. Example: true
+     * @queryParam per_page int Number of items per page. Example: 15
+     */
     public function index(Request $request): EventCollection
     {
         $this->authorize('viewAny', Event::class);
@@ -42,6 +53,11 @@ class EventController extends Controller
         return new EventCollection($events);
     }
 
+    /**
+     * Create event.
+     *
+     * Create a new event.
+     */
     public function store(StoreEventRequest $request): EventResource
     {
         $this->authorize('create', Event::class);
@@ -54,6 +70,11 @@ class EventController extends Controller
         return new EventResource($event);
     }
 
+    /**
+     * Retrieve event.
+     *
+     * Get the details of a specific event.
+     */
     public function show(Event $event): EventResource
     {
         $this->authorize('view', $event);
@@ -61,6 +82,11 @@ class EventController extends Controller
         return new EventResource($event);
     }
 
+    /**
+     * Update event.
+     *
+     * Update an existing event's details.
+     */
     public function update(UpdateEventRequest $request, Event $event): EventResource
     {
         $this->authorize('update', $event);
@@ -70,6 +96,11 @@ class EventController extends Controller
         return new EventResource($event->fresh());
     }
 
+    /**
+     * Delete event.
+     *
+     * Remove an event from the system.
+     */
     public function destroy(Event $event): JsonResponse
     {
         $this->authorize('delete', $event);

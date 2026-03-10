@@ -13,6 +13,15 @@ use Illuminate\Http\Request;
 
 class CampusController extends Controller
 {
+    /**
+     * List campuses.
+     *
+     * Retrieve a paginated list of campuses.
+     *
+     * @queryParam city string Filter campuses by city name (partial match).
+     * @queryParam is_main boolean Filter to show only main campuses. Example: true
+     * @queryParam per_page int Number of items per page. Example: 15
+     */
     public function index(Request $request): CampusCollection
     {
         $this->authorize('viewAny', Campus::class);
@@ -34,6 +43,11 @@ class CampusController extends Controller
         return new CampusCollection($campuses);
     }
 
+    /**
+     * Create campus.
+     *
+     * Create a new campus for the tenant.
+     */
     public function store(StoreCampusRequest $request): CampusResource
     {
         $this->authorize('create', Campus::class);
@@ -46,6 +60,11 @@ class CampusController extends Controller
         return new CampusResource($campus);
     }
 
+    /**
+     * Retrieve campus.
+     *
+     * Get the details of a specific campus.
+     */
     public function show(Campus $campus): CampusResource
     {
         $this->authorize('view', $campus);
@@ -53,6 +72,11 @@ class CampusController extends Controller
         return new CampusResource($campus);
     }
 
+    /**
+     * Update campus.
+     *
+     * Update the details of an existing campus.
+     */
     public function update(UpdateCampusRequest $request, Campus $campus): CampusResource
     {
         $this->authorize('update', $campus);
@@ -62,6 +86,11 @@ class CampusController extends Controller
         return new CampusResource($campus->fresh());
     }
 
+    /**
+     * Delete campus.
+     *
+     * Remove a campus from the system.
+     */
     public function destroy(Campus $campus): JsonResponse
     {
         $this->authorize('delete', $campus);

@@ -13,6 +13,15 @@ use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
+    /**
+     * List pages.
+     *
+     * Retrieve a paginated list of pages.
+     *
+     * @queryParam published boolean Filter to show only published pages. Example: true
+     * @queryParam search string Search pages by title.
+     * @queryParam per_page int Number of items per page. Example: 15
+     */
     public function index(Request $request): PageCollection
     {
         $this->authorize('viewAny', Page::class);
@@ -35,6 +44,11 @@ class PageController extends Controller
         return new PageCollection($pages);
     }
 
+    /**
+     * Create page.
+     *
+     * Create a new page.
+     */
     public function store(StorePageRequest $request): PageResource
     {
         $this->authorize('create', Page::class);
@@ -47,6 +61,11 @@ class PageController extends Controller
         return new PageResource($page);
     }
 
+    /**
+     * Retrieve page.
+     *
+     * Get the details of a specific page.
+     */
     public function show(Page $page): PageResource
     {
         $this->authorize('view', $page);
@@ -54,6 +73,11 @@ class PageController extends Controller
         return new PageResource($page);
     }
 
+    /**
+     * Update page.
+     *
+     * Update an existing page.
+     */
     public function update(UpdatePageRequest $request, Page $page): PageResource
     {
         $this->authorize('update', $page);
@@ -63,6 +87,11 @@ class PageController extends Controller
         return new PageResource($page->fresh());
     }
 
+    /**
+     * Delete page.
+     *
+     * Remove a page from the system.
+     */
     public function destroy(Page $page): JsonResponse
     {
         $this->authorize('delete', $page);

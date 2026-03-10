@@ -13,6 +13,16 @@ use Illuminate\Http\Request;
 
 class GalleryController extends Controller
 {
+    /**
+     * List galleries.
+     *
+     * Retrieve a paginated list of media galleries.
+     *
+     * @queryParam galleryable_type string Filter galleries by associated model type. Example: App\Models\Event
+     * @queryParam galleryable_id int Filter galleries by associated model ID.
+     * @queryParam search string Search galleries by title.
+     * @queryParam per_page int Number of items per page. Example: 15
+     */
     public function index(Request $request): GalleryCollection
     {
         $this->authorize('viewAny', Gallery::class);
@@ -36,6 +46,11 @@ class GalleryController extends Controller
         return new GalleryCollection($galleries);
     }
 
+    /**
+     * Create gallery.
+     *
+     * Create a new media gallery.
+     */
     public function store(StoreGalleryRequest $request): GalleryResource
     {
         $this->authorize('create', Gallery::class);
@@ -48,6 +63,11 @@ class GalleryController extends Controller
         return new GalleryResource($gallery);
     }
 
+    /**
+     * Retrieve gallery.
+     *
+     * Get the details of a specific media gallery.
+     */
     public function show(Gallery $gallery): GalleryResource
     {
         $this->authorize('view', $gallery);
@@ -55,6 +75,11 @@ class GalleryController extends Controller
         return new GalleryResource($gallery);
     }
 
+    /**
+     * Update gallery.
+     *
+     * Update an existing gallery.
+     */
     public function update(UpdateGalleryRequest $request, Gallery $gallery): GalleryResource
     {
         $this->authorize('update', $gallery);
@@ -64,6 +89,11 @@ class GalleryController extends Controller
         return new GalleryResource($gallery->fresh());
     }
 
+    /**
+     * Delete gallery.
+     *
+     * Remove a gallery from the system.
+     */
     public function destroy(Gallery $gallery): JsonResponse
     {
         $this->authorize('delete', $gallery);

@@ -13,6 +13,21 @@ use Illuminate\Http\Request;
 
 class GivingRecordController extends Controller
 {
+    /**
+     * List giving records.
+     *
+     * Retrieve a paginated list of tithes, offerings, and donations.
+     *
+     * @queryParam campus_id int Filter by campus ID.
+     * @queryParam method string Filter by payment method. Example: card
+     * @queryParam currency string Filter by currency. Example: USD
+     * @queryParam member_id int Filter by member ID.
+     * @queryParam anonymous boolean Filter for anonymous giving. Example: false
+     * @queryParam campaign_id int Filter by campaign ID.
+     * @queryParam from string Filter records from date. Example: 2024-01-01
+     * @queryParam to string Filter records up to date. Example: 2024-12-31
+     * @queryParam per_page int Number of items per page. Example: 15
+     */
     public function index(Request $request): GivingRecordCollection
     {
         $this->authorize('viewAny', GivingRecord::class);
@@ -58,6 +73,11 @@ class GivingRecordController extends Controller
         return new GivingRecordCollection($records);
     }
 
+    /**
+     * Create giving record.
+     *
+     * Manually record a new giving transaction.
+     */
     public function store(StoreGivingRecordRequest $request): GivingRecordResource
     {
         $this->authorize('create', GivingRecord::class);
@@ -70,6 +90,11 @@ class GivingRecordController extends Controller
         return new GivingRecordResource($record->load('member'));
     }
 
+    /**
+     * Retrieve giving record.
+     *
+     * Get details of a specific transaction.
+     */
     public function show(GivingRecord $givingRecord): GivingRecordResource
     {
         $this->authorize('view', $givingRecord);
@@ -77,6 +102,11 @@ class GivingRecordController extends Controller
         return new GivingRecordResource($givingRecord->load('member'));
     }
 
+    /**
+     * Update giving record.
+     *
+     * Update details of an existing giving record.
+     */
     public function update(UpdateGivingRecordRequest $request, GivingRecord $givingRecord): GivingRecordResource
     {
         $this->authorize('update', $givingRecord);
@@ -86,6 +116,11 @@ class GivingRecordController extends Controller
         return new GivingRecordResource($givingRecord->fresh()->load('member'));
     }
 
+    /**
+     * Delete giving record.
+     *
+     * Remove a giving record from the system.
+     */
     public function destroy(GivingRecord $givingRecord): JsonResponse
     {
         $this->authorize('delete', $givingRecord);

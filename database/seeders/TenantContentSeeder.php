@@ -19,12 +19,13 @@ class TenantContentSeeder extends Seeder
     {
         $tenant = tenant() ?? Tenant::first();
 
-        if (!$tenant) {
+        if (! $tenant) {
             $this->command->error('No tenant found. Run tenant:create first.');
+
             return;
         }
 
-        if (!tenant()) {
+        if (! tenant()) {
             tenancy()->initialize($tenant);
         }
 

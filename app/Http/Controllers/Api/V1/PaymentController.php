@@ -16,6 +16,16 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
+    /**
+     * List payment transactions.
+     *
+     * Retrieve a paginated list of payment transactions.
+     *
+     * @queryParam status string Filter by transaction status (e.g., pending, successful, failed). Example: successful
+     * @queryParam provider string Filter by payment provider. Example: chapa
+     * @queryParam campus_id int Filter by campus ID.
+     * @queryParam per_page int Number of items per page. Example: 15
+     */
     public function index(Request $request): PaymentTransactionCollection
     {
         $query = PaymentTransaction::query();
@@ -39,6 +49,11 @@ class PaymentController extends Controller
         return new PaymentTransactionCollection($transactions);
     }
 
+    /**
+     * Initiate payment.
+     *
+     * Start a new payment transaction with the specified provider. Returns the checkout URL.
+     */
     public function initiate(InitiatePaymentRequest $request, PaymentManager $manager): JsonResponse
     {
         $validated = $request->validated();
@@ -86,6 +101,13 @@ class PaymentController extends Controller
         ], $response->status === 'failed' ? 422 : 201);
     }
 
+    /**
+     * Retrieve payment transaction.
+     *
+     * Get details of a specific payment transaction by its UUID.
+     *
+     * @urlParam uuid string The UUID of the transaction.
+     */
     public function show(string $uuid): PaymentTransactionResource
     {
         $transaction = PaymentTransaction::where('uuid', $uuid)->firstOrFail();
@@ -93,9 +115,23 @@ class PaymentController extends Controller
         return new PaymentTransactionResource($transaction);
     }
 
+    /**
+     * Payment webhook.
+     *
+     * Webhook endpoint for payment providers to send asynchronous transaction updates.
+     * This endpoint is meant for server-to-server communication and is publicly accessible.
+     *
+     * @unauthenticated
+     *
+     * @urlParam provider string The payment provider (e.g., chapa, paystack).
+     */
     public function webhook(Request $request, PaymentManager $manager, string $provider): JsonResponse
     {
         $response = $manager->driver($provider)->handleWebhook($request);
+
+        if ($response->status === 'failed') {
+            return response()->json(['status' => 'error', 'message' => $response->failureReason], 400);
+        }
 
         $transactionId = $response->providerMetadata['transaction_id']
             ?? $response->providerReference

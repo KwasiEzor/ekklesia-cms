@@ -15,12 +15,14 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         // 1. Generate permissions first via Shield
         // This ensures all resource-based permissions exist in the DB
-        $this->command->info('Generating permissions via Shield...');
-        Artisan::call('shield:generate', [
-            '--all' => true,
-            '--panel' => 'admin',
-            '--no-interaction' => true,
-        ]);
+        if (! app()->environment('testing')) {
+            $this->command->info('Generating permissions via Shield...');
+            Artisan::call('shield:generate', [
+                '--all' => true,
+                '--panel' => 'admin',
+                '--no-interaction' => true,
+            ]);
+        }
 
         // Reset cached roles and permissions
         app(PermissionRegistrar::class)->forgetCachedPermissions();
@@ -43,21 +45,27 @@ class RolesAndPermissionsSeeder extends Seeder
             if ($roleEnum === UserRole::SUPER_ADMIN) {
                 // Super Admin gets everything
                 $role->syncPermissions(Permission::all());
-                $this->command->info("  - Assigned all " . Permission::count() . " permissions to Super Admin.");
+                $this->command->info('  - Assigned all '.Permission::count().' permissions to Super Admin.');
             } else {
                 // Other roles get their specific subset defined in the Enum
                 $permissions = $roleEnum->getPermissions();
-                
+
+                if (app()->environment('testing')) {
+                    foreach ($permissions as $permName) {
+                        Permission::firstOrCreate(['name' => $permName, 'guard_name' => 'web']);
+                    }
+                }
+
                 // Verify permissions exist before syncing (to avoid errors)
                 $existingPermissions = Permission::whereIn('name', $permissions)->pluck('name')->toArray();
                 $missingPermissions = array_diff($permissions, $existingPermissions);
-                
-                if (!empty($missingPermissions)) {
-                    $this->command->warn("  - Missing permissions for {$roleEnum->value}: " . implode(', ', $missingPermissions));
+
+                if (! empty($missingPermissions)) {
+                    $this->command->warn("  - Missing permissions for {$roleEnum->value}: ".implode(', ', $missingPermissions));
                 }
 
                 $role->syncPermissions($existingPermissions);
-                $this->command->info("  - Assigned " . count($existingPermissions) . " permissions to {$roleEnum->value}.");
+                $this->command->info('  - Assigned '.count($existingPermissions)." permissions to {$roleEnum->value}.");
             }
         }
 
