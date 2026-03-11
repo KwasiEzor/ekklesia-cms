@@ -28,9 +28,9 @@ Ekklesia is the tool that was missing.
 
 ## Project Status
 
-Ekklesia is currently in **pre-alpha active development**. Phase 2 (Core Content Types) is complete — all 6 content types are built with full API, Filament admin, and test coverage. Phase 3 (API Layer) is next.
+Ekklesia is currently in **pre-beta active development**. Phases 1 through 5 (Core Content Types, API Layer, Deployment Prep, and AI Layer) are complete. The recent Production Readiness Sprint and the Page Builder "Pro" Update are also finished. We are currently implementing Phase 6 (Premium Modules).
 
-> **Warning:** Do not use in production. The API, database schema, and plugin contracts are all subject to change without notice until v1.0 stable.
+> **Warning:** Do not use in production yet. The API, database schema, and plugin contracts are subject to change without notice until v1.0 stable.
 
 ## Documentation
 

@@ -1123,3 +1123,39 @@ User message → ProcessAiMessage (queued job)
   - `lang/en/giving_records.php`
   - `app/Filament/Resources/GivingRecordResource.php`
 
+---
+
+## 2026-03-11 — Page Builder "Pro" Update
+
+- **Status:** Done
+- **Goal:** Transition the Ekklesia CMS Page Builder from a static marketing tool to a professional-grade dynamic Church CMS.
+- **Summary:**
+  - **Dynamic & Motion Updates:**
+    - Upgraded `hero` block with multiple slides, configurable transition types (fade/slide), and autoplay speed.
+    - Updated `logo_cloud` block with infinite scrolling/marquee loop for partner logos.
+  - **Church-Specific Dynamic Blocks:**
+    - `sermon_feed`: Pulls dynamic data from `Sermons` with filters and a new `notes_url` for downloading notes.
+    - `staff_directory`: Dynamically loads from `User` model, filtering by active roles and `department`. Supports `bio`, `title`, and `social_links`.
+    - `events_feed`: Added campus filtering and visual improvements.
+    - `giving_cta`: Added "Quick Give" functionality linked directly to `Funds`.
+  - **Engagement & Automation:**
+    - `live_stream`: Respects a global tenant `live_stream_active` setting from the Admin Settings to show/hide dynamically.
+  - **Layout & Structure:**
+    - Enhanced `columns` block to support nested dynamic blocks (like `video`, `quote`).
+    - Upgraded `divider` block with decorative wave patterns.
+    - Added `mosaic` grid layout to `gallery` block for varying photo sizes.
+  - **Database & Resources:**
+    - Added `notes_url` to `sermons` table.
+    - Added `title`, `department`, `bio`, and `social_links` to `users` table.
+    - Fully translated all new block properties in FR and EN.
+- **Validation:**
+  - `php artisan test tests/Feature/Api/V1/PageApiTest.php`: pass
+  - `composer quality`: pass
+- **Files Changed:**
+  - `app/Filament/Resources/PageResource.php`
+  - `app/Filament/Resources/SermonResource.php`
+  - `app/Filament/Resources/UserResource.php`
+  - `app/Models/Sermon.php`, `app/Models/User.php`
+  - `resources/views/components/blocks/*.blade.php`
+  - Migrations for sermons and users.
+

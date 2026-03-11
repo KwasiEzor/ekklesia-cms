@@ -65,6 +65,12 @@
 - **AI rate limiting:** 10 messages/minute per tenant via `RateLimiter`
 - **Audit trail:** Read-only `ActivityResource` for administrators
 
+### Page Builder "Pro" Update
+- **Dynamic Blocks:** `sermon_feed` with filterable dynamic data, `staff_directory` mapped to actual system users/roles, `events_feed` with logic filtering, and `giving_cta` tied to dynamic funds.
+- **Motion & Interactions:** Carousels for `hero`, infinite marquee loops for `logo_cloud`, interactive `tabs` and `newsletter_signup`.
+- **Engagement Logic:** `live_stream` banner linked to global `live_stream_active` tenant setting for true automation.
+- **Premium Layouts:** Advanced `columns` with nested structures, `mosaic` layout for `gallery`, and visual `waves` for `divider` blocks.
+
 ### Observability
 - **`spatie/laravel-health`** monitoring: Database, Storage, Debug Mode, Environment, App Optimization
 - **Admin runbook** for church staff (Treasurers, Pastors)

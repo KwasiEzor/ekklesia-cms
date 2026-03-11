@@ -117,6 +117,7 @@
 
 > Status: **In Progress**
 
+- [x] Page Builder "Pro" Update (Dynamic components, Motion, and Integrations)
 - [ ] Mobile money giving (MTN Mobile Money, Orange Money, Wave)
 - [ ] SMS pastoral notifications (Africa's Talking, Twilio)
 - [ ] WhatsApp integration
