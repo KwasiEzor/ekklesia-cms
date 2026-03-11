@@ -1,7 +1,8 @@
 @props([
     'title' => 'Upcoming Events',
     'limit' => 3,
-    'showPast' => false
+    'showPast' => false,
+    'campusId' => null
 ])
 
 @php
@@ -9,6 +10,10 @@
     
     if (!$showPast) {
         $query->where('start_at', '>=', now());
+    }
+
+    if ($campusId) {
+        $query->where('campus_id', $campusId);
     }
     
     $events = $query->orderBy('start_at', 'asc')->limit($limit)->get();

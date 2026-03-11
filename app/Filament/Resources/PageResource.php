@@ -466,8 +466,18 @@ class PageResource extends Resource
 
                                         Components\Select::make('limit')
                                             ->label(__('pages.blocks.events_feed_limit'))
-                                            ->options([3 => '3 Events', 6 => '6 Events', 9 => '9 Events'])
+                                            ->options([
+                                                3 => '3 Events',
+                                                6 => '6 Events',
+                                                9 => '9 Events',
+                                            ])
                                             ->default(3),
+
+                                        Components\Select::make('campus_id')
+                                            ->label(__('campuses.campus'))
+                                            ->options(fn () => \App\Models\Campus::pluck('name', 'id'))
+                                            ->placeholder('All Campuses')
+                                            ->searchable(),
 
                                         Components\Toggle::make('show_past')
                                             ->label('Show Past Events')
