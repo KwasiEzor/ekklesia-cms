@@ -12,6 +12,7 @@ return [
     'duration_seconds' => 'Duration (in seconds)',
     'audio_url' => 'Audio URL',
     'video_url' => 'Video URL',
+    'notes_url' => 'Notes URL',
     'transcript' => 'Transcript',
     'series' => 'Series',
     'tags' => 'Tags',
@@ -32,5 +33,6 @@ return [
     'speaker_placeholder' => 'E.g. Pastor John Smith',
     'audio_url_placeholder' => 'https://example.com/audio.mp3',
     'video_url_placeholder' => 'https://youtube.com/watch?v=...',
+    'notes_url_placeholder' => 'https://example.com/notes.pdf',
     'duration_placeholder' => 'E.g. 3600 for 1h',
 ];

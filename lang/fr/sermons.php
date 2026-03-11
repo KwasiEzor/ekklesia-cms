@@ -12,6 +12,7 @@ return [
     'duration_seconds' => 'Durée (en secondes)',
     'audio_url' => 'URL audio',
     'video_url' => 'URL vidéo',
+    'notes_url' => 'URL des notes',
     'transcript' => 'Transcription',
     'series' => 'Série',
     'tags' => 'Étiquettes',
@@ -32,5 +33,6 @@ return [
     'speaker_placeholder' => 'Ex : Pasteur Jean Dupont',
     'audio_url_placeholder' => 'https://example.com/audio.mp3',
     'video_url_placeholder' => 'https://youtube.com/watch?v=...',
+    'notes_url_placeholder' => 'https://example.com/notes.pdf',
     'duration_placeholder' => 'Ex : 3600 pour 1h',
 ];

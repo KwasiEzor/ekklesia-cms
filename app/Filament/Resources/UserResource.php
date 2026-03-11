@@ -26,11 +26,36 @@ class UserResource extends Resource
                 Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Components\TextInput::make('title')
+                    ->maxLength(255),
+                Components\TextInput::make('department')
+                    ->maxLength(255),
                 Components\TextInput::make('email')
                     ->email()
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
+                Components\Textarea::make('bio')
+                    ->rows(3)
+                    ->maxLength(1000),
+                Components\Repeater::make('social_links')
+                    ->schema([
+                        Components\Select::make('platform')
+                            ->options([
+                                'facebook' => 'Facebook',
+                                'twitter' => 'Twitter/X',
+                                'instagram' => 'Instagram',
+                                'youtube' => 'YouTube',
+                                'linkedin' => 'LinkedIn',
+                                'website' => 'Website',
+                            ])
+                            ->required(),
+                        Components\TextInput::make('url')
+                            ->url()
+                            ->required(),
+                    ])
+                    ->columns(2)
+                    ->grid(2),
                 Components\TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))

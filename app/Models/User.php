@@ -21,7 +21,11 @@ class User extends Authenticatable implements HasTenants
 
     protected $fillable = [
         'name',
+        'title',
+        'department',
         'email',
+        'bio',
+        'social_links',
         'password',
         'tenant_id',
     ];
@@ -46,6 +50,7 @@ class User extends Authenticatable implements HasTenants
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'social_links' => 'array',
         ];
     }
 

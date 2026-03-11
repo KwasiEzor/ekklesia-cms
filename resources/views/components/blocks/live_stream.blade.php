@@ -4,9 +4,10 @@
     'alwaysShow' => true
 ])
 
-{{-- In a real scenario, we would check a global setting or a LiveStream model status --}}
 @php
-    $isLive = true; 
+    $tenant = \Filament\Facades\Filament::getTenant();
+    $isLive = $tenant && ($tenant->live_stream_active ?? false);
+    $url = $streamUrl !== '#' ? $streamUrl : ($tenant->live_stream_url ?? '#');
 @endphp
 
 @if($alwaysShow || $isLive)
@@ -32,7 +33,7 @@
                 <p class="hidden md:block text-indigo-100 text-sm font-medium">
                     Our Sunday Service is currently streaming live. Join our online community!
                 </p>
-                <a href="{{ $streamUrl }}" target="_blank" class="inline-flex items-center px-4 py-1.5 bg-white text-slate-900 text-xs font-black rounded-full hover:bg-red-50 transition-all hover:scale-105 shadow-lg shadow-white/10">
+                <a href="{{ $url }}" target="_blank" class="inline-flex items-center px-4 py-1.5 bg-white text-slate-900 text-xs font-black rounded-full hover:bg-red-50 transition-all hover:scale-105 shadow-lg shadow-white/10">
                     WATCH NOW
                     <svg class="ml-1.5 w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
                 </a>

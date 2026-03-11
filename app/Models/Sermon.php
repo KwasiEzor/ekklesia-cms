@@ -33,6 +33,7 @@ class Sermon extends Model
         'duration',
         'audio_url',
         'video_url',
+        'notes_url',
         'transcript',
         'series_id',
         'campus_id',

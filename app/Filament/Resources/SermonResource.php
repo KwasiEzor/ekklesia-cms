@@ -108,8 +108,15 @@ class SermonResource extends Resource
                             ->prefixIcon(Heroicon::OutlinedVideoCamera)
                             ->url()
                             ->maxLength(2048),
+
+                        Components\TextInput::make('notes_url')
+                            ->label(__('sermons.notes_url'))
+                            ->placeholder(__('sermons.notes_url_placeholder'))
+                            ->prefixIcon(Heroicon::OutlinedDocumentText)
+                            ->url()
+                            ->maxLength(2048),
                     ])
-                    ->columns(2),
+                    ->columns(3),
 
                 Section::make(__('sermons.section_tags'))
                     ->description(__('sermons.section_tags_desc'))

@@ -688,6 +688,23 @@ class Settings extends Page
                             ->default(true),
                     ])
                     ->columns(2),
+
+                Section::make(__('pages.blocks.live_stream'))
+                    ->description('Global live stream status and settings')
+                    ->icon(Heroicon::OutlinedPlayCircle)
+                    ->schema([
+                        Components\Toggle::make('data.live_stream_active')
+                            ->label('Stream is Live')
+                            ->helperText('Enable this to show the "Join Now" banner on the website')
+                            ->default(false),
+
+                        Components\TextInput::make('data.live_stream_url')
+                            ->label('Default Stream URL')
+                            ->placeholder('YouTube/Facebook Live link')
+                            ->url()
+                            ->maxLength(2048),
+                    ])
+                    ->columns(2),
             ]);
     }
 

@@ -2,6 +2,7 @@
     'slides' => [],
     'isCarousel' => false,
     'autoplaySpeed' => 5000,
+    'transitionType' => 'fade',
     // Support legacy props for single slide if provided
     'title' => null,
     'subtitle' => null,
@@ -57,12 +58,21 @@
         @foreach($allSlides as $index => $slide)
             <div 
                 x-show="activeSlide === {{ $index }}"
-                x-transition:enter="transition ease-out duration-700"
-                x-transition:enter-start="opacity-0 transform scale-105"
-                x-transition:enter-end="opacity-100 transform scale-100"
-                x-transition:leave="transition ease-in duration-500"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
+                @if($transitionType === 'slide')
+                    x-transition:enter="transition ease-out duration-700"
+                    x-transition:enter-start="opacity-0 translate-x-full"
+                    x-transition:enter-end="opacity-100 translate-x-0"
+                    x-transition:leave="transition ease-in duration-500"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 -translate-x-full"
+                @else
+                    x-transition:enter="transition ease-out duration-700"
+                    x-transition:enter-start="opacity-0 transform scale-105"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-500"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                @endif
                 class="absolute inset-0 w-full h-full"
                 style="display: {{ $index === 0 ? 'block' : 'none' }}"
             >

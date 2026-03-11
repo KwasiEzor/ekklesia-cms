@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "skills": {
+    "article-extractor": {
+      "source": "michalparkola/tapestry-skills-for-claude-code",
+      "sourceType": "github",
+      "computedHash": "fc3369b15640de9af0409396aac9cc7608c3aa48f902b4a80f92f98a924a1429"
+    },
+    "csv-data-summarizer": {
+      "source": "coffeefuelbump/csv-data-summarizer-claude-skill",
+      "sourceType": "github",
+      "computedHash": "691551a714511f24b1e7c2a993b1323210a0ad2acd51b239bfa609a298fc1876"
+    },
+    "docx": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "6962db07127ee540a56e4677f65576d0727668a1d67f7da8bc978f10791c2bfe"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
+    },
+    "markdown-to-epub-converter": {
+      "source": "smerchek/claude-epub-skill",
+      "sourceType": "github",
+      "computedHash": "dd2aa7897635371d8ddcc85299f003e2f64d4914fc02b8f76c3e1699f01fa727"
+    },
+    "pdf": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "cfbc539377088ca7e44a813b30c306327385bbd973cd7a721e1743f60837dd62"
+    },
+    "playwright-cli": {
+      "source": "microsoft/playwright-cli",
+      "sourceType": "github",
+      "computedHash": "7075ab30f588019197a2f1518bb4c9d33d69d33352af079b5f9c60303ad3886e"
+    },
+    "text-to-speech": {
+      "source": "elevenlabs/skills",
+      "sourceType": "github",
+      "computedHash": "dccf9155f284345ade4a5af5d3c3db5d5da77856011ff92fff725160b0df8370"
+    }
+  }
+}

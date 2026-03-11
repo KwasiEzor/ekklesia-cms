@@ -136,7 +136,16 @@ class PageResource extends Resource
                                                 ->numeric()
                                                 ->default(5000)
                                                 ->visible(fn (callable $get) => $get('is_carousel')),
-                                        ])->columns(2),
+
+                                            Components\Select::make('transition_type')
+                                                ->label(__('pages.blocks.hero_transition_type'))
+                                                ->options([
+                                                    'fade' => __('pages.blocks.hero_transition_fade'),
+                                                    'slide' => __('pages.blocks.hero_transition_slide'),
+                                                ])
+                                                ->default('fade')
+                                                ->visible(fn (callable $get) => $get('is_carousel')),
+                                        ])->columns(3),
                                     ]),
 
                                 Components\Builder\Block::make('heading')
@@ -385,6 +394,10 @@ class PageResource extends Resource
                                                 'featured' => 'Featured (1 large + others)',
                                             ])
                                             ->default('grid'),
+
+                                        Components\Toggle::make('show_download_notes')
+                                            ->label(__('pages.blocks.sermon_feed_show_notes'))
+                                            ->default(false),
                                     ])->columns(2),
 
                                 Components\Builder\Block::make('staff_directory')
@@ -429,6 +442,17 @@ class PageResource extends Resource
                                             ->options(fn () => \App\Models\Fund::pluck('name', 'id'))
                                             ->placeholder('General Fund')
                                             ->searchable(),
+
+                                        Components\Toggle::make('show_quick_give')
+                                            ->label(__('pages.blocks.giving_show_quick_give'))
+                                            ->default(false)
+                                            ->live(),
+
+                                        Components\TextInput::make('quick_give_amounts')
+                                            ->label(__('pages.blocks.giving_quick_amounts'))
+                                            ->default('10, 20, 50, 100')
+                                            ->placeholder('e.g. 10, 20, 50, 100')
+                                            ->visible(fn (callable $get) => $get('show_quick_give')),
                                     ])->columns(2),
 
                                 Components\Builder\Block::make('events_feed')
@@ -531,6 +555,17 @@ class PageResource extends Resource
                                                                 Components\TextInput::make('url')->url()->required(),
                                                                 Components\TextInput::make('alt'),
                                                             ]),
+                                                        Components\Builder\Block::make('video')
+                                                            ->label(__('pages.blocks.video'))
+                                                            ->schema([
+                                                                Components\TextInput::make('url')->url()->required(),
+                                                            ]),
+                                                        Components\Builder\Block::make('quote')
+                                                            ->label(__('pages.blocks.quote'))
+                                                            ->schema([
+                                                                Components\Textarea::make('text')->required(),
+                                                                Components\TextInput::make('attribution'),
+                                                            ]),
                                                         Components\Builder\Block::make('call_to_action')
                                                             ->label(__('pages.blocks.call_to_action'))
                                                             ->schema([
@@ -582,6 +617,7 @@ class PageResource extends Resource
                                                 'solid' => 'Solid Line',
                                                 'dashed' => 'Dashed Line',
                                                 'gradient' => 'Gradient Fade',
+                                                'waves' => __('pages.blocks.divider_waves'),
                                             ])
                                             ->default('solid'),
                                     ]),
@@ -605,6 +641,7 @@ class PageResource extends Resource
                                             ->options([
                                                 'grid' => 'Grid',
                                                 'masonry' => 'Masonry',
+                                                'mosaic' => __('pages.blocks.gallery_mosaic'),
                                                 'slider' => 'Slider',
                                             ])
                                             ->default('grid'),
@@ -633,6 +670,19 @@ class PageResource extends Resource
                                             ])
                                             ->columns(3)
                                             ->grid(2),
+
+                                        Group::make([
+                                            Components\Toggle::make('is_carousel')
+                                                ->label(__('pages.blocks.is_carousel'))
+                                                ->default(true)
+                                                ->live(),
+
+                                            Components\TextInput::make('autoplay_speed')
+                                                ->label(__('pages.blocks.autoplay_speed'))
+                                                ->numeric()
+                                                ->default(5000)
+                                                ->visible(fn (callable $get) => $get('is_carousel')),
+                                        ])->columns(2),
                                     ]),
 
                                 Components\Builder\Block::make('newsletter_signup')

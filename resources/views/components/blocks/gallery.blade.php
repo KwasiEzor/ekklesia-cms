@@ -82,14 +82,19 @@
                         'grid gap-6',
                         'grid-cols-2 md:grid-cols-3 lg:grid-cols-4' => $layout === 'grid',
                         'columns-2 md:columns-3 lg:columns-4 space-y-6' => $layout === 'masonry',
+                        'grid-cols-2 md:grid-cols-4 auto-rows-[200px]' => $layout === 'mosaic',
                     ])>
-                        @foreach($photos as $photo)
+                        @foreach($photos as $index => $photo)
                             <div 
-                                class="relative overflow-hidden rounded-2xl bg-slate-100 cursor-pointer group break-inside-avoid"
+                                @class([
+                                    'relative overflow-hidden rounded-2xl bg-slate-100 cursor-pointer group break-inside-avoid',
+                                    'md:col-span-2 md:row-span-2' => $layout === 'mosaic' && $index % 7 === 0,
+                                    'md:row-span-2' => $layout === 'mosaic' && $index % 7 === 3,
+                                ])
                                 @click="open({{ json_encode($photo) }})"
                             >
                                 <img 
-                                    src="{{ $photo['medium'] }}" 
+                                    src="{{ ($layout === 'mosaic' && ($index % 7 === 0 || $index % 7 === 3)) ? $photo['url'] : $photo['medium'] }}" 
                                     alt="{{ $photo['name'] }}"
                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 >

@@ -2,11 +2,14 @@
     'title' => 'Support Our Mission',
     'description' => 'Your generosity helps us reach more people with the message of hope.',
     'buttonLabel' => 'Give Online Now',
-    'fundId' => null
+    'fundId' => null,
+    'showQuickGive' => false,
+    'quickGiveAmounts' => '10, 20, 50, 100'
 ])
 
 @php
     $fund = $fundId ? \App\Models\Fund::find($fundId) : null;
+    $amounts = array_map('trim', explode(',', $quickGiveAmounts));
 @endphp
 
 <section class="py-16 bg-white">
@@ -16,8 +19,8 @@
             <div class="absolute top-0 right-0 -translate-y-12 translate-x-12 w-64 h-64 bg-indigo-500 rounded-full opacity-50 blur-3xl"></div>
             <div class="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-64 h-64 bg-indigo-400 rounded-full opacity-30 blur-3xl"></div>
             
-            <div class="relative z-10 p-8 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10">
-                <div class="max-w-2xl text-center md:text-left">
+            <div class="relative z-10 p-8 md:p-16 flex flex-col lg:flex-row items-center justify-between gap-10">
+                <div class="max-w-2xl text-center lg:text-left">
                     <h2 class="text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl">
                         {{ $title }}
                     </h2>
@@ -28,6 +31,16 @@
                         <div class="mt-4 inline-flex items-center px-3 py-1 bg-indigo-700/50 rounded-full text-xs font-bold text-indigo-100 border border-indigo-400/30">
                             <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
                             Targeting: {{ $fund->name }}
+                        </div>
+                    @endif
+
+                    @if($showQuickGive && !empty($amounts))
+                        <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-3">
+                            @foreach($amounts as $amount)
+                                <a href="#" class="px-5 py-2.5 bg-indigo-500/30 hover:bg-indigo-500/50 text-white font-bold rounded-xl border border-indigo-400/30 transition-all hover:scale-105">
+                                    ${{ $amount }}
+                                </a>
+                            @endforeach
                         </div>
                     @endif
                 </div>

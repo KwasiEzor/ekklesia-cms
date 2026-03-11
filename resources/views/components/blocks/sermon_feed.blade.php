@@ -2,7 +2,8 @@
     'title' => 'Latest Sermons',
     'limit' => 3,
     'seriesId' => null,
-    'viewStyle' => 'grid'
+    'viewStyle' => 'grid',
+    'showDownloadNotes' => false
 ])
 
 @php
@@ -103,7 +104,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex gap-3">
+                            <div class="flex flex-wrap gap-3">
                                 @if($sermon->video_url)
                                     <button class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-colors">
                                         Watch
@@ -113,6 +114,12 @@
                                     <button class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200 transition-colors">
                                         Listen
                                     </button>
+                                @endif
+                                @if(($showDownloadNotes ?? false) && $sermon->notes_url)
+                                    <a href="{{ $sermon->notes_url }}" target="_blank" class="px-4 py-2 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-xl hover:bg-indigo-100 transition-colors flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        Notes
+                                    </a>
                                 @endif
                             </div>
                         </div>
