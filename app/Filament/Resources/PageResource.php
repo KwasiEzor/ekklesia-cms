@@ -6,13 +6,17 @@ use App\Filament\Resources\PageResource\Pages;
 use App\Models\Page;
 use BackedEnum;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Forms\Components;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Actions as SchemaActions;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
 
 class PageResource extends Resource
 {
@@ -41,6 +45,24 @@ class PageResource extends Resource
     {
         return $schema
             ->components([
+                SchemaActions::make([
+                    Action::make('preview')
+                        ->label(__('common.actions.view').' (Preview)')
+                        ->icon(Heroicon::OutlinedEye)
+                        ->color('info')
+                        ->modalHeading(__('common.actions.view').' : Preview')
+                        ->modalWidth('full')
+                        ->modalContent(fn (Components\Builder|array $state, $get): View => view(
+                            'filament.pages.preview-page',
+                            [
+                                'title' => $get('title') ?? 'Untitled Page',
+                                'blocks' => $get('content_blocks') ?? [],
+                            ]
+                        ))
+                        ->modalSubmitAction(false)
+                        ->modalCancelActionLabel('Close'),
+                ])->alignment('right'),
+
                 Section::make(__('pages.section_details'))
                     ->description(__('pages.section_details_desc'))
                     ->icon(Heroicon::OutlinedDocumentText)
@@ -66,8 +88,39 @@ class PageResource extends Resource
                         Components\Builder::make('content_blocks')
                             ->label(__('pages.content_blocks'))
                             ->blocks([
+                                Components\Builder\Block::make('hero')
+                                    ->label(__('pages.blocks.hero'))
+                                    ->icon(Heroicon::OutlinedSparkles)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.hero_title'))
+                                            ->required()
+                                            ->maxLength(255),
+
+                                        Components\Textarea::make('subtitle')
+                                            ->label(__('pages.blocks.hero_subtitle'))
+                                            ->rows(2)
+                                            ->maxLength(500),
+
+                                        Components\TextInput::make('image_url')
+                                            ->label(__('pages.blocks.hero_image'))
+                                            ->url()
+                                            ->required(),
+
+                                        Group::make([
+                                            Components\TextInput::make('cta_label')
+                                                ->label(__('pages.blocks.hero_cta_label'))
+                                                ->maxLength(255),
+
+                                            Components\TextInput::make('cta_url')
+                                                ->label(__('pages.blocks.hero_cta_url'))
+                                                ->url(),
+                                        ])->columns(2),
+                                    ]),
+
                                 Components\Builder\Block::make('heading')
                                     ->label(__('pages.blocks.heading'))
+                                    ->icon(Heroicon::OutlinedBars3)
                                     ->schema([
                                         Components\Select::make('level')
                                             ->label(__('pages.blocks.heading_level'))
@@ -88,14 +141,43 @@ class PageResource extends Resource
 
                                 Components\Builder\Block::make('rich_text')
                                     ->label(__('pages.blocks.rich_text'))
+                                    ->icon(Heroicon::OutlinedBars3BottomLeft)
                                     ->schema([
                                         Components\MarkdownEditor::make('body')
                                             ->label(__('pages.blocks.rich_text_body'))
                                             ->required(),
                                     ]),
 
+                                Components\Builder\Block::make('features')
+                                    ->label(__('pages.blocks.features'))
+                                    ->icon(Heroicon::OutlinedSquaresPlus)
+                                    ->schema([
+                                        Components\Repeater::make('items')
+                                            ->label(__('pages.blocks.features_items'))
+                                            ->schema([
+                                                Components\TextInput::make('icon')
+                                                    ->label(__('pages.blocks.features_icon'))
+                                                    ->placeholder('E.g. heart, star, home')
+                                                    ->required(),
+
+                                                Components\TextInput::make('title')
+                                                    ->label(__('pages.blocks.features_title'))
+                                                    ->required()
+                                                    ->maxLength(255),
+
+                                                Components\Textarea::make('description')
+                                                    ->label(__('pages.blocks.features_desc'))
+                                                    ->required()
+                                                    ->rows(2),
+                                            ])
+                                            ->columns(1)
+                                            ->grid(3)
+                                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null),
+                                    ]),
+
                                 Components\Builder\Block::make('image')
                                     ->label(__('pages.blocks.image'))
+                                    ->icon(Heroicon::OutlinedPhoto)
                                     ->schema([
                                         Components\TextInput::make('url')
                                             ->label(__('pages.blocks.image_url'))
@@ -112,8 +194,29 @@ class PageResource extends Resource
                                             ->maxLength(255),
                                     ]),
 
+                                Components\Builder\Block::make('faq')
+                                    ->label(__('pages.blocks.faq'))
+                                    ->icon(Heroicon::OutlinedQuestionMarkCircle)
+                                    ->schema([
+                                        Components\Repeater::make('items')
+                                            ->label(__('pages.blocks.faq_items'))
+                                            ->schema([
+                                                Components\TextInput::make('question')
+                                                    ->label(__('pages.blocks.faq_question'))
+                                                    ->required()
+                                                    ->maxLength(255),
+
+                                                Components\Textarea::make('answer')
+                                                    ->label(__('pages.blocks.faq_answer'))
+                                                    ->required()
+                                                    ->rows(2),
+                                            ])
+                                            ->itemLabel(fn (array $state): ?string => $state['question'] ?? null),
+                                    ]),
+
                                 Components\Builder\Block::make('video')
                                     ->label(__('pages.blocks.video'))
+                                    ->icon(Heroicon::OutlinedVideoCamera)
                                     ->schema([
                                         Components\TextInput::make('url')
                                             ->label(__('pages.blocks.video_url'))
@@ -128,6 +231,7 @@ class PageResource extends Resource
 
                                 Components\Builder\Block::make('call_to_action')
                                     ->label(__('pages.blocks.call_to_action'))
+                                    ->icon(Heroicon::OutlinedCursorArrowRays)
                                     ->schema([
                                         Components\TextInput::make('label')
                                             ->label(__('pages.blocks.cta_label'))
@@ -152,6 +256,7 @@ class PageResource extends Resource
 
                                 Components\Builder\Block::make('quote')
                                     ->label(__('pages.blocks.quote'))
+                                    ->icon(Heroicon::OutlinedChatBubbleBottomCenterText)
                                     ->schema([
                                         Components\Textarea::make('text')
                                             ->label(__('pages.blocks.quote_text'))
@@ -162,10 +267,62 @@ class PageResource extends Resource
                                             ->label(__('pages.blocks.quote_attribution'))
                                             ->maxLength(255),
                                     ]),
+
+                                Components\Builder\Block::make('testimonials')
+                                    ->label(__('pages.blocks.testimonials'))
+                                    ->icon(Heroicon::OutlinedUserGroup)
+                                    ->schema([
+                                        Components\Repeater::make('items')
+                                            ->label(__('pages.blocks.testimonials_items'))
+                                            ->schema([
+                                                Components\TextInput::make('name')
+                                                    ->label(__('pages.blocks.testimonials_name'))
+                                                    ->required()
+                                                    ->maxLength(255),
+
+                                                Components\TextInput::make('role')
+                                                    ->label(__('pages.blocks.testimonials_role'))
+                                                    ->maxLength(255),
+
+                                                Components\Textarea::make('content')
+                                                    ->label(__('pages.blocks.testimonials_content'))
+                                                    ->required()
+                                                    ->rows(3),
+
+                                                Components\TextInput::make('avatar_url')
+                                                    ->label(__('pages.blocks.testimonials_avatar'))
+                                                    ->url(),
+                                            ])
+                                            ->grid(2)
+                                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null),
+                                    ]),
+
+                                Components\Builder\Block::make('contact_form')
+                                    ->label(__('pages.blocks.contact_form'))
+                                    ->icon(Heroicon::OutlinedEnvelope)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.contact_form_title'))
+                                            ->default('Get in Touch')
+                                            ->required()
+                                            ->maxLength(255),
+
+                                        Components\Textarea::make('description')
+                                            ->label(__('pages.blocks.contact_form_desc'))
+                                            ->default(__('pages.blocks.contact_form_placeholder'))
+                                            ->rows(2),
+
+                                        Components\TextInput::make('email_to')
+                                            ->label('Target Email')
+                                            ->placeholder('Defaults to church email')
+                                            ->email(),
+                                    ]),
                             ])
                             ->columnSpanFull()
                             ->collapsible()
-                            ->reorderable(),
+                            ->collapsed()
+                            ->reorderable()
+                            ->blockIcons(),
                     ]),
 
                 Section::make(__('pages.section_seo'))

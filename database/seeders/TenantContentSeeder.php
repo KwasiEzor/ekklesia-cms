@@ -20,7 +20,7 @@ class TenantContentSeeder extends Seeder
         $tenant = tenant() ?? Tenant::first();
 
         if (! $tenant) {
-            $this->command->error('No tenant found. Run tenant:create first.');
+            $this->command?->error('No tenant found. Run tenant:create first.');
 
             return;
         }
@@ -29,7 +29,7 @@ class TenantContentSeeder extends Seeder
             tenancy()->initialize($tenant);
         }
 
-        $this->command->info("Seeding realistic content for tenant: {$tenant->id}");
+        $this->command?->info("Seeding realistic content for tenant: {$tenant->id}");
 
         $campus = Campus::first() ?? Campus::factory()->create(['name' => 'Campus Principal', 'tenant_id' => $tenant->id]);
 
@@ -41,7 +41,7 @@ class TenantContentSeeder extends Seeder
         $this->seedPages($tenant);
         $this->seedGivingRecords($tenant);
 
-        $this->command->info('Tenant content seeded successfully with real-world examples.');
+        $this->command?->info('Tenant content seeded successfully with real-world examples.');
     }
 
     private function seedSermonSeries(Tenant $tenant): void
@@ -57,7 +57,7 @@ class TenantContentSeeder extends Seeder
             SermonSeries::factory()->create(array_merge($data, ['tenant_id' => $tenant->id]));
         }
 
-        $this->command->info('  - 4 sermon series created');
+        $this->command?->info('  - 4 sermon series created');
     }
 
     private function seedSermons(Tenant $tenant, Campus $campus): void
@@ -88,7 +88,7 @@ class TenantContentSeeder extends Seeder
             ]));
         }
 
-        $this->command->info('  - 12 sermons created');
+        $this->command?->info('  - 12 sermons created');
     }
 
     private function seedEvents(Tenant $tenant, Campus $campus): void
@@ -134,7 +134,7 @@ class TenantContentSeeder extends Seeder
             'capacity' => 100,
         ]);
 
-        $this->command->info('  - 4 major events created');
+        $this->command?->info('  - 4 major events created');
     }
 
     private function seedAnnouncements(Tenant $tenant): void
@@ -153,7 +153,7 @@ class TenantContentSeeder extends Seeder
             'target_group' => 'all',
         ]);
 
-        $this->command->info('  - 2 announcements created');
+        $this->command?->info('  - 2 announcements created');
     }
 
     private function seedMembers(Tenant $tenant): void
@@ -163,7 +163,7 @@ class TenantContentSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        $this->command->info('  - 30 members created');
+        $this->command?->info('  - 30 members created');
     }
 
     private function seedPages(Tenant $tenant): void
@@ -178,7 +178,116 @@ class TenantContentSeeder extends Seeder
             ],
         ]);
 
-        $this->command->info('  - 1 static page created');
+        Page::factory()->published()->create([
+            'tenant_id' => $tenant->id,
+            'title' => 'Demo Showcase',
+            'slug' => 'demo-showcase',
+            'content_blocks' => [
+                [
+                    'type' => 'hero',
+                    'data' => [
+                        'title' => 'Bienvenue à Ekklesia CMS',
+                        'subtitle' => 'La solution moderne pour la gestion de votre église. Puissante, intuitive et centrée sur votre mission.',
+                        'image_url' => 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&q=80&w=2000',
+                        'cta_label' => 'Commencer maintenant',
+                        'cta_url' => '/admin/register',
+                    ],
+                ],
+                [
+                    'type' => 'features',
+                    'data' => [
+                        'items' => [
+                            [
+                                'icon' => 'star',
+                                'title' => 'Gestion des Membres',
+                                'description' => 'Suivez l\'engagement et la croissance de votre communauté en toute simplicité.',
+                            ],
+                            [
+                                'icon' => 'heart',
+                                'title' => 'Gestion des Dons',
+                                'description' => 'Collectez et suivez les offrandes avec une transparence totale et des rapports détaillés.',
+                            ],
+                            [
+                                'icon' => 'home',
+                                'title' => 'Multi-Campus',
+                                'description' => 'Gérez plusieurs lieux de culte à partir d\'un seul tableau de bord centralisé.',
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'heading',
+                    'data' => [
+                        'level' => 'h2',
+                        'content' => 'Pourquoi choisir notre plateforme ?',
+                    ],
+                ],
+                [
+                    'type' => 'rich_text',
+                    'data' => [
+                        'body' => "Notre système a été conçu par des leaders d'église pour des leaders d'église. Nous comprenons les défis uniques de la gestion d'une communauté de foi.\n\n### Points Forts :\n- **Intégration IA** pour vos prédications et la communication.\n- **Sécurité maximale** pour vos données financières.\n- **Interface Premium** fluide et rapide.",
+                    ],
+                ],
+                [
+                    'type' => 'quote',
+                    'data' => [
+                        'text' => "L'église n'est pas un bâtiment, c'est un peuple. Notre mission est de vous donner les outils pour mieux servir ce peuple.",
+                        'attribution' => 'Pasteur Emmanuel Kofi',
+                    ],
+                ],
+                [
+                    'type' => 'testimonials',
+                    'data' => [
+                        'items' => [
+                            [
+                                'name' => 'Jean Dupont',
+                                'role' => 'Administrateur',
+                                'content' => "Ekklesia CMS a transformé notre façon de communiquer avec nos membres. C'est un gain de temps incroyable.",
+                                'avatar_url' => 'https://i.pravatar.cc/150?u=jean',
+                            ],
+                            [
+                                'name' => 'Marie Leroi',
+                                'role' => 'Responsable Jeunesse',
+                                'content' => "Le constructeur de pages est tellement simple à utiliser. Nos annonces d'événements n'ont jamais été aussi belles.",
+                                'avatar_url' => 'https://i.pravatar.cc/150?u=marie',
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'faq',
+                    'data' => [
+                        'items' => [
+                            [
+                                'question' => 'Le système est-il sécurisé ?',
+                                'answer' => 'Oui, nous utilisons un cryptage de bout en bout et des protocoles de sécurité bancaire pour toutes les transactions financières.',
+                            ],
+                            [
+                                'question' => 'Puis-je l\'utiliser sur mon téléphone ?',
+                                'answer' => 'Absolument. Notre interface est entièrement responsive et fonctionne parfaitement sur smartphones et tablettes.',
+                            ],
+                        ],
+                    ],
+                ],
+                [
+                    'type' => 'call_to_action',
+                    'data' => [
+                        'label' => 'Rejoignez la communauté',
+                        'url' => '/contact',
+                        'style' => 'primary',
+                    ],
+                ],
+                [
+                    'type' => 'contact_form',
+                    'data' => [
+                        'title' => 'Des questions ?',
+                        'description' => 'Remplissez le formulaire ci-dessous et notre équipe vous contactera dans les plus brefs délais.',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->command?->info('  - 2 static pages created (including Demo Showcase)');
     }
 
     private function seedGivingRecords(Tenant $tenant): void
@@ -194,6 +303,6 @@ class TenantContentSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('  - 40 giving records created');
+        $this->command?->info('  - 40 giving records created');
     }
 }
