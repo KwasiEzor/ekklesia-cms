@@ -55,6 +55,21 @@ Reducing administrative overhead by automating content updates.
 
 ---
 
+## Phase 4: Advanced Layouts & Structure
+Giving users full control over the page rhythm and structural composition.
+
+### 4.1 Flexible Columns (The "Grid" Block)
+- **Functionality:** Choose from common layouts (50/50, 70/30, 33/33/33).
+- **Content:** Allows adding specific content elements (Text, Image, Button) inside columns.
+
+### 4.2 Spacer & Visual Dividers
+- **Functionality:** Control vertical whitespace and add decorative separators (Lines, Waves).
+
+### 4.3 General Purpose Tabs & Accordions
+- **Functionality:** Beyond just FAQ - useful for "Service Times" or "What to Expect."
+
+---
+
 ## Technical Standards
 - **Component Pattern:** Use `resources/views/components/blocks/` for all new UI.
 - **State Management:** Alpine.js for frontend interactivity (Carousels/Tabs).
@@ -69,3 +84,4 @@ Reducing administrative overhead by automating content updates.
 - [x] Phase 1: Carousel Enhancements (Hero, Testimonials)
 - [x] Phase 2: Church-Specific Blocks (Sermons, Giving, Staff)
 - [x] Phase 3: Automation & Engagement (Events, Live Stream, Countdown)
+- [x] Phase 4: Advanced Layouts & Structure

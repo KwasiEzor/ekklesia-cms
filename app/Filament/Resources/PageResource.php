@@ -491,6 +491,100 @@ class PageResource extends Resource
                                             ->label('Button URL')
                                             ->url(),
                                     ])->columns(2),
+
+                                Components\Builder\Block::make('columns')
+                                    ->label(__('pages.blocks.columns'))
+                                    ->icon(Heroicon::OutlinedColumns)
+                                    ->schema([
+                                        Components\Select::make('layout')
+                                            ->label(__('pages.blocks.columns_layout'))
+                                            ->options([
+                                                '50-50' => '50 / 50',
+                                                '33-33-33' => '33 / 33 / 33',
+                                                '70-30' => '70 / 30',
+                                                '30-70' => '30 / 70',
+                                            ])
+                                            ->default('50-50')
+                                            ->required(),
+
+                                        Components\Repeater::make('columns')
+                                            ->label(__('pages.blocks.columns_content'))
+                                            ->schema([
+                                                Components\Builder::make('content')
+                                                    ->label(__('pages.blocks.content'))
+                                                    ->blocks([
+                                                        // Subset of blocks for nesting
+                                                        Components\Builder\Block::make('heading')
+                                                            ->label(__('pages.blocks.heading'))
+                                                            ->schema([
+                                                                Components\TextInput::make('content')->required(),
+                                                                Components\Select::make('level')->options(['h2' => 'H2', 'h3' => 'H3', 'h4' => 'H4'])->default('h3'),
+                                                            ]),
+                                                        Components\Builder\Block::make('rich_text')
+                                                            ->label(__('pages.blocks.rich_text'))
+                                                            ->schema([
+                                                                Components\MarkdownEditor::make('body')->required(),
+                                                            ]),
+                                                        Components\Builder\Block::make('image')
+                                                            ->label(__('pages.blocks.image'))
+                                                            ->schema([
+                                                                Components\TextInput::make('url')->url()->required(),
+                                                                Components\TextInput::make('alt'),
+                                                            ]),
+                                                        Components\Builder\Block::make('call_to_action')
+                                                            ->label(__('pages.blocks.call_to_action'))
+                                                            ->schema([
+                                                                Components\TextInput::make('label')->required(),
+                                                                Components\TextInput::make('url')->url()->required(),
+                                                            ]),
+                                                    ]),
+                                            ])
+                                            ->minItems(2)
+                                            ->maxItems(3)
+                                            ->itemLabel(fn (array $state): ?string => 'Column '.($state['id'] ?? '')),
+                                    ]),
+
+                                Components\Builder\Block::make('tabs')
+                                    ->label(__('pages.blocks.tabs'))
+                                    ->icon(Heroicon::OutlinedSquare2Stack)
+                                    ->schema([
+                                        Components\Repeater::make('items')
+                                            ->label(__('pages.blocks.tabs_items'))
+                                            ->schema([
+                                                Components\TextInput::make('title')->required(),
+                                                Components\MarkdownEditor::make('content')->required(),
+                                            ])
+                                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null),
+                                    ]),
+
+                                Components\Builder\Block::make('spacer')
+                                    ->label(__('pages.blocks.spacer'))
+                                    ->icon(Heroicon::OutlinedArrowsUpDown)
+                                    ->schema([
+                                        Components\Select::make('size')
+                                            ->label(__('pages.blocks.spacer_size'))
+                                            ->options([
+                                                'small' => 'Small (24px)',
+                                                'medium' => 'Medium (48px)',
+                                                'large' => 'Large (96px)',
+                                                'xlarge' => 'X-Large (192px)',
+                                            ])
+                                            ->default('medium'),
+                                    ]),
+
+                                Components\Builder\Block::make('divider')
+                                    ->label(__('pages.blocks.divider'))
+                                    ->icon(Heroicon::OutlinedMinus)
+                                    ->schema([
+                                        Components\Select::make('style')
+                                            ->label(__('pages.blocks.divider_style'))
+                                            ->options([
+                                                'solid' => 'Solid Line',
+                                                'dashed' => 'Dashed Line',
+                                                'gradient' => 'Gradient Fade',
+                                            ])
+                                            ->default('solid'),
+                                    ]),
                             ])
                             ->columnSpanFull()
                             ->collapsible()
