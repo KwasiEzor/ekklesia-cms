@@ -585,6 +585,93 @@ class PageResource extends Resource
                                             ])
                                             ->default('solid'),
                                     ]),
+
+                                Components\Builder\Block::make('gallery')
+                                    ->label(__('pages.blocks.gallery'))
+                                    ->icon(Heroicon::OutlinedPhoto)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.gallery_title'))
+                                            ->maxLength(255),
+
+                                        Components\Select::make('gallery_id')
+                                            ->label(__('pages.blocks.gallery_source'))
+                                            ->options(fn () => \App\Models\Gallery::pluck('title', 'id'))
+                                            ->placeholder('Select a Gallery')
+                                            ->searchable(),
+
+                                        Components\Select::make('layout')
+                                            ->label(__('pages.blocks.gallery_layout'))
+                                            ->options([
+                                                'grid' => 'Grid',
+                                                'masonry' => 'Masonry',
+                                                'slider' => 'Slider',
+                                            ])
+                                            ->default('grid'),
+                                    ])->columns(2),
+
+                                Components\Builder\Block::make('logo_cloud')
+                                    ->label(__('pages.blocks.logo_cloud'))
+                                    ->icon(Heroicon::OutlinedCloud)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.logo_cloud_title'))
+                                            ->maxLength(255),
+
+                                        Components\Repeater::make('logos')
+                                            ->label(__('pages.blocks.logo_cloud_items'))
+                                            ->schema([
+                                                Components\TextInput::make('url')
+                                                    ->label('Logo URL')
+                                                    ->url()
+                                                    ->required(),
+                                                Components\TextInput::make('name')
+                                                    ->label('Partner Name'),
+                                                Components\TextInput::make('link')
+                                                    ->label('Website Link')
+                                                    ->url(),
+                                            ])
+                                            ->columns(3)
+                                            ->grid(2),
+                                    ]),
+
+                                Components\Builder\Block::make('newsletter_signup')
+                                    ->label(__('pages.blocks.newsletter_signup'))
+                                    ->icon(Heroicon::OutlinedAtSymbol)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.newsletter_title'))
+                                            ->default('Stay Updated')
+                                            ->required(),
+
+                                        Components\Textarea::make('description')
+                                            ->label(__('pages.blocks.newsletter_desc'))
+                                            ->default('Subscribe to our newsletter to receive the latest news and updates.'),
+
+                                        Components\TextInput::make('button_label')
+                                            ->label(__('pages.blocks.newsletter_button'))
+                                            ->default('Subscribe'),
+                                    ]),
+
+                                Components\Builder\Block::make('map')
+                                    ->label(__('pages.blocks.map'))
+                                    ->icon(Heroicon::OutlinedMap)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.map_title'))
+                                            ->default('Our Location'),
+
+                                        Components\Select::make('campus_id')
+                                            ->label(__('pages.blocks.map_campus'))
+                                            ->options(fn () => \App\Models\Campus::pluck('name', 'id'))
+                                            ->placeholder('Select Campus for Address')
+                                            ->searchable(),
+
+                                        Components\TextInput::make('address')
+                                            ->label('Manual Address')
+                                            ->placeholder('E.g. 123 Church St, City, Country')
+                                            ->helperText('Used if no campus is selected'),
+                                    ])->columns(2),
                             ])
                             ->columnSpanFull()
                             ->collapsible()

@@ -18,9 +18,6 @@ We will implement a reusable "Carousel" wrapper using **Alpine.js** (native to o
 - **Functionality:** Infinite loop for testimonials and partner logos.
 - **Settings:** Items per view (responsive), pause on hover.
 
-### 1.3 Featured Content Slider
-- **Functionality:** A horizontal scroll for Feature cards or Blog posts.
-
 ---
 
 ## Phase 2: Church-Specific "Pro" Blocks
@@ -70,6 +67,24 @@ Giving users full control over the page rhythm and structural composition.
 
 ---
 
+## Phase 5: Media & Interactive
+Elevating the visual impact with advanced media handling and engagement tools.
+
+### 5.1 Dynamic Gallery (Grid/Slider)
+- **Functionality:** Display images from a selected `Gallery` or manual upload.
+- **Layouts:** Masonry grid, Slider, or Mosaic.
+
+### 5.2 Logo Cloud / Partner Slider
+- **Functionality:** Infinite scrolling loop for partners, affiliations, or sponsors.
+
+### 5.3 Newsletter Signup Form
+- **Functionality:** Simple, high-conversion email capture for internal/external lists.
+
+### 5.4 Interactive Map / Location
+- **Functionality:** Google Maps/Mapbox integration pulling from `Campus` locations.
+
+---
+
 ## Technical Standards
 - **Component Pattern:** Use `resources/views/components/blocks/` for all new UI.
 - **State Management:** Alpine.js for frontend interactivity (Carousels/Tabs).
@@ -85,3 +100,4 @@ Giving users full control over the page rhythm and structural composition.
 - [x] Phase 2: Church-Specific Blocks (Sermons, Giving, Staff)
 - [x] Phase 3: Automation & Engagement (Events, Live Stream, Countdown)
 - [x] Phase 4: Advanced Layouts & Structure
+- [x] Phase 5: Media & Interactive
