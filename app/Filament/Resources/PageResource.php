@@ -92,29 +92,50 @@ class PageResource extends Resource
                                     ->label(__('pages.blocks.hero'))
                                     ->icon(Heroicon::OutlinedSparkles)
                                     ->schema([
-                                        Components\TextInput::make('title')
-                                            ->label(__('pages.blocks.hero_title'))
-                                            ->required()
-                                            ->maxLength(255),
+                                        Components\Repeater::make('slides')
+                                            ->label(__('pages.blocks.hero_slides'))
+                                            ->schema([
+                                                Components\TextInput::make('title')
+                                                    ->label(__('pages.blocks.hero_title'))
+                                                    ->required()
+                                                    ->maxLength(255),
 
-                                        Components\Textarea::make('subtitle')
-                                            ->label(__('pages.blocks.hero_subtitle'))
-                                            ->rows(2)
-                                            ->maxLength(500),
+                                                Components\Textarea::make('subtitle')
+                                                    ->label(__('pages.blocks.hero_subtitle'))
+                                                    ->rows(2)
+                                                    ->maxLength(500),
 
-                                        Components\TextInput::make('image_url')
-                                            ->label(__('pages.blocks.hero_image'))
-                                            ->url()
-                                            ->required(),
+                                                Components\TextInput::make('image_url')
+                                                    ->label(__('pages.blocks.hero_image'))
+                                                    ->url()
+                                                    ->required(),
+
+                                                Group::make([
+                                                    Components\TextInput::make('cta_label')
+                                                        ->label(__('pages.blocks.hero_cta_label'))
+                                                        ->maxLength(255),
+
+                                                    Components\TextInput::make('cta_url')
+                                                        ->label(__('pages.blocks.hero_cta_url'))
+                                                        ->url(),
+                                                ])->columns(2),
+                                            ])
+                                            ->minItems(1)
+                                            ->defaultItems(1)
+                                            ->reorderable()
+                                            ->collapsible(),
 
                                         Group::make([
-                                            Components\TextInput::make('cta_label')
-                                                ->label(__('pages.blocks.hero_cta_label'))
-                                                ->maxLength(255),
+                                            Components\Toggle::make('is_carousel')
+                                                ->label(__('pages.blocks.is_carousel'))
+                                                ->default(false)
+                                                ->live(),
 
-                                            Components\TextInput::make('cta_url')
-                                                ->label(__('pages.blocks.hero_cta_url'))
-                                                ->url(),
+                                            Components\TextInput::make('autoplay_speed')
+                                                ->label(__('pages.blocks.autoplay_speed'))
+                                                ->numeric()
+                                                ->default(5000)
+                                                ->visible(fn (callable $get) => $get('is_carousel')),
                                         ])->columns(2),
                                     ]),
 
@@ -295,6 +316,19 @@ class PageResource extends Resource
                                             ])
                                             ->grid(2)
                                             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null),
+
+                                        Group::make([
+                                            Components\Toggle::make('is_carousel')
+                                                ->label(__('pages.blocks.is_carousel'))
+                                                ->default(false)
+                                                ->live(),
+
+                                            Components\TextInput::make('autoplay_speed')
+                                                ->label(__('pages.blocks.autoplay_speed'))
+                                                ->numeric()
+                                                ->default(5000)
+                                                ->visible(fn (callable $get) => $get('is_carousel')),
+                                        ])->columns(2),
                                     ]),
 
                                 Components\Builder\Block::make('contact_form')
@@ -317,6 +351,146 @@ class PageResource extends Resource
                                             ->placeholder('Defaults to church email')
                                             ->email(),
                                     ]),
+
+                                Components\Builder\Block::make('sermon_feed')
+                                    ->label(__('pages.blocks.sermon_feed'))
+                                    ->icon(Heroicon::OutlinedMicrophone)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.sermon_feed_title'))
+                                            ->default('Latest Sermons')
+                                            ->required()
+                                            ->maxLength(255),
+
+                                        Components\Select::make('limit')
+                                            ->label(__('pages.blocks.sermon_feed_limit'))
+                                            ->options([
+                                                3 => '3 Sermons',
+                                                6 => '6 Sermons',
+                                                9 => '9 Sermons',
+                                            ])
+                                            ->default(3),
+
+                                        Components\Select::make('series_id')
+                                            ->label(__('pages.blocks.sermon_feed_series'))
+                                            ->options(fn () => \App\Models\SermonSeries::pluck('title', 'id'))
+                                            ->placeholder('All Series')
+                                            ->searchable(),
+
+                                        Components\Select::make('view_style')
+                                            ->label(__('pages.blocks.sermon_feed_style'))
+                                            ->options([
+                                                'grid' => 'Grid View',
+                                                'list' => 'List View',
+                                                'featured' => 'Featured (1 large + others)',
+                                            ])
+                                            ->default('grid'),
+                                    ])->columns(2),
+
+                                Components\Builder\Block::make('staff_directory')
+                                    ->label(__('pages.blocks.staff_directory'))
+                                    ->icon(Heroicon::OutlinedIdentification)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.staff_title'))
+                                            ->default('Our Leadership')
+                                            ->required(),
+
+                                        Components\Select::make('department')
+                                            ->label(__('pages.blocks.staff_department'))
+                                            ->options([
+                                                'all' => 'All Departments',
+                                                'pastoral' => 'Pastoral Team',
+                                                'admin' => 'Administration',
+                                                'worship' => 'Worship & Arts',
+                                            ])
+                                            ->default('all'),
+                                    ])->columns(2),
+
+                                Components\Builder\Block::make('giving_cta')
+                                    ->label(__('pages.blocks.giving_cta'))
+                                    ->icon(Heroicon::OutlinedHeart)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.giving_title'))
+                                            ->default('Support Our Mission')
+                                            ->required(),
+
+                                        Components\Textarea::make('description')
+                                            ->label(__('pages.blocks.giving_desc'))
+                                            ->default('Your generosity helps us reach more people with the message of hope.'),
+
+                                        Components\TextInput::make('button_label')
+                                            ->label(__('pages.blocks.giving_button'))
+                                            ->default('Give Online Now'),
+
+                                        Components\Select::make('fund_id')
+                                            ->label(__('pages.blocks.giving_fund'))
+                                            ->options(fn () => \App\Models\Fund::pluck('name', 'id'))
+                                            ->placeholder('General Fund')
+                                            ->searchable(),
+                                    ])->columns(2),
+
+                                Components\Builder\Block::make('events_feed')
+                                    ->label(__('pages.blocks.events_feed'))
+                                    ->icon(Heroicon::OutlinedCalendarDays)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.events_feed_title'))
+                                            ->default('Upcoming Events')
+                                            ->required(),
+
+                                        Components\Select::make('limit')
+                                            ->label(__('pages.blocks.events_feed_limit'))
+                                            ->options([3 => '3 Events', 6 => '6 Events', 9 => '9 Events'])
+                                            ->default(3),
+
+                                        Components\Toggle::make('show_past')
+                                            ->label('Show Past Events')
+                                            ->default(false),
+                                    ])->columns(2),
+
+                                Components\Builder\Block::make('live_stream')
+                                    ->label(__('pages.blocks.live_stream'))
+                                    ->icon(Heroicon::OutlinedPlayCircle)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.live_title'))
+                                            ->default('Join us Live!')
+                                            ->required(),
+
+                                        Components\TextInput::make('stream_url')
+                                            ->label('Stream URL')
+                                            ->placeholder('YouTube/Facebook/Twitch link')
+                                            ->url(),
+
+                                        Components\Toggle::make('always_show')
+                                            ->label('Always Show')
+                                            ->default(true)
+                                            ->helperText('Uncheck to only show when live (requires setting)'),
+                                    ])->columns(2),
+
+                                Components\Builder\Block::make('countdown_timer')
+                                    ->label(__('pages.blocks.countdown_timer'))
+                                    ->icon(Heroicon::OutlinedClock)
+                                    ->schema([
+                                        Components\TextInput::make('title')
+                                            ->label(__('pages.blocks.countdown_title'))
+                                            ->default('Big Event Starting In...')
+                                            ->required(),
+
+                                        Components\DateTimePicker::make('target_date')
+                                            ->label('Target Date & Time')
+                                            ->required(),
+
+                                        Components\TextInput::make('cta_label')
+                                            ->label('Button Label')
+                                            ->maxLength(255),
+
+                                        Components\TextInput::make('cta_url')
+                                            ->label('Button URL')
+                                            ->url(),
+                                    ])->columns(2),
                             ])
                             ->columnSpanFull()
                             ->collapsible()
