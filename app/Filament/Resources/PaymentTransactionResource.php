@@ -190,7 +190,7 @@ class PaymentTransactionResource extends Resource
                     ->relationship('campus', 'name'),
             ])
             ->actions([
-                Tables\Actions\Action::make('void')
+                Actions\Action::make('void')
                     ->label(__('payments.void'))
                     ->icon(Heroicon::OutlinedNoSymbol)
                     ->color('danger')

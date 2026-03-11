@@ -35,4 +35,11 @@ return [
     'amount_placeholder' => 'Ex : 50000',
     'reference_placeholder' => 'Ex : TX-2026-001',
     'campaign_placeholder' => 'Ex : Construction du temple',
+
+    // Void / Adjustments
+    'void' => 'Annuler',
+    'voided' => 'Annulé',
+    'void_heading' => 'Annuler ce don',
+    'void_description' => 'Êtes-vous sûr de vouloir annuler ce don ? Cette action est irréversible et sera enregistrée dans le journal d\'audit.',
+    'void_reason' => 'Raison de l\'annulation',
 ];

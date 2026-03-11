@@ -1088,3 +1088,38 @@ User message → ProcessAiMessage (queued job)
   - `tests/Feature/TenantIsolation/BulkMessageIsolationTest.php` (new — 3 tests)
   - `tests/Feature/Commands/SendScheduledBulkMessagesTest.php` (new — 7 tests including job tests)
 - **Notes:** Features 7 (Birthday Notifications), 8 (Reading Plans), and 9 (Bulk Messaging) are now all complete with full test coverage. Production readiness sprint features 1-9 done.
+
+---
+
+## 2026-03-11 — UI Hotfix (Table Toolbar Icon Bleed)
+
+- **Status:** Done
+- **Goal:** Fix Filament table UI where column manager and filter trigger icons were being pushed completely outside the table card due to search field width constraints.
+- **Summary:**
+  - Modified `.fi-ta-header-toolbar > div` flex layout to include `flex-wrap: wrap;` allowing children to naturally break if space is constrained.
+  - Updated `.fi-ta-search-field` to use `flex: 1 1 auto;` with a minimum width instead of an inflexible `width: 100%;`.
+  - Ensured the column manager and action icons properly fit inside the rounded `.fi-ta` table container without bleeding out over the edges.
+- **Validation:**
+  - `npm run build`: pass
+  - `php -d memory_limit=512M vendor/bin/pest`: pass (568 passed, 1561 assertions)
+  - `composer quality`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+
+---
+
+## 2026-03-11 — Giving Records UI Fix (Translations & Icon Consistency)
+
+- **Status:** Done
+- **Goal:** Fix missing translation keys for "Void" actions and labels in the Giving Records table.
+- **Summary:**
+  - Added `void`, `voided`, `void_heading`, `void_description`, and `void_reason` keys to `lang/fr/giving_records.php` and `lang/en/giving_records.php`.
+  - Converted the `void` action in `GivingRecordResource` to an icon-only button to match the premium admin design system (was showing as a red text link with a raw translation key).
+- **Validation:**
+  - `composer quality`: pass
+  - UI visual check: translation keys now resolve to "Annuler" / "Annulé" (FR) or "Void" / "Voided" (EN).
+- **Files:**
+  - `lang/fr/giving_records.php`
+  - `lang/en/giving_records.php`
+  - `app/Filament/Resources/GivingRecordResource.php`
+

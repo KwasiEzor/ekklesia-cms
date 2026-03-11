@@ -34,4 +34,11 @@ return [
     'amount_placeholder' => 'E.g. 50000',
     'reference_placeholder' => 'E.g. TX-2026-001',
     'campaign_placeholder' => 'E.g. Temple construction',
+
+    // Void / Adjustments
+    'void' => 'Void',
+    'voided' => 'Voided',
+    'void_heading' => 'Void this record',
+    'void_description' => 'Are you sure you want to void this record? This action is irreversible and will be logged in the audit trail.',
+    'void_reason' => 'Reason for voiding',
 ];

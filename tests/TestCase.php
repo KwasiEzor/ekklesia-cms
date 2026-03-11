@@ -9,13 +9,14 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Globally bypass authorization for all tests to isolate functionality vs auth logic
         // Skip bypassing for RbacTest because it explicitly asserts role permissions
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
             if (str_contains(static::class, 'RbacTest')) {
                 return null; // Let real Spatie checks run
             }
+
             return true;
         });
     }

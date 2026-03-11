@@ -201,9 +201,10 @@ class GivingRecordResource extends Resource
                     ->relationship('campus', 'name'),
             ])
             ->actions([
-                Tables\Actions\Action::make('void')
+                Actions\Action::make('void')
                     ->label(__('giving_records.void'))
                     ->icon(Heroicon::OutlinedNoSymbol)
+                    ->iconButton()
                     ->color('danger')
                     ->requiresConfirmation()
                     ->modalHeading(__('giving_records.void_heading'))
