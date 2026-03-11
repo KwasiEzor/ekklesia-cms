@@ -986,8 +986,105 @@ User message → ProcessAiMessage (queued job)
 - **Validation:**
   - `php artisan test tests/Feature/Filament/RbacTest.php`: pass (4 passed)
 - **Files:**
-  - `config/filament-shield.php`, `config/permission.php`
-  - `app/Http/Controllers/Api/V1/*.php`
-  - `app/Policies/*.php`
-  - `database/seeders/RolesAndPermissionsSeeder.php`
-  - `tests/Feature/Filament/RbacTest.php`
+---
+
+## 2026-03-11 — Stage 1 Hardening & Security Audit
+
+- **Status:** Done
+- **Goal:** Harden financial integrity, optimize AI performance, and enforce PII scrubbing in audit logs.
+- **Summary:**
+  - **Financial Hardening:**
+    - Created `ImmutableRecordException` for uniform handling of forbidden modifications.
+    - Updated `GivingRecord` and `PaymentTransaction` models to throw localized exceptions on `updating` or `deleting`.
+  - **Privacy & Security:**
+    - Enhanced `LogsActivityWithTenant` trait with a `scrubPii` method that automatically redacts sensitive keys (`phone`, `email`, `amount`, etc.) within `custom_fields` JSON property.
+  - **AI Performance & UX:**
+    - Optimized `TenantContextBuilder` by caching aggregate stats for 15 minutes per tenant to avoid N+1 queries during AI interaction.
+    - Enhanced AI financial context with "Safe Totals" (comparing current month to previous month) to enable trend analysis without exposing individual records.
+    - Upgraded `SkillRegistry` with keyword-based skill detection and scoring, allowing the AI assistant to recognize intent even without explicit `/slug` commands.
+- **Validation:**
+  - `php artisan test --filter=GivingRecordApiTest`: pass (14 passed)
+- **Files:**
+  - `app/Exceptions/ImmutableRecordException.php`
+  - `app/Models/GivingRecord.php`
+  - `app/Models/PaymentTransaction.php`
+  - `app/Concerns/LogsActivityWithTenant.php`
+  - `app/Services/TenantContextBuilder.php`
+  - `app/Services/Ai/AiSkill.php`
+---
+
+## 2026-03-11 — Stage 2: Financial Corrections & Data Portability
+
+- **Status:** In Progress
+- **Goal:** Enable safe financial corrections and provide data export tools.
+- **Summary:**
+  - **Adjustment System:**
+    - Implemented a polymorphic `Adjustment` model to track voids and corrections for immutable records.
+    - Added `Void` action to `GivingRecordResource` and `PaymentTransactionResource` with reason tracking and audit trail.
+    - Integrated visual indicators (IconColumn) to identify voided records in tables.
+  - **Data Portability:**
+
+    - Enabled `withResponsiveImages()` for Member avatars and Gallery photos to optimize bandwidth for low-connectivity areas.
+    - Added high-quality thumbnails and medium-sized conversions for all core models.
+- **Validation:**
+  - `php artisan test`: pass
+  - Exporters and Media conversions verified.
+- **Files:**
+  - `app/Models/Adjustment.php`
+  - `database/migrations/2026_03_11_095048_create_adjustments_table.php`
+  - `app/Filament/Exports/GivingRecordExporter.php`
+  - `app/Filament/Exports/MemberExporter.php`
+  - `app/Filament/Resources/GivingRecordResource.php`
+  - `app/Filament/Resources/GivingRecordResource/Pages/ListGivingRecords.php`
+  - `app/Filament/Resources/MemberResource/Pages/ListMembers.php`
+  - `app/Filament/Resources/NotificationDispatchResource.php`
+  - **Fund Management:**
+    - Enhanced `FundResource` and `CampaignResource` with real-time financial tracking (Total Raised calculations).
+    - Integrated multi-currency support for global church operations.
+
+## 2026-03-11 — Stage 3: Launch Prep & Observability
+
+- **Status:** Done
+- **Goal:** Ensure system reliability and prepare for production deployment.
+- **Summary:**
+  - **Observability:**
+    - Integrated `spatie/laravel-health` to monitor core system vitals.
+    - Registered health checks for Database, Storage, Debug Mode, Environment, and App Optimization.
+  - **Documentation:**
+    - Created a comprehensive `Admin Runbook` for church staff (Treasurers, Pastors).
+    - Integrated the runbook into the VitePress documentation site.
+- **Validation:**
+  - `php artisan test`: pass (330 passed, 959 assertions)
+  - `php artisan health:list`: verified (manual check)
+- **Files:**
+  - `app/Providers/AppServiceProvider.php`
+  - `docs/guide/admin-runbook.md`
+  - `app/Filament/Resources/FundResource.php`
+  - `app/Filament/Resources/CampaignResource.php`
+  - `IMPROVEMENTS_PLAN.md`
+
+---
+
+## 2026-03-11 — Stage 4: Bulk Messaging Test Coverage & Bug Fix
+
+- **Status:** Done
+- **Goal:** Complete test coverage for the Bulk Messaging feature (Feature 9) and fix a type bug.
+- **Summary:**
+  - **Bug Fix:**
+    - Fixed `BulkMessage::getRecipients()` returning `Illuminate\Support\Collection` instead of `Illuminate\Database\Eloquent\Collection` for the default case.
+  - **Test Coverage (45 new tests):**
+    - **Unit Tests (16):** Model casts, hidden attributes, scopes (draft, scheduled, sent, sending, readyToSend), status transition methods (markAsSending, markAsSent, markAsFailed), getRecipients targeting, relationship to creator.
+    - **API Feature Tests (20):** Auth guard, CRUD operations, send action dispatching, status/channel filtering, pagination, validation errors, update endpoint returns 405.
+    - **Tenant Isolation Tests (3):** Cross-tenant invisibility, count isolation, API scoping.
+    - **Job & Command Tests (7):** SendBulkMessageJob status transitions, dispatch record creation, failure counting, contact info skipping; SendScheduledBulkMessages command multi-tenant processing, no-op when nothing due.
+  - **Code Style:** Applied Pint formatting to all dirty files (policies, migrations, services).
+- **Validation:**
+  - `pest`: pass (568 passed, 1561 assertions)
+  - `phpstan analyze app/Models/BulkMessage.php`: pass (no errors)
+- **Files:**
+  - `app/Models/BulkMessage.php` (bug fix: default return type)
+  - `tests/Unit/Models/BulkMessageTest.php` (new — 16 tests)
+  - `tests/Feature/Api/V1/BulkMessageApiTest.php` (new — 20 tests)
+  - `tests/Feature/TenantIsolation/BulkMessageIsolationTest.php` (new — 3 tests)
+  - `tests/Feature/Commands/SendScheduledBulkMessagesTest.php` (new — 7 tests including job tests)
+- **Notes:** Features 7 (Birthday Notifications), 8 (Reading Plans), and 9 (Bulk Messaging) are now all complete with full test coverage. Production readiness sprint features 1-9 done.

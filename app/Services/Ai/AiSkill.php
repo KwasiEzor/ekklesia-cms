@@ -13,4 +13,10 @@ abstract class AiSkill
     abstract public function category(): string;
 
     abstract public function systemPromptAddition(): string;
+
+    /** @return string[] */
+    public function getKeywords(): array
+    {
+        return [];
+    }
 }

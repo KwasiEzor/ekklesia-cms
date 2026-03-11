@@ -87,6 +87,14 @@ class MemberResource extends Resource
                             ->tel()
                             ->maxLength(255),
 
+                        Components\DatePicker::make('date_of_birth')
+                            ->label(__('members.date_of_birth'))
+                            ->maxDate(now()->subYears(1)),
+
+                        Components\DatePicker::make('wedding_anniversary')
+                            ->label(__('members.wedding_anniversary'))
+                            ->maxDate(now()),
+
                         Components\DatePicker::make('baptism_date')
                             ->label(__('members.baptism_date')),
 
@@ -101,6 +109,31 @@ class MemberResource extends Resource
                             ->relationship('campus', 'name')
                             ->searchable()
                             ->preload()
+                            ->nullable(),
+
+                        Components\Select::make('household_id')
+                            ->label(__('households.label'))
+                            ->relationship('household', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->createOptionForm([
+                                Components\TextInput::make('name')
+                                    ->label(__('households.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+
+                        Components\Select::make('family_role')
+                            ->label(__('households.family_role'))
+                            ->options([
+                                'head' => __('households.role_head'),
+                                'spouse' => __('households.role_spouse'),
+                                'child' => __('households.role_child'),
+                                'parent' => __('households.role_parent'),
+                                'sibling' => __('households.role_sibling'),
+                                'other' => __('households.role_other'),
+                            ])
                             ->nullable(),
 
                         Components\Select::make('status')
@@ -152,6 +185,11 @@ class MemberResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn (MemberStatus $state): string => $state->label())
                     ->color(fn (MemberStatus $state): string => $state->color()),
+
+                Tables\Columns\TextColumn::make('household.name')
+                    ->label(__('households.label'))
+                    ->icon(Heroicon::OutlinedHomeModern)
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('cellGroup.name')
                     ->label(__('members.cell_group'))

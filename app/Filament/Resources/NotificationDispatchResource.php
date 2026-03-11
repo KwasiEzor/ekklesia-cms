@@ -6,6 +6,7 @@ use App\Filament\Resources\NotificationDispatchResource\Pages;
 use App\Models\NotificationDispatch;
 use BackedEnum;
 use Filament\Actions;
+use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -47,7 +48,46 @@ class NotificationDispatchResource extends Resource
             ->components([
                 Section::make(__('notification_dispatches.label'))
                     ->icon(Heroicon::OutlinedBellAlert)
-                    ->schema([]),
+                    ->schema([
+                        Components\TextInput::make('channel')
+                            ->label(__('notification_dispatches.channel'))
+                            ->disabled(),
+
+                        Components\TextInput::make('type')
+                            ->label(__('notification_dispatches.type'))
+                            ->disabled(),
+
+                        Components\TextInput::make('status')
+                            ->label(__('notification_dispatches.status'))
+                            ->disabled(),
+
+                        Components\TextInput::make('recipient')
+                            ->label(__('notification_dispatches.recipient'))
+                            ->disabled(),
+
+                        Components\TextInput::make('subject')
+                            ->label(__('notification_dispatches.subject'))
+                            ->disabled()
+                            ->columnSpanFull()
+                            ->hidden(fn ($get) => empty($get('subject'))),
+
+                        Components\Textarea::make('body')
+                            ->label(__('notification_dispatches.body'))
+                            ->disabled()
+                            ->columnSpanFull(),
+
+                        Components\Textarea::make('failure_reason')
+                            ->label(__('notification_dispatches.failure_reason'))
+                            ->disabled()
+                            ->columnSpanFull()
+                            ->hidden(fn ($get) => $get('status') !== 'failed'),
+
+                        Components\KeyValue::make('metadata')
+                            ->label(__('notification_dispatches.metadata'))
+                            ->disabled()
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -58,7 +98,7 @@ class NotificationDispatchResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('channel')
                     ->label(__('notification_dispatches.channel'))
-                    ->formatStateUsing(fn (string $state): string|array => __("notification_dispatches.channels.{$state}"))
+                    ->formatStateUsing(fn (string $state): string|array|null => __("notification_dispatches.channels.{$state}") ?? $state)
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'email' => 'info',
@@ -71,7 +111,7 @@ class NotificationDispatchResource extends Resource
 
                 Tables\Columns\TextColumn::make('type')
                     ->label(__('notification_dispatches.type'))
-                    ->formatStateUsing(fn (string $state): string|array => __("notification_dispatches.types.{$state}"))
+                    ->formatStateUsing(fn (string $state): string|array|null => __("notification_dispatches.types.{$state}") ?? $state)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('recipient')
@@ -87,7 +127,7 @@ class NotificationDispatchResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('notification_dispatches.status'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string|array => __("notification_dispatches.statuses.{$state}"))
+                    ->formatStateUsing(fn (string $state): string|array|null => __("notification_dispatches.statuses.{$state}") ?? $state)
                     ->color(fn (string $state): string => match ($state) {
                         'sent' => 'success',
                         'delivered' => 'success',

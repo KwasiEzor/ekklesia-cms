@@ -32,7 +32,7 @@ class GivingRecordController extends Controller
     {
         $this->authorize('viewAny', GivingRecord::class);
 
-        $query = GivingRecord::with('member');
+        $query = GivingRecord::with(['member', 'fund', 'campaign']);
 
         if ($request->has('campus_id')) {
             $query->forCampus((int) $request->input('campus_id'));
@@ -54,8 +54,12 @@ class GivingRecordController extends Controller
             $query->whereNull('member_id');
         }
 
+        if ($request->has('fund_id')) {
+            $query->where('fund_id', (int) $request->input('fund_id'));
+        }
+
         if ($request->has('campaign_id')) {
-            $query->where('campaign_id', $request->input('campaign_id'));
+            $query->where('campaign_id', (int) $request->input('campaign_id'));
         }
 
         if ($request->has('from')) {
@@ -87,7 +91,7 @@ class GivingRecordController extends Controller
             'tenant_id' => tenant('id'),
         ]);
 
-        return new GivingRecordResource($record->load('member'));
+        return new GivingRecordResource($record->load(['member', 'fund', 'campaign']));
     }
 
     /**
@@ -99,7 +103,7 @@ class GivingRecordController extends Controller
     {
         $this->authorize('view', $givingRecord);
 
-        return new GivingRecordResource($givingRecord->load('member'));
+        return new GivingRecordResource($givingRecord->load(['member', 'fund', 'campaign']));
     }
 
     /**

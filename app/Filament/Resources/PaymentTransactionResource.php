@@ -6,6 +6,7 @@ use App\Filament\Resources\PaymentTransactionResource\Pages;
 use App\Models\PaymentTransaction;
 use BackedEnum;
 use Filament\Actions;
+use Filament\Forms\Components;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -47,7 +48,56 @@ class PaymentTransactionResource extends Resource
             ->components([
                 Section::make(__('payments.label'))
                     ->icon(Heroicon::OutlinedCreditCard)
-                    ->schema([]),
+                    ->schema([
+                        Components\TextInput::make('uuid')
+                            ->label(__('payments.uuid'))
+                            ->disabled(),
+
+                        Components\TextInput::make('status')
+                            ->label(__('payments.status'))
+                            ->disabled(),
+
+                        Components\TextInput::make('amount')
+                            ->label(__('payments.amount'))
+                            ->disabled(),
+
+                        Components\TextInput::make('currency')
+                            ->label(__('payments.currency'))
+                            ->disabled(),
+
+                        Components\TextInput::make('provider')
+                            ->label(__('payments.provider'))
+                            ->disabled(),
+
+                        Components\TextInput::make('payment_method')
+                            ->label(__('payments.payment_method'))
+                            ->disabled(),
+
+                        Components\TextInput::make('phone_number')
+                            ->label(__('payments.phone_number'))
+                            ->disabled(),
+
+                        Components\DateTimePicker::make('paid_at')
+                            ->label(__('payments.paid_at'))
+                            ->disabled(),
+
+                        Components\DateTimePicker::make('failed_at')
+                            ->label(__('payments.failed_at'))
+                            ->disabled()
+                            ->hidden(fn ($get) => empty($get('failed_at'))),
+
+                        Components\Textarea::make('failure_reason')
+                            ->label(__('payments.failure_reason'))
+                            ->disabled()
+                            ->columnSpanFull()
+                            ->hidden(fn ($get) => empty($get('failure_reason'))),
+
+                        Components\KeyValue::make('provider_metadata')
+                            ->label(__('payments.provider_metadata'))
+                            ->disabled()
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
             ])
             ->columns(1);
     }
@@ -69,18 +119,26 @@ class PaymentTransactionResource extends Resource
 
                 Tables\Columns\TextColumn::make('provider')
                     ->label(__('payments.provider'))
-                    ->formatStateUsing(fn (string $state): string|array => __("payments.providers.{$state}"))
+                    ->formatStateUsing(fn (string $state): string|array|null => __("payments.providers.{$state}") ?? $state)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label(__('payments.payment_method'))
-                    ->formatStateUsing(fn (?string $state): string|array => $state ? __("payments.methods.{$state}") : '-')
+                    ->formatStateUsing(fn (?string $state): string|array|null => $state ? (__("payments.methods.{$state}") ?? $state) : '-')
+                    ->toggleable(),
+
+                Tables\Columns\IconColumn::make('is_voided')
+                    ->label(__('payments.voided'))
+                    ->boolean()
+                    ->getStateUsing(fn ($record): bool => $record->adjustments()->where('type', 'void')->exists())
+                    ->trueColor('danger')
+                    ->falseColor('gray')
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('payments.status'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string|array => __("payments.statuses.{$state}"))
+                    ->formatStateUsing(fn (string $state): string|array|null => __("payments.statuses.{$state}") ?? $state)
                     ->color(fn (string $state): string => match ($state) {
                         'completed' => 'success',
                         'pending', 'processing' => 'warning',
@@ -132,6 +190,34 @@ class PaymentTransactionResource extends Resource
                     ->relationship('campus', 'name'),
             ])
             ->actions([
+                Tables\Actions\Action::make('void')
+                    ->label(__('payments.void'))
+                    ->icon(Heroicon::OutlinedNoSymbol)
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading(__('payments.void_heading'))
+                    ->modalDescription(__('payments.void_description'))
+                    ->form([
+                        Components\TextInput::make('reason')
+                            ->label(__('payments.void_reason'))
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->action(function (PaymentTransaction $record, array $data): void {
+                        $record->adjustments()->create([
+                            'tenant_id' => $record->tenant_id,
+                            'user_id' => auth()->id(),
+                            'type' => 'void',
+                            'amount_before' => $record->amount,
+                            'amount_after' => 0,
+                            'reason' => $data['reason'],
+                        ]);
+
+                        if ($record->status !== 'completed') {
+                            $record->update(['status' => 'cancelled']);
+                        }
+                    })
+                    ->visible(fn (PaymentTransaction $record): bool => ! $record->adjustments()->where('type', 'void')->exists()),
                 Actions\ViewAction::make()
                     ->iconButton(),
             ]);

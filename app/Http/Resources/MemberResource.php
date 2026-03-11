@@ -20,6 +20,8 @@ class MemberResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'avatar_url' => $this->avatar_url,
+            'date_of_birth' => $this->date_of_birth?->toDateString(),
+            'wedding_anniversary' => $this->wedding_anniversary?->toDateString(),
             'baptism_date' => $this->baptism_date?->toDateString(),
             'cell_group_id' => $this->cell_group_id,
             'status' => (string) $this->status,

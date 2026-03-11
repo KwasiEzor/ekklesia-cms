@@ -80,16 +80,26 @@ PROMPT;
 
     private function aggregateStats(): string
     {
-        $stats = [
-            'Prédications' => Sermon::count(),
-            'Membres (total)' => Member::count(),
-            'Membres (actifs)' => Member::where('status', 'active')->count(),
-            'Pages (total)' => Page::count(),
-            'Pages (publiées)' => Page::whereNotNull('published_at')->count(),
-            'Dons ce mois' => GivingRecord::whereMonth('date', now()->month)
-                ->whereYear('date', now()->year)
-                ->count(),
-        ];
+        $tenantId = tenant('id');
+        $cacheKey = "tenant_context_stats:{$tenantId}";
+
+        $stats = cache()->remember($cacheKey, now()->addMinutes(15), function () {
+            $thisMonth = GivingRecord::whereMonth('date', now()->month)
+                ->whereYear('date', now()->year);
+
+            $lastMonth = GivingRecord::whereMonth('date', now()->subMonth()->month)
+                ->whereYear('date', now()->subMonth()->year);
+
+            return [
+                'Prédications' => Sermon::count(),
+                'Membres (total)' => Member::count(),
+                'Membres (actifs)' => Member::where('status', 'active')->count(),
+                'Pages (publiées)' => Page::whereNotNull('published_at')->count(),
+                'Dons ce mois' => $thisMonth->count(),
+                'Montant total ce mois' => number_format((float) $thisMonth->sum('amount'), 2),
+                'Montant total mois dernier' => number_format((float) $lastMonth->sum('amount'), 2),
+            ];
+        });
 
         $lines = ['## Statistiques actuelles'];
         foreach ($stats as $label => $value) {

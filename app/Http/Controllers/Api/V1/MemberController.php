@@ -114,4 +114,55 @@ class MemberController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Upcoming birthdays.
+     *
+     * Retrieve members with birthdays in the next N days.
+     *
+     * @queryParam days int Number of days to look ahead. Default: 30. Example: 7
+     */
+    public function birthdays(Request $request): MemberCollection
+    {
+        $this->authorize('viewAny', Member::class);
+
+        $days = (int) $request->input('days', 30);
+        $days = min(max($days, 1), 365);
+
+        $members = Member::upcomingBirthdays($days)
+            ->orderByRaw('EXTRACT(MONTH FROM date_of_birth), EXTRACT(DAY FROM date_of_birth)')
+            ->paginate($request->input('per_page', 15));
+
+        return new MemberCollection($members);
+    }
+
+    /**
+     * Upcoming anniversaries.
+     *
+     * Retrieve members with wedding anniversaries in the next N days.
+     *
+     * @queryParam days int Number of days to look ahead. Default: 30. Example: 7
+     */
+    public function anniversaries(Request $request): MemberCollection
+    {
+        $this->authorize('viewAny', Member::class);
+
+        $days = (int) $request->input('days', 30);
+        $days = min(max($days, 1), 365);
+
+        $members = Member::anniversaryThisWeek()
+            ->when($days > 7, fn ($q) => $q->orWhere(function ($q) use ($days): void {
+                $dates = collect(range(7, $days - 1))->map(fn (int $i) => now()->addDays($i));
+                foreach ($dates as $date) {
+                    $q->orWhereRaw('EXTRACT(MONTH FROM wedding_anniversary) = ? AND EXTRACT(DAY FROM wedding_anniversary) = ?', [
+                        $date->month,
+                        $date->day,
+                    ]);
+                }
+            }))
+            ->orderByRaw('EXTRACT(MONTH FROM wedding_anniversary), EXTRACT(DAY FROM wedding_anniversary)')
+            ->paginate($request->input('per_page', 15));
+
+        return new MemberCollection($members);
+    }
 }

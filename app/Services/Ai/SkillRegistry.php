@@ -59,12 +59,59 @@ class SkillRegistry
 
     public function detectSkill(string $message): ?AiSkill
     {
-        // Check for explicit /slug invocation
-        if (preg_match('/^\/([a-z-]+)/', trim($message), $matches)) {
+        $message = trim($message);
+
+        // 1. Check for explicit /slug invocation
+        if (preg_match('/^\/([a-z-]+)/', $message, $matches)) {
             return $this->find($matches[1]);
         }
 
-        return null;
+        // 2. Keyword-based detection with scoring
+        $scores = collect();
+        $lowercaseMessage = mb_strtolower($message);
+
+        foreach ($this->skills as $skill) {
+            $score = 0;
+            $keywords = $this->getKeywordsForSkill($skill);
+
+            foreach ($keywords as $keyword) {
+                if (str_contains($lowercaseMessage, mb_strtolower($keyword))) {
+                    $score++;
+                }
+            }
+
+            if ($score > 0) {
+                $scores->put($skill->slug(), [
+                    'skill' => $skill,
+                    'score' => $score,
+                ]);
+            }
+        }
+
+        if ($scores->isEmpty()) {
+            return null;
+        }
+
+        // Return skill with highest score
+        return $scores->sortByDesc('score')->first()['skill'];
+    }
+
+    /** @return string[] */
+    private function getKeywordsForSkill(AiSkill $skill): array
+    {
+        $defaults = match ($skill->slug()) {
+            'sermon-outline' => ['sermon', 'prédication', 'plan', 'outline', 'message'],
+            'giving-insights' => ['don', 'giving', 'argent', 'finance', 'stat', 'tendance', 'montant', 'offrande', 'dîme'],
+            'event-plan' => ['événement', 'event', 'planifier', 'organisation', 'fête', 'culte'],
+            'translate' => ['traduire', 'translate', 'traduction', 'anglais', 'français'],
+            'proofread' => ['corriger', 'fautes', 'orthographe', 'relecture', 'proofread'],
+            'seo-optimize' => ['seo', 'référencement', 'google', 'mots-clés'],
+            'content-write' => ['écrire', 'rédiger', 'article', 'blog', 'texte'],
+            'social-create' => ['facebook', 'instagram', 'réseaux', 'post', 'social'],
+            default => [],
+        };
+
+        return array_unique(array_merge($defaults, $skill->getKeywords()));
     }
 
     private function registerDefaults(): void

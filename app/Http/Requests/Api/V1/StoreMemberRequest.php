@@ -28,6 +28,10 @@ class StoreMemberRequest extends FormRequest
             ],
             /** @example "+1234567890" */
             'phone' => ['nullable', 'string', 'max:255'],
+            /** @example "1990-05-15" */
+            'date_of_birth' => ['nullable', 'date', 'before:today'],
+            /** @example "2015-06-20" */
+            'wedding_anniversary' => ['nullable', 'date', 'before:today'],
             /** @example "2020-01-01" */
             'baptism_date' => ['nullable', 'date'],
             /** @example 1 */

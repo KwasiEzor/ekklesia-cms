@@ -1,15 +1,25 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AnnouncementController;
+use App\Http\Controllers\Api\V1\AttendanceController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BulkMessageController;
+use App\Http\Controllers\Api\V1\CampaignController;
 use App\Http\Controllers\Api\V1\CampusController;
+use App\Http\Controllers\Api\V1\DevotionalController;
 use App\Http\Controllers\Api\V1\EventController;
+use App\Http\Controllers\Api\V1\FundController;
 use App\Http\Controllers\Api\V1\GalleryController;
 use App\Http\Controllers\Api\V1\GivingRecordController;
+use App\Http\Controllers\Api\V1\HouseholdController;
 use App\Http\Controllers\Api\V1\MemberController;
 use App\Http\Controllers\Api\V1\PageController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PrayerRequestController;
+use App\Http\Controllers\Api\V1\ReadingPlanController;
 use App\Http\Controllers\Api\V1\SermonController;
+use App\Http\Controllers\Api\V1\ServiceTypeController;
+use App\Http\Controllers\Api\V1\TestimonyController;
 use App\Http\Middleware\InitializeTenancyByHeader;
 use App\Http\Middleware\InitializeTenancyByUser;
 use Illuminate\Support\Facades\Route;
@@ -40,10 +50,28 @@ Route::prefix('v1')->group(function (): void {
         Route::apiResource('sermons', SermonController::class);
         Route::apiResource('events', EventController::class);
         Route::apiResource('announcements', AnnouncementController::class);
+        Route::get('members/upcoming/birthdays', [MemberController::class, 'birthdays']);
+        Route::get('members/upcoming/anniversaries', [MemberController::class, 'anniversaries']);
         Route::apiResource('members', MemberController::class);
         Route::apiResource('galleries', GalleryController::class);
         Route::apiResource('pages', PageController::class);
         Route::apiResource('giving-records', GivingRecordController::class)->except(['update', 'destroy']);
+        Route::apiResource('service-types', ServiceTypeController::class);
+        Route::apiResource('attendances', AttendanceController::class);
+        Route::apiResource('households', HouseholdController::class);
+        Route::apiResource('prayer-requests', PrayerRequestController::class);
+        Route::post('prayer-requests/{prayer_request}/commit', [PrayerRequestController::class, 'commit']);
+        Route::apiResource('funds', FundController::class);
+        Route::apiResource('campaigns', CampaignController::class);
+        Route::apiResource('devotionals', DevotionalController::class);
+        Route::apiResource('testimonies', TestimonyController::class);
+        Route::post('testimonies/{testimony}/react', [TestimonyController::class, 'react']);
+        Route::apiResource('reading-plans', ReadingPlanController::class);
+        Route::post('reading-plans/{reading_plan}/subscribe', [ReadingPlanController::class, 'subscribe']);
+        Route::post('reading-plans/{reading_plan}/days/{day}/complete', [ReadingPlanController::class, 'completeDay']);
+        Route::get('reading-plans/{reading_plan}/progress', [ReadingPlanController::class, 'progress']);
+        Route::apiResource('bulk-messages', BulkMessageController::class)->except(['update']);
+        Route::post('bulk-messages/{bulk_message}/send', [BulkMessageController::class, 'send']);
 
         // Payments — requires plan with payments feature
         Route::middleware(['plan:payments'])->group(function (): void {

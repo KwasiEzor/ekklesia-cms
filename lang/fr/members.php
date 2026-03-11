@@ -11,6 +11,8 @@ return [
     'full_name' => 'Nom complet',
     'email' => 'Courriel',
     'phone' => 'Téléphone',
+    'date_of_birth' => 'Date de naissance',
+    'wedding_anniversary' => 'Date de mariage',
     'baptism_date' => 'Date de baptême',
     'cell_group' => 'Groupe de cellule',
     'status' => 'Statut',

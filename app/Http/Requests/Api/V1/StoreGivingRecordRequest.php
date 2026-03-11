@@ -31,8 +31,18 @@ class StoreGivingRecordRequest extends FormRequest
             'method' => ['required', 'string', Rule::in(['mobile_money', 'cash', 'bank_transfer', 'card'])],
             /** @example "TXN-12345" */
             'reference' => ['nullable', 'string', 'max:255'],
-            /** @example "tithe" */
-            'campaign_id' => ['nullable', 'string', 'max:255'],
+            /** @example 1 */
+            'fund_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('funds', 'id')->where('tenant_id', tenant('id')),
+            ],
+            /** @example 1 */
+            'campaign_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('campaigns', 'id')->where('tenant_id', tenant('id')),
+            ],
             'custom_fields' => ['nullable', 'array'],
         ];
     }

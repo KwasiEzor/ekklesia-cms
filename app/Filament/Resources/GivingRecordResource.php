@@ -103,10 +103,19 @@ class GivingRecordResource extends Resource
                             ->placeholder(__('giving_records.reference_placeholder'))
                             ->maxLength(255),
 
-                        Components\TextInput::make('campaign_id')
+                        Components\Select::make('fund_id')
+                            ->label(__('giving_records.fund'))
+                            ->relationship('fund', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
+
+                        Components\Select::make('campaign_id')
                             ->label(__('giving_records.campaign'))
-                            ->placeholder(__('giving_records.campaign_placeholder'))
-                            ->maxLength(255),
+                            ->relationship('campaign', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable(),
 
                         Components\Select::make('campus_id')
                             ->label(__('campuses.campus'))
@@ -144,6 +153,14 @@ class GivingRecordResource extends Resource
                     ->label(__('giving_records.date'))
                     ->date('d M Y')
                     ->sortable(),
+
+                Tables\Columns\IconColumn::make('is_voided')
+                    ->label(__('giving_records.voided'))
+                    ->boolean()
+                    ->getStateUsing(fn ($record): bool => $record->adjustments()->where('type', 'void')->exists())
+                    ->trueColor('danger')
+                    ->falseColor('gray')
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('reference')
                     ->label(__('giving_records.reference'))
@@ -184,6 +201,33 @@ class GivingRecordResource extends Resource
                     ->relationship('campus', 'name'),
             ])
             ->actions([
+                Tables\Actions\Action::make('void')
+                    ->label(__('giving_records.void'))
+                    ->icon(Heroicon::OutlinedNoSymbol)
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading(__('giving_records.void_heading'))
+                    ->modalDescription(__('giving_records.void_description'))
+                    ->form([
+                        Components\TextInput::make('reason')
+                            ->label(__('giving_records.void_reason'))
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->action(function (GivingRecord $record, array $data): void {
+                        $record->adjustments()->create([
+                            'tenant_id' => $record->tenant_id,
+                            'user_id' => auth()->id(),
+                            'type' => 'void',
+                            'amount_before' => $record->amount,
+                            'amount_after' => 0,
+                            'reason' => $data['reason'],
+                        ]);
+
+                        // We can't update amount because of immutability in model boot
+                        // But we want to indicate it is voided. The IconColumn handles this.
+                    })
+                    ->visible(fn (GivingRecord $record): bool => ! $record->adjustments()->where('type', 'void')->exists()),
                 Actions\ViewAction::make()
                     ->iconButton(),
             ])

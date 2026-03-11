@@ -12,6 +12,7 @@ return [
     'date' => 'Date',
     'method' => 'Mode de paiement',
     'reference' => 'Référence',
+    'fund' => 'Fonds',
     'campaign' => 'Campagne',
     'anonymous' => 'Anonyme',
     'custom_fields' => 'Champs personnalisés',

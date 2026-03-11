@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Concerns\HasCampusScope;
 use App\Concerns\LogsActivityWithTenant;
+use App\Exceptions\ImmutableRecordException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class GivingRecord extends Model
@@ -22,6 +24,7 @@ class GivingRecord extends Model
         'date',
         'method',
         'reference',
+        'fund_id',
         'campaign_id',
         'campus_id',
         'custom_fields',
@@ -31,12 +34,12 @@ class GivingRecord extends Model
     {
         static::updating(function ($record): void {
             if ($record->isDirty(['amount', 'currency', 'date', 'member_id', 'method'])) {
-                throw new \Exception('Financial records are immutable. Corrections must be handled via new records.');
+                throw new ImmutableRecordException(__('giving_records.immutable_error') ?? 'Financial records are immutable. Corrections must be handled via new records.');
             }
         });
 
         static::deleting(function ($record): void {
-            throw new \Exception('Financial records are immutable and cannot be deleted.');
+            throw new ImmutableRecordException(__('giving_records.immutable_delete_error') ?? 'Financial records are immutable and cannot be deleted.');
         });
     }
 
@@ -56,6 +59,21 @@ class GivingRecord extends Model
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
+    }
+
+    public function fund(): BelongsTo
+    {
+        return $this->belongsTo(Fund::class);
+    }
+
+    public function campaign(): BelongsTo
+    {
+        return $this->belongsTo(Campaign::class);
+    }
+
+    public function adjustments(): MorphMany
+    {
+        return $this->morphMany(Adjustment::class, 'adjustable');
     }
 
     public function getIsAnonymousAttribute(): bool

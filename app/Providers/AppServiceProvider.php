@@ -22,6 +22,12 @@ use Illuminate\Support\Facades\Event as EventFacade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Spatie\Health\Checks\Checks\DatabaseCheck;
+use Spatie\Health\Checks\Checks\DebugModeCheck;
+use Spatie\Health\Checks\Checks\EnvironmentCheck;
+use Spatie\Health\Checks\Checks\OptimizedAppCheck;
+use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
+use Spatie\Health\Facades\Health;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +45,14 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Health::checks([
+            OptimizedAppCheck::new(),
+            DebugModeCheck::new(),
+            EnvironmentCheck::new(),
+            DatabaseCheck::new(),
+            UsedDiskSpaceCheck::new(),
+        ]);
+
         Gate::before(function ($user, $ability) {
             // Check if super_admin role exists globally or in current team
             // We use a direct DB query to avoid any caching or scoping issues with Spatie's hasRole

@@ -30,10 +30,18 @@ test('skill registry detects skill from /command syntax', function () {
     expect($skill->slug())->toBe('translate');
 });
 
-test('skill registry returns null when no /command prefix', function () {
+test('skill registry detects skill from keywords without prefix', function () {
     $registry = new SkillRegistry;
 
-    expect($registry->detectSkill('Help me write a sermon'))->toBeNull();
+    $skill = $registry->detectSkill('Aidez-moi à préparer un plan de prédication');
+
+    expect($skill)->toBeInstanceOf(\App\Services\Ai\Skills\SermonOutlineSkill::class);
+});
+
+test('skill registry returns null when no keywords match', function () {
+    $registry = new SkillRegistry;
+
+    expect($registry->detectSkill('Bonjour, comment ça va ?'))->toBeNull();
 });
 
 test('skills have french and english names', function () {

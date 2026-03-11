@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\GivingRecordResource\Pages;
 
+use App\Filament\Exports\GivingRecordExporter;
 use App\Filament\Resources\GivingRecordResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -16,6 +17,8 @@ class ListGivingRecords extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\ExportAction::make()
+                ->exporter(GivingRecordExporter::class),
             Actions\CreateAction::make(),
         ];
     }

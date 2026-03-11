@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Concerns\LogsActivityWithTenant;
+use App\Exceptions\ImmutableRecordException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
@@ -60,12 +62,12 @@ class PaymentTransaction extends Model
 
         static::updating(function ($record): void {
             if ($record->status !== 'pending' && $record->isDirty(['amount', 'currency', 'member_id', 'provider'])) {
-                throw new \Exception('Payment transactions are immutable once processed.');
+                throw new ImmutableRecordException(__('payments.immutable_error') ?? 'Payment transactions are immutable once processed.');
             }
         });
 
         static::deleting(function ($record): void {
-            throw new \Exception('Payment transactions are immutable and cannot be deleted.');
+            throw new ImmutableRecordException(__('payments.immutable_delete_error') ?? 'Payment transactions are immutable and cannot be deleted.');
         });
     }
 
@@ -82,6 +84,16 @@ class PaymentTransaction extends Model
     public function campus(): BelongsTo
     {
         return $this->belongsTo(Campus::class);
+    }
+
+    public function campaign(): BelongsTo
+    {
+        return $this->belongsTo(Campaign::class);
+    }
+
+    public function adjustments(): MorphMany
+    {
+        return $this->morphMany(Adjustment::class, 'adjustable');
     }
 
     public function markAsCompleted(?string $providerReference = null): void

@@ -40,6 +40,7 @@ export default defineConfig({
             { text: 'Introduction', link: '/guide/introduction' },
             { text: 'Why Ekklesia?', link: '/guide/why-ekklesia' },
             { text: 'Quick Start', link: '/guide/quick-start' },
+            { text: 'Admin Runbook', link: '/guide/admin-runbook' },
             { text: 'AI Gates Self-Test', link: '/guide/ai-gates-self-test' },
             { text: 'Roadmap', link: '/guide/roadmap' },
             { text: 'Changelog', link: '/guide/changelog' },

@@ -26,6 +26,8 @@ class UpdateMemberRequest extends FormRequest
                     ->ignore($this->route('member')),
             ],
             'phone' => ['nullable', 'string', 'max:255'],
+            'date_of_birth' => ['nullable', 'date', 'before:today'],
+            'wedding_anniversary' => ['nullable', 'date', 'before:today'],
             'baptism_date' => ['nullable', 'date'],
             'cell_group_id' => ['nullable', 'integer', 'exists:cell_groups,id'],
             'status' => ['nullable', 'string', Rule::in(['active', 'inactive', 'visiting', 'transferred'])],

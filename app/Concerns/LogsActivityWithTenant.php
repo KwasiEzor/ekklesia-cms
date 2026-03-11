@@ -13,6 +13,42 @@ trait LogsActivityWithTenant
     public function tapActivity(Activity $activity, string $eventName): void
     {
         $activity->tenant_id = $this->tenant_id;
+
+        if (isset($activity->properties['attributes']['custom_fields'])) {
+            $properties = $activity->properties->toArray();
+            $properties['attributes']['custom_fields'] = $this->scrubPii($properties['attributes']['custom_fields']);
+
+            if (isset($properties['old']['custom_fields'])) {
+                $properties['old']['custom_fields'] = $this->scrubPii($properties['old']['custom_fields']);
+            }
+
+            $activity->properties = collect($properties);
+        }
+    }
+
+    protected function scrubPii(array $data): array
+    {
+        $sensitiveKeys = [
+            'phone', 'telephone', 'mobile', 'email', 'address', 'addr',
+            'amount', 'montant', 'price', 'prix', 'birth', 'naissance',
+        ];
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->scrubPii($value);
+
+                continue;
+            }
+
+            foreach ($sensitiveKeys as $sensitiveKey) {
+                if (str_contains(strtolower((string) $key), $sensitiveKey)) {
+                    $data[$key] = '[REDACTED]';
+                    break;
+                }
+            }
+        }
+
+        return $data;
     }
 
     public function getActivitylogOptions(): LogOptions

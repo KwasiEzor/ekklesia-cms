@@ -21,7 +21,7 @@ class PaymentTransactionFactory extends Factory
             'status' => 'pending',
             'payment_method' => $this->faker->randomElement(['mtn_momo', 'orange_money', 'wave', 'card']),
             'phone_number' => $this->faker->optional(0.7)->phoneNumber(),
-            'campaign_id' => $this->faker->optional(0.3)->word(),
+            'campaign_id' => null,
             'provider_metadata' => null,
         ];
     }
