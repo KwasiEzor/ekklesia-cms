@@ -528,7 +528,7 @@ class PageResource extends Resource
 
                                 Components\Builder\Block::make('columns')
                                     ->label(__('pages.blocks.columns'))
-                                    ->icon(Heroicon::OutlinedColumns)
+                                    ->icon(Heroicon::OutlinedViewColumns)
                                     ->schema([
                                         Components\Select::make('layout')
                                             ->label(__('pages.blocks.columns_layout'))

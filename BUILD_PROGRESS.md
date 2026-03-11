@@ -1159,3 +1159,17 @@ User message → ProcessAiMessage (queued job)
   - `resources/views/components/blocks/*.blade.php`
   - Migrations for sermons and users.
 
+---
+
+## 2026-03-11 — UI Hotfix (Heroicon Constant Error)
+
+- **Status:** Done
+- **Goal:** Resolve internal server error in `PageResource` caused by an undefined Heroicon constant.
+- **Summary:**
+  - Corrected `Heroicon::OutlinedColumns` to `Heroicon::OutlinedViewColumns` in `app/Filament/Resources/PageResource.php`.
+- **Validation:**
+  - Verified constant existence via Tinker.
+  - `php artisan test tests/Feature/Api/V1/PageApiTest.php`: pass
+- **Files:**
+  - `app/Filament/Resources/PageResource.php`
+
