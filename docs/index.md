@@ -19,34 +19,34 @@ hero:
 features:
   - icon: 🏛️
     title: Built for African Churches
-    details: Designed from the ground up for Francophone Africa — French-first interface, mobile money giving, multilingual content, and culturally relevant workflows for Pentecostal and charismatic congregations.
+    details: Designed from the ground up for Francophone Africa — French-first interface, multi-currency giving, attendance tracking, prayer wall, devotionals, testimonies, and culturally relevant workflows.
 
   - icon: 🧩
     title: Headless & Flexible
-    details: A clean REST API at the core. Build your frontend in Next.js, Nuxt, React Native, or plain Blade. Your design, your stack, your church.
+    details: 60+ REST API endpoints at the core. Build your frontend in Next.js, Nuxt, React Native, or plain Blade. Your design, your stack, your church.
 
   - icon: 🤖
     title: AI-Powered
-    details: An embedded AI assistant helps church administrators draft sermons announcements, summarize messages, and answer how-to questions — in French or English, no technical skill required.
+    details: A multi-provider AI assistant (Claude, OpenAI, Gemini) with 14 specialized skills — drafts sermons, plans events, analyzes giving, and answers questions in French or English.
 
   - icon: 🚀
-    title: One-Click Deploy
-    details: Launch a live demo in under two minutes with Laravel Cloud. Deploy to production on Sevalla with Google Cloud infrastructure that has African points of presence.
+    title: Production-Ready
+    details: 568 tests, Docker deployment, health monitoring, financial audit trails, RBAC with 4 roles, and a comprehensive admin runbook for church staff.
 
   - icon: 🔒
     title: Multi-Tenant by Design
-    details: One installation, many churches. Every church is fully isolated — their data, their media, their settings. Upgrade to dedicated database isolation for premium tenants.
+    details: One installation, many churches. Every church is fully isolated — their data, their media, their settings. Immutable financial records with full audit trails.
 
   - icon: 🌍
     title: Open Source Core
-    details: The full CMS engine is MIT-licensed and free forever. Premium modules — mobile money, SMS notifications, AI assistant, multi-campus — fund the project's continued development.
+    details: The full CMS engine is MIT-licensed and free forever. Premium modules — mobile money, SMS notifications, WhatsApp, multi-campus — fund the project's continued development.
 ---
 
 ## Why Ekklesia?
 
 WordPress is overkill and culturally misaligned. Church management tools built for Western congregations don't understand African workflows. **Ekklesia is the tool that was missing.**
 
-It handles what African churches actually need: sermon archives with audio and video, event management, member directories, giving records, multilingual announcements — all from a clean admin panel that non-technical pastors and church secretaries can use with confidence.
+It handles what African churches actually need: sermon archives, event management, member directories, household linking, attendance tracking, giving records with fund management, prayer walls, devotionals, testimonies, reading plans, and bulk messaging — all from a clean admin panel that non-technical pastors and church secretaries can use with confidence.
 
 And because it is open source, it belongs to the community it serves.
 

@@ -1,5 +1,117 @@
 # Changelog
 
+## Production Readiness Sprint (March 2026)
+
+### Features 1–9: Complete Production Feature Set
+
+**9 new features** fully implemented with models, migrations, Filament resources, API endpoints, factories, policies, translations, and comprehensive test coverage.
+
+#### 1. Attendance Tracking
+- **Models:** `ServiceType`, `Attendance`
+- **Filament:** `ServiceTypeResource`, `AttendanceResource` with service type filters
+- **API:** Full CRUD for both service types and attendance records
+- **Tests:** Unit, API, and tenant isolation tests
+
+#### 2. Family/Household Linking
+- **Model:** `Household` with head of household, family roles
+- **Member update:** `household_id`, `family_role`, `date_of_birth` columns
+- **Filament:** `HouseholdResource` with member listing
+- **API:** Full CRUD with family member aggregation
+
+#### 3. Fund & Campaign Management
+- **Models:** `Fund`, `Campaign` with goal tracking and progress calculation
+- **GivingRecord update:** `fund_id` foreign key for categorized giving
+- **Filament:** `FundResource`, `CampaignResource` with real-time totals
+- **Multi-currency support** for global church operations
+
+#### 4. Prayer Wall & Tracking
+- **Models:** `PrayerRequest`, `PrayerCommitment`
+- **Features:** Public/group/confidential visibility, "Je prie" commitments, answered prayer tracking
+- **Filament:** `PrayerRequestResource` with moderation workflow
+- **API:** Prayer requests with commitment and answer endpoints
+
+#### 5. Daily Devotional Delivery
+- **Models:** `Devotional`, `DevotionalSeries`
+- **Features:** Verse reference, reflection, prayer point, application fields
+- **Series support** for themed multi-day devotionals
+- **Scheduling system** for advance creation and publishing
+
+#### 6. Testimony Sharing
+- **Model:** `Testimony` with categories (healing, provision, deliverance, conversion, family restoration)
+- **Features:** Moderation workflow (submitted → review → approved/rejected), anonymous option, culturally appropriate reactions (Amen, Gloire à Dieu, Alléluia)
+- **Audio recording support** via Spatie Media Library
+
+#### 7. Birthday Auto-Notifications
+- **Command:** `SendBirthdayNotifications` — scans all tenants daily
+- **Notifications:** `BirthdayNotification`, `AnniversaryNotification`
+- **Member scopes:** `birthdayToday`, `birthdayThisWeek`, `anniversaryToday`
+- **Accessors:** `age`, `years_married`
+
+#### 8. Bible Reading Plans & Streaks
+- **Models:** `ReadingPlan`, `ReadingPlanDay`, `MemberReadingProgress`
+- **Features:** Daily passage tracking, streak counter with grace period, longest streak tracking
+- **API:** Subscribe, complete day, progress with streak data
+
+#### 9. SMS Bulk Messaging
+- **Models:** `BulkMessage`, `MessageTemplate`
+- **Job:** `SendBulkMessageJob` with per-recipient dispatch tracking
+- **Command:** `SendScheduledBulkMessages` for scheduled delivery
+- **Targeting:** All members, cell group, campus, or status-based audiences
+
+### Security & Financial Hardening
+- **Immutable financial records:** `GivingRecord` and `PaymentTransaction` block updates/deletes at model level
+- **Adjustment system:** Polymorphic `Adjustment` model for voids and corrections
+- **PII scrubbing:** `LogsActivityWithTenant` automatically redacts sensitive fields in audit logs
+- **AI rate limiting:** 10 messages/minute per tenant via `RateLimiter`
+- **Audit trail:** Read-only `ActivityResource` for administrators
+
+### Observability
+- **`spatie/laravel-health`** monitoring: Database, Storage, Debug Mode, Environment, App Optimization
+- **Admin runbook** for church staff (Treasurers, Pastors)
+
+### Data Portability
+- **CSV exporters** for GivingRecords and Members via Filament
+- **Responsive images** for Member avatars and Gallery photos
+
+### Stats
+- 568 tests passing (1561 assertions)
+- 15 new models, 18 new migrations, 10 new API controllers
+- Full French translations for all 9 features
+
+---
+
+## Phase 5 — AI Layer (March 2026)
+
+### Multi-Provider AI Assistant
+- **AiManager** driver pattern: Claude, OpenAI, Gemini
+- **14 specialized skills** in 5 categories: Content Creation, Church Management, Design & Branding, Security & Maintenance, AI Guidance
+- **Tenant-scoped context pipeline** with PII filtering and cached aggregate stats
+- **Streaming responses** via Laravel Reverb on private `ai-chat.{userId}` channel
+- **Per-tenant configuration:** provider, model, API key, max tokens
+
+### Stats
+- 228 tests passing (34 new)
+
+---
+
+## UI Refonte — Premium Admin Redesign (March 2026)
+
+### Dashboard Widgets
+- StatsOverview (4 stat cards with sparklines), GivingChart, MemberDistributionChart, UpcomingEventsWidget, SermonsChart
+
+### Settings Page — 7 Tabs
+- Church Information, Appearance & Design, Social Media, SEO & Analytics, Notifications, Modules, Advanced
+
+### Resource Form Redesign
+- Icon sections with descriptions, collapsible secondary content, prefix icons, placeholders, helper texts across all 7 resources
+
+### RBAC & Shield Integration
+- 4 base roles: Super Admin, Pastor, Treasurer, Volunteer
+- `filament/shield` v4 with tenant-scoped permissions
+- Policies for all 10+ core resources
+
+---
+
 ## Phase 4 — Deployment Preparation (March 2026)
 
 ### AI Quality & Security Governance
@@ -48,7 +160,7 @@
 - Production PHP config with OPcache, upload limits, security settings
 - `.dockerignore` for lean production images
 
-### Stats
+### Stats (at the time)
 - 194 tests passing (604 assertions)
 - PHPStan level 5, Rector PHP 8.4, Pint — all green
 

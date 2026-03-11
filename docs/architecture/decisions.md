@@ -93,8 +93,46 @@ The contract governing what a community plugin can and cannot do — which data 
 
 ---
 
-### AI Context Pipeline <span class="decision-badge">OPEN</span>
+### AI Context Pipeline <span class="decision-badge">DECIDED</span>
 
-**Status:** Not yet decided. Must be resolved before the AI module is built.
+**Decision:** Tenant-scoped context builder with cached aggregate statistics and PII filtering.
 
-How content is structured and passed to the Claude API — which fields, in what format, with what context window management — determines the quality of AI responses for church users.
+**Rationale:** The AI assistant needs church context to provide relevant responses, but must never expose individual member data (phone numbers, giving amounts) or data from other tenants.
+
+**Implementation:**
+- `TenantContextBuilder` assembles system prompts with tenant metadata (name, denomination, settings) and aggregate statistics (member count, giving trends, event counts)
+- Aggregate stats are cached for 15 minutes per tenant to avoid N+1 queries during AI interactions
+- "Safe Totals" provide month-over-month financial trends without individual record exposure
+- All AI requests go through the tenant's configured provider (Claude/OpenAI/Gemini) via the `AiManager` driver pattern
+- Rate limiting: 10 AI messages per minute per tenant via Laravel `RateLimiter`
+- Streaming responses via Laravel Reverb on private `ai-chat.{userId}` channels
+
+---
+
+### Financial Record Immutability <span class="decision-badge">DECIDED</span>
+
+**Decision:** `GivingRecord` and `PaymentTransaction` models are immutable — updates and deletes are blocked at the Eloquent event level.
+
+**Rationale:** Financial records must maintain audit integrity. Once a giving record or payment transaction is created, it cannot be modified or deleted. This is a hard requirement for any church finance system that may face audits.
+
+**Implementation:**
+- Both models throw `ImmutableRecordException` on `updating` or `deleting` events
+- Corrections are handled via a polymorphic `Adjustment` model (type: void or correction) with required reason and audit trail
+- `HasSoftVersioning` was removed from `GivingRecord` to enforce immutability
+- Filament resources disable Edit and Delete actions for these models
+- API routes exclude `PUT/PATCH/DELETE` for giving records
+
+---
+
+### Role-Based Access Control <span class="decision-badge">DECIDED</span>
+
+**Decision:** `filament/shield` v4 with `spatie/laravel-permission` for tenant-scoped RBAC.
+
+**Rationale:** Church organizations need granular access control — a Treasurer should access financial records but not member pastoral notes, while a Volunteer should have read-only access to events and announcements.
+
+**Implementation:**
+- 4 base roles: Super Admin, Pastor, Treasurer, Volunteer
+- Permissions generated per resource via Shield (ViewAny, View, Create, Update, Delete)
+- Tenant-scoped via `team_id` matching tenant slugs
+- All API controllers enforce model policies via `$this->authorize()`
+- `Gate::before()` in TestCase bypasses auth for non-RBAC tests

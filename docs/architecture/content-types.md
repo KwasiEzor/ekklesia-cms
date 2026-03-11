@@ -149,6 +149,121 @@ This avoids the EAV anti-pattern used by WordPress, which requires multiple JOIN
 
 ---
 
+## Production Readiness Content Types
+
+The following content types were added during the Production Readiness Sprint to complete the church management feature set.
+
+### Service Type & Attendance <span class="decision-badge">IMPLEMENTED</span>
+
+| Model | Key Columns | Notes |
+|-------|-------------|-------|
+| `ServiceType` | name, description, day_of_week, start_time | Defines recurring service slots |
+| `Attendance` | service_type_id, member_id, date, check_in_time, is_first_time | Per-member attendance tracking |
+
+**Features:** QR code check-in, first-time visitor flagging, trend dashboards (week-over-week, per campus, per service).
+
+---
+
+### Household <span class="decision-badge">IMPLEMENTED</span>
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `name` | string | Family/household name |
+| `head_of_household_id` | foreignId | References a Member |
+| `address`, `city`, `phone` | string | Shared contact info |
+| `custom_fields` | jsonb | GIN indexed |
+
+**Member additions:** `household_id`, `family_role` (head, spouse, child, relative), `date_of_birth`, `wedding_anniversary`.
+
+---
+
+### Fund & Campaign <span class="decision-badge">IMPLEMENTED</span>
+
+| Model | Key Columns | Notes |
+|-------|-------------|-------|
+| `Fund` | name, description, type (tithe/offering/building/missions/benevolence), is_active | Categorizes giving |
+| `Campaign` | name, fund_id, goal_amount, currency, start_date, end_date, is_active | Time-bound fundraising |
+
+**GivingRecord update:** `fund_id` foreign key links giving to specific funds. Real-time progress calculation for campaigns.
+
+---
+
+### Prayer Request & Commitment <span class="decision-badge">IMPLEMENTED</span>
+
+| Model | Key Columns | Notes |
+|-------|-------------|-------|
+| `PrayerRequest` | member_id, title, content, type (prayer/praise), visibility (public/group/confidential), status, is_answered | Prayer wall entries |
+| `PrayerCommitment` | prayer_request_id, member_id | "Je prie" commitment pivot |
+
+**Features:** Prayer chain broadcast, answered prayer marking with optional testimony link, commitment counter.
+
+---
+
+### Devotional & Series <span class="decision-badge">IMPLEMENTED</span>
+
+| Model | Key Columns | Notes |
+|-------|-------------|-------|
+| `DevotionalSeries` | title, slug, description, is_active | Groups themed devotionals |
+| `Devotional` | series_id, title, verse_reference, content, prayer_point, application, published_at | Daily devotional content |
+
+**Features:** Multi-channel delivery (in-app, SMS, email), AI-assisted draft generation, scheduling system.
+
+---
+
+### Testimony <span class="decision-badge">IMPLEMENTED</span>
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `member_id` | foreignId | Author (nullable for anonymous) |
+| `title` | string | Testimony title |
+| `content` | text | Full testimony text |
+| `category` | string | healing, provision, deliverance, conversion, family_restoration |
+| `status` | string | submitted, approved, rejected |
+| `is_anonymous` | boolean | Hides member identity |
+| `is_featured` | boolean | Highlighted testimonies |
+| `reactions` | jsonb | { amen: 5, gloire_a_dieu: 3, alleluia: 2 } |
+
+**Features:** Moderation workflow, audio recording support, culturally appropriate reactions.
+
+---
+
+### Reading Plan & Progress <span class="decision-badge">IMPLEMENTED</span>
+
+| Model | Key Columns | Notes |
+|-------|-------------|-------|
+| `ReadingPlan` | title, slug, description, duration_days, grace_period_days, is_active | Plan definition |
+| `ReadingPlanDay` | reading_plan_id, day_number, passage_reference, passage_text, reflection | Daily entries |
+| `MemberReadingProgress` | member_id, reading_plan_id, current_streak, longest_streak, started_at, completed_at | Progress tracking |
+
+**Features:** Streak counter with configurable grace period, cell group plan assignments.
+
+---
+
+### Bulk Message & Template <span class="decision-badge">IMPLEMENTED</span>
+
+| Model | Key Columns | Notes |
+|-------|-------------|-------|
+| `BulkMessage` | title, body, channel (sms/email/whatsapp), target_type, status, scheduled_at | Bulk delivery |
+| `MessageTemplate` | name, body, channel, placeholders | Reusable templates |
+
+**Features:** Scheduled delivery, audience targeting (all, cell_group, campus, status), per-recipient dispatch tracking via `NotificationDispatch`.
+
+---
+
+### Adjustment <span class="decision-badge">IMPLEMENTED</span>
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `adjustable_type` | string | Polymorphic (GivingRecord, PaymentTransaction) |
+| `adjustable_id` | bigint | Reference to original record |
+| `type` | string | void, correction |
+| `reason` | text | Required explanation |
+| `adjusted_by` | foreignId | User who made the adjustment |
+
+**Purpose:** Financial records are immutable — adjustments provide a safe audit trail for voids and corrections without modifying original records.
+
+---
+
 ## JSONB Indexing Strategy
 
 ```sql

@@ -1,8 +1,8 @@
 # Roadmap
 
-## Phase 0 — Architecture (Current)
+## Phase 0 — Architecture :white_check_mark:
 
-> Status: **In Progress**
+> Status: **Complete** (February 2026)
 
 - [x] Project vision and niche definition
 - [x] Multi-tenancy strategy decision
@@ -10,68 +10,142 @@
 - [x] Tech stack finalization
 - [x] Architecture document v1.0
 - [x] Documentation site (this site)
-- [ ] Plugin architecture contract
-- [ ] AI context pipeline design
-- [ ] Content versioning decision
-- [ ] Database schema v1 design
+- [x] Content versioning decision — soft versioning with `previous_version` JSONB
+- [x] AI context pipeline design
+- [x] Database schema v1 design
+- [ ] Plugin architecture contract (deferred — not blocking)
 
 ---
 
-## Phase 1 — Core CMS Alpha
+## Phase 1 — Project Scaffold :white_check_mark:
 
-> Target: Q2 2026
+> Status: **Complete** (February 2026)
 
-- [ ] Laravel 12 + Filament v5 project scaffold
-- [ ] Multi-tenancy with `stancl/tenancy`
-- [ ] Core content types: Sermon, Event, Announcement, Page
-- [ ] REST API delivery layer
-- [ ] Spatie Media Library integration
-- [ ] French + English admin UI
-- [ ] Basic role and permission management
-- [ ] Laravel Cloud demo deployment
-
----
-
-## Phase 2 — Church Features Beta
-
-> Target: Q3 2026
-
-- [ ] Member directory with cell group management
-- [ ] Giving records (basic)
-- [ ] Sermon series management
-- [ ] Block-based page builder
-- [ ] Multilingual content (spatie/translatable)
-- [ ] SEO tools and sitemap
-- [ ] Sevalla production deployment
-- [ ] Plugin system foundation
+- [x] Laravel 12 + Filament v5 project scaffold
+- [x] Multi-tenancy with `stancl/tenancy` (single-database mode)
+- [x] PostgreSQL 16 with JSONB custom fields
+- [x] Sanctum API authentication
+- [x] Spatie Media Library integration
+- [x] French + English admin UI
+- [x] `HasSoftVersioning` trait for one-level content undo
+- [x] Real-time broadcasting via Laravel Reverb
 
 ---
 
-## Phase 3 — AI & Premium Layer
+## Phase 2 — Core Content Types :white_check_mark:
 
-> Target: Q4 2026
+> Status: **Complete** (February 2026)
 
-- [ ] AI admin assistant (French/English)
-- [ ] Internal maintenance agents (GitHub integration)
+- [x] Sermon (model, migration, Filament resource, API, tests)
+- [x] Event
+- [x] Announcement
+- [x] Member & Gallery (with Spatie Media Library)
+- [x] Page (with block builder — 6 block types)
+- [x] GivingRecord (multi-currency, mobile money)
+
+---
+
+## Phase 2.5 — Hardening Sprint :white_check_mark:
+
+> Status: **Complete** (March 2026)
+
+- [x] Rector PHP code quality rules
+- [x] PHPStan level 5 static analysis
+- [x] GitHub Actions CI pipeline
+- [x] Security headers middleware
+- [x] Tenant-aware API rate limiting
+- [x] SECURITY.md and CONTRIBUTING.md
+
+---
+
+## Phase 3 — API Layer :white_check_mark:
+
+> Status: **Complete** (March 2026)
+
+- [x] Auth endpoints (login, logout, register, token management)
+- [x] Full CRUD API for all 6 core content types
+- [x] Scramble auto-generated API documentation
+- [x] Route versioning `/api/v1/`
+- [x] Tenant-scoped rate limiting
+
+---
+
+## Phase 4 — First Deployment :white_check_mark:
+
+> Status: **Complete** (March 2026)
+
+- [x] Tenancy middleware for API tenant resolution
+- [x] `tenant:create` Artisan command
+- [x] Demo content seeders
+- [x] Health check endpoint
+- [x] Docker + docker-compose configuration
+- [x] FrankenPHP + Laravel Octane production setup
+
+---
+
+## Phase 5 — AI Layer :white_check_mark:
+
+> Status: **Complete** (March 2026)
+
+- [x] Multi-provider AI assistant (Claude, OpenAI, Gemini)
+- [x] 14 specialized skills in 5 categories
+- [x] Tenant-scoped context pipeline (no PII exposure)
+- [x] Streaming responses via Laravel Reverb
+- [x] AI configuration per tenant in settings
+
+---
+
+## Production Readiness Sprint :white_check_mark:
+
+> Status: **Complete** (March 2026) — 9 features fully implemented and tested
+
+| # | Feature | Status |
+|---|---------|--------|
+| 1 | Attendance Tracking (service types, QR check-in) | :white_check_mark: Complete |
+| 2 | Family/Household Linking | :white_check_mark: Complete |
+| 3 | Fund & Campaign Management | :white_check_mark: Complete |
+| 4 | Prayer Wall & Tracking | :white_check_mark: Complete |
+| 5 | Daily Devotional Delivery | :white_check_mark: Complete |
+| 6 | Testimony Sharing | :white_check_mark: Complete |
+| 7 | Birthday Auto-Notifications | :white_check_mark: Complete |
+| 8 | Bible Reading Plans & Streaks | :white_check_mark: Complete |
+| 9 | SMS Bulk Messaging | :white_check_mark: Complete |
+
+---
+
+## Phase 6 — Premium Modules (Current)
+
+> Status: **In Progress**
+
 - [ ] Mobile money giving (MTN Mobile Money, Orange Money, Wave)
-- [ ] SMS pastoral notifications
+- [ ] SMS pastoral notifications (Africa's Talking, Twilio)
+- [ ] WhatsApp integration
+- [ ] Multi-campus management
 - [ ] Premium hosting platform (ekklesia.app)
-- [ ] Open core billing system
+- [ ] Billing system (Laravel Cashier)
 
 ---
 
-## Phase 4 — Ecosystem
+## Future Roadmap
 
-> Target: 2027
+> Target: 2027+
 
-- [ ] React Native mobile app builder
-- [ ] Multi-campus management
+- [ ] Badges & achievements system
+- [ ] Spiritual growth journey tracking
+- [ ] Fasting & prayer challenges
+- [ ] Recurring events
+- [ ] Exportable reports (CSV/PDF)
+- [ ] Cell group leader portal
+- [ ] Bible school / courses
+- [ ] Children's check-in
+- [ ] Member self-service portal
+- [ ] Printable certificates
+- [ ] React Native mobile app
 - [ ] Local language support (Ewe, Lingala, Fon — community-driven)
 - [ ] Plugin marketplace
-- [ ] Community governance model
 
 ---
 
 ::: tip Contribute
-If you want to contribute to any phase, open an issue or discussion on [GitHub](https://github.com/your-org/ekklesia-cms). Architecture input is especially welcome during Phase 0.
+If you want to contribute to any phase, open an issue or discussion on [GitHub](https://github.com/KwasiEzor/ekklesia-cms). Feature contributions, translations, and bug reports are all welcome.
 :::

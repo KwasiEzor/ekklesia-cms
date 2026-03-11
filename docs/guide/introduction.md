@@ -19,17 +19,24 @@ A church administrator in Lomé or Kinshasa gets:
 - A **clean French-first admin panel** powered by Filament v5
 - **Sermon management** — audio, video, transcripts, series, scripture references
 - **Event coordination** — calendar, registration, capacity management
-- **Member directory** — cell groups, baptism records, pastoral notes
-- **Giving records** — including mobile money (MTN, Orange, Wave)
-- **Multilingual content** — French, English, and local language support on the roadmap
+- **Member directory** — cell groups, households, baptism records, pastoral notes
+- **Attendance tracking** — service types, QR check-in, trend dashboards
+- **Giving records** — funds, campaigns, multi-currency support (XOF, XAF, EUR, USD)
+- **Prayer wall** — prayer requests, commitments, answered prayers
+- **Daily devotionals** — series, scheduling, multi-channel delivery
+- **Testimony sharing** — moderation workflow, culturally appropriate reactions
+- **Bible reading plans** — streak tracking, progress monitoring
+- **SMS bulk messaging** — scheduled delivery, audience targeting
+- **Birthday & anniversary auto-notifications** — configurable per tenant
 - **An AI assistant** that drafts announcements, summarizes sermons, and answers how-to questions in French
+- **Multilingual content** — French, English, and local language support on the roadmap
 
 A developer in the community gets:
 
 - A **clean Laravel 12 + Filament v5** codebase to extend
-- A **headless REST API** to build any frontend against
+- A **headless REST API** with 60+ endpoints to build any frontend against
 - A **plugin architecture** following Filament's own conventions
-- Full self-hosting capability with a simple installer
+- Full self-hosting capability with Docker and FrankenPHP
 
 ## What Ekklesia Is Not
 
@@ -37,10 +44,10 @@ Ekklesia is not a general-purpose CMS. It will never try to compete with WordPre
 
 ## Project Status
 
-Ekklesia is currently in **pre-alpha architecture phase**. The core architectural decisions have been made and documented. Active development begins once the architecture documentation is complete.
+Ekklesia has completed **Phases 0–5** and is actively building **Phase 6 — Premium Modules**. The core CMS, API layer, AI assistant, and 9 production-readiness features are fully implemented with **568 passing tests** (1561 assertions).
 
-::: warning Status: Pre-Alpha
-Do not use in production. The API, database schema, and plugin contracts are all subject to change without notice until v1.0 stable.
+::: warning Status: Alpha
+Ekklesia is in active development. The core architecture is stable, but the API contract and plugin system may still evolve before v1.0 stable.
 :::
 
 ## Next Steps

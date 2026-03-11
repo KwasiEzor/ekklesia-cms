@@ -31,17 +31,10 @@ Questions to answer:
 
 ## 3. AI Context Pipeline Design
 
-**Status:** Open — must resolve before AI module build  
+**Status:** ~~Open~~ **Resolved** — see [Core Decisions](/architecture/decisions#ai-context-pipeline)
 **Impact:** Medium — determines AI response quality for church users
 
-How content is structured and passed to the Claude API needs careful design.
-
-Questions to answer:
-- How is the system prompt constructed per tenant? What context does it include?
-- How is context window size managed for long conversations?
-- How are multi-turn conversations persisted? (Database? Redis? Client-side only?)
-- How is the streaming response handled in the Filament slide-over UI?
-- How are AI usage limits enforced per tenant per plan tier?
+**Decision:** Tenant-scoped `TenantContextBuilder` with cached aggregate stats, PII filtering, multi-provider driver pattern (`AiManager`), and streaming via Laravel Reverb. Rate limited to 10 messages/minute per tenant. Full details in the [decisions page](/architecture/decisions#ai-context-pipeline).
 
 ---
 

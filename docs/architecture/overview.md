@@ -8,7 +8,7 @@ Ekklesia follows a **four-layer architecture**. Each layer is loosely coupled by
 
 Filament v5 on Laravel 12. The complete back-office for church administrators.
 
-Manages: content types, members, media, events, sermons, announcements, roles, and tenant settings. Multi-tenant from day one — a single installation serves many churches, each fully isolated.
+Manages: content types, members, households, attendance, giving, prayer requests, devotionals, testimonies, reading plans, bulk messaging, roles, and tenant settings. Multi-tenant from day one — a single installation serves many churches, each fully isolated.
 
 ### Layer 2 — API Delivery
 
@@ -22,11 +22,13 @@ The API is versioned, authenticated with Laravel Sanctum, and designed to be cac
 
 ### Layer 3 — AI Intelligence
 
-Two directions working from the same Claude API foundation:
+A multi-provider AI system with 14 specialized skills:
 
-**Internal agents** — run in the background handling maintenance: issue triage, PR review, documentation drift detection, dependency assessment, first-line community support drafts.
+**Multi-provider support** — Claude, OpenAI, and Gemini via a driver-based `AiManager` pattern. Each tenant can configure their preferred provider.
 
-**User-facing assistant** — embedded in the Filament admin panel. Helps church staff draft content, summarize sermons, translate text, and answer how-to questions in French or English. Context-aware: it knows the current tenant, the current content type, and the user's language.
+**14 specialized skills** in 5 categories — Content Creation (sermon outlines, content writing, translation, SEO, proofreading), Church Management (event planning, communication drafts, giving insights, dashboard narration), Design & Branding, Security & Maintenance, and AI Guidance.
+
+**User-facing assistant** — embedded in the Filament admin panel with streaming responses via Laravel Reverb. Helps church staff draft content, summarize sermons, translate text, and answer how-to questions in French or English. Context-aware with tenant-scoped data pipeline and PII filtering.
 
 ### Layer 4 — Deployment Abstraction
 
@@ -43,7 +45,8 @@ Switching providers never touches core business logic.
                            │
 ┌──────────────────────────▼──────────────────────────────────┐
 │              LAYER 1: ADMIN PANEL (Filament v5)             │
-│  Sermons · Events · Members · Media · Settings · AI Chat    │
+│  Sermons · Events · Members · Giving · Prayer · AI Chat     │
+│  Attendance · Households · Devotionals · Testimonies · SMS   │
 └──────────────────────────┬──────────────────────────────────┘
                            │ writes
 ┌──────────────────────────▼──────────────────────────────────┐

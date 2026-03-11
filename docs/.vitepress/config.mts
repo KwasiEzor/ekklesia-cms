@@ -59,6 +59,7 @@ export default defineConfig({
             { text: 'AI Architecture', link: '/architecture/ai' },
             { text: 'AI Skill Ops', link: '/architecture/ai-skill-ops' },
             { text: 'Deployment', link: '/architecture/deployment' },
+            { text: 'Partitioning Strategy', link: '/architecture/partitioning-strategy' },
             { text: 'Business Model', link: '/architecture/business-model' },
             { text: 'Open Questions', link: '/architecture/open-questions' },
           ]
