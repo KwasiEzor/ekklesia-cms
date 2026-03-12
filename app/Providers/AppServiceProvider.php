@@ -51,6 +51,8 @@ class AppServiceProvider extends ServiceProvider
             EnvironmentCheck::new(),
             DatabaseCheck::new(),
             UsedDiskSpaceCheck::new(),
+            \Spatie\Health\Checks\Checks\RedisCheck::new(),
+            \App\Checks\AiConnectivityCheck::new(),
         ]);
 
         Gate::before(function ($user, $ability): ?true {

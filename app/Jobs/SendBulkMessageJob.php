@@ -52,7 +52,7 @@ class SendBulkMessageJob implements ShouldQueue
             try {
                 $channel->send($payload);
 
-                NotificationDispatch::create([
+                $dispatch = NotificationDispatch::create([
                     'member_id' => $member->id,
                     'channel' => $this->bulkMessage->channel,
                     'type' => 'bulk_message',
@@ -65,9 +65,11 @@ class SendBulkMessageJob implements ShouldQueue
                     'tenant_id' => $this->bulkMessage->tenant_id,
                 ]);
 
+                event(new \App\Events\NotificationDispatched($dispatch));
+
                 $sentCount++;
             } catch (\Throwable $e) {
-                NotificationDispatch::create([
+                $dispatch = NotificationDispatch::create([
                     'member_id' => $member->id,
                     'channel' => $this->bulkMessage->channel,
                     'type' => 'bulk_message',
@@ -80,6 +82,8 @@ class SendBulkMessageJob implements ShouldQueue
                     'failure_reason' => $e->getMessage(),
                     'tenant_id' => $this->bulkMessage->tenant_id,
                 ]);
+
+                event(new \App\Events\NotificationDispatched($dispatch));
 
                 $failedCount++;
             }
