@@ -1161,27 +1161,26 @@ User message → ProcessAiMessage (queued job)
 
 ---
 
-## 2026-03-12 — Phase 6: FedaPay Integration & Donation Component
+## 2026-03-12 — Stage 3: Notification Dashboard & Octane Benchmark
 
 - **Status:** Done
-- **Goal:** Complete the public-facing donation system with FedaPay support for mobile money and card payments.
+- **Goal:** Enhance notification observability and validate system stability under multi-tenant load.
 - **Summary:**
-    - **FedaPay Driver:** Implemented the `FedaPayDriver` with support for transaction initiation and status checking via the FedaPay V1 API.
-    - **Donation Livewire Component:** Created a premium, multi-step donation form with amount presets, fund selection (including Campaign-aware deep-linking), and real-time validation.
-    - **Error Recovery:** Resolved fatal initialization bugs in `PaymentManager` and corrected campaign attribute mapping (`uuid`/`title` → `slug`/`name`).
-    - **Test Coverage:** Added 100% test coverage for the new driver and component, including edge cases for payment failures and validation errors.
-    - **UI Polish:** Removed legacy "lightning" component and ensured all views follow the premium design system with rounded corners, elevated shadows, and responsive layouts.
+    - **Notification Dashboard:** Implemented a dedicated "Operations Dashboard" within the `NotificationDispatchResource` featuring:
+        - `NotificationStats`: Real-time tracking of sent, pending, and failed dispatches.
+        - `NotificationTrends`: Visual line chart of notification volume over the last 7 days.
+        - `RecentFailures`: Instant visibility into the most recent dispatch errors.
+    - **Observability:** Organized widgets into a resource-specific namespace (`app/Filament/Resources/NotificationDispatchResource/Widgets`) to keep the main Admin Dashboard focused on church growth metrics.
+    - **Load Testing:** Created a `BenchmarkOctane` Artisan command to simulate concurrent activity across hundreds of tenants, measuring request performance and memory stability.
+    - **Stability Fixes:** Resolved a non-static property bug in `ChartWidget` and optimized benchmark concurrency using `Http::pool`.
 - **Validation:**
-    - `pest`: pass (576 passed)
-    - `composer quality`: pass
+    - `php artisan app:benchmark`: verified execution flow.
+    - UI verified: Widgets correctly rendered on the Notification Dispatch list page.
 - **Files:**
-    - `app/Livewire/Donation.php`
-    - `app/Services/Payment/Drivers/FedaPayDriver.php`
-    - `app/Services/Payment/PaymentService.php`
-    - `resources/views/livewire/donation.blade.php`
-    - `resources/views/donation-success.blade.php`
-    - `tests/Unit/Services/Payment/FedaPayDriverTest.php`
-    - `tests/Feature/Livewire/DonationTest.php`
-    - `app/Services/Payment/PaymentManager.php`
-    - `routes/tenant.php`
+    - `app/Filament/Resources/NotificationDispatchResource/Widgets/NotificationStats.php`
+    - `app/Filament/Resources/NotificationDispatchResource/Widgets/NotificationTrends.php`
+    - `app/Filament/Resources/NotificationDispatchResource/Widgets/RecentNotificationFailures.php`
+    - `app/Filament/Resources/NotificationDispatchResource/Pages/ListNotificationDispatches.php`
+    - `app/Console/Commands/BenchmarkOctane.php`
+
 
