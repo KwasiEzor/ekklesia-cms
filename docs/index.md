@@ -31,7 +31,7 @@ features:
 
   - icon: 🚀
     title: Production-Ready
-    details: 568 tests, Docker deployment, health monitoring, financial audit trails, RBAC with 4 roles, and a comprehensive admin runbook for church staff.
+    details: 576 tests, Docker deployment, health monitoring, financial audit trails, RBAC with 4 roles, and a comprehensive admin runbook for church staff.
 
   - icon: 🔒
     title: Multi-Tenant by Design
