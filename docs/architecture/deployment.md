@@ -86,13 +86,23 @@ Church subscribes on ekklesia.app
 
 ### Self-Hosted — Technical Users
 
-Used for: developers and technical churches who want full control.
+Used for: developers and technical churches who want full control on their own VPS or servers.
+
+We provide a production-ready Docker architecture to run Ekklesia CMS natively anywhere using `docker-compose.prod.yml`.
+
+**The Production Stack:**
+- **FrankenPHP (App):** Laravel Octane server for high-performance requests.
+- **PostgreSQL 16:** Primary database.
+- **Redis 7:** Caching, queues, and session management.
+- **Laravel Reverb:** Dedicated container for real-time WebSocket events (AI streaming, notification dashboards).
+- **Worker & Scheduler:** Containers for asynchronous jobs and CRON.
+- **Caddy:** Reverse proxy with automatic SSL (Let's Encrypt) routing traffic to Octane (`:8000`) and Reverb (`:8080`).
 
 ```bash
-# Full self-hosted installation
-composer create-project ekklesia/cms my-church-cms
-cd my-church-cms
-php artisan ekklesia:install
+# Provisioning a production server
+cp .env.example .env
+# Edit .env with APP_DOMAIN, ACME_EMAIL, DB/Redis passwords
+docker-compose -f docker-compose.prod.yml up -d --build
 ```
 
 No hosting fees. No platform dependency. Full control. The open-source code is MIT-licensed.

@@ -1,0 +1,24 @@
+{
+    # Automatically get SSL certificates for this email
+    email {$ACME_EMAIL}
+}
+
+{$APP_DOMAIN} {
+    # Compress responses
+    encode zstd gzip
+
+    # Route Reverb websocket traffic
+    handle_path /app/* {
+        reverse_proxy reverb:8080
+    }
+    
+    # Route Reverb API traffic
+    handle_path /apps/* {
+        reverse_proxy reverb:8080
+    }
+
+    # Route everything else to the Octane/FrankenPHP app
+    handle {
+        reverse_proxy app:8000
+    }
+}
