@@ -8000,6 +8000,360 @@
                 }
             }
         },
+        "/v1/stripe/webhook": {
+            "post": {
+                "operationId": "stripe.webhook",
+                "summary": "Handle a Stripe webhook call",
+                "tags": [
+                    "StripeWebhook"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/subscriptions/status": {
+            "get": {
+                "operationId": "subscription.status",
+                "summary": "Get current subscription status",
+                "tags": [
+                    "Subscription"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "tenant": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "plan_slug": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name",
+                                                "plan_slug"
+                                            ]
+                                        },
+                                        "subscription": {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/SubscriptionResource"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ]
+                                        },
+                                        "plan": {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PlanLimitResource"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "tenant",
+                                        "subscription",
+                                        "plan"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/subscriptions/plans": {
+            "get": {
+                "operationId": "subscription.plans",
+                "summary": "List available plans",
+                "tags": [
+                    "Subscription"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PlanLimitResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/subscriptions/subscribe": {
+            "post": {
+                "operationId": "subscription.subscribe",
+                "summary": "Subscribe to a plan (Checkout session)",
+                "tags": [
+                    "Subscription"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "plan_slug": {
+                                        "type": "string"
+                                    },
+                                    "success_url": {
+                                        "type": "string"
+                                    },
+                                    "cancel_url": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "plan_slug"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "checkout_url": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "checkout_url"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/subscriptions/portal": {
+            "post": {
+                "operationId": "subscription.portal",
+                "summary": "Get billing portal URL",
+                "tags": [
+                    "Subscription"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "return_url": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "portal_url": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "portal_url"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Tenant has no billing history yet."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/subscriptions/cancel": {
+            "post": {
+                "operationId": "subscription.cancel",
+                "summary": "Cancel subscription",
+                "tags": [
+                    "Subscription"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Subscription cancelled successfully."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "No active subscription found to cancel."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/subscriptions/resume": {
+            "post": {
+                "operationId": "subscription.resume",
+                "summary": "Resume subscription",
+                "tags": [
+                    "Subscription"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Subscription resumed successfully."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Subscription is not on grace period."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/v1/testimonies": {
             "get": {
                 "operationId": "testimonies.index",
@@ -10055,6 +10409,73 @@
                 ],
                 "title": "PaymentTransactionResource"
             },
+            "PlanLimitResource": {
+                "type": "object",
+                "properties": {
+                    "plan_slug": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "string"
+                    },
+                    "currency": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "string",
+                                "enum": [
+                                    "USD"
+                                ]
+                            }
+                        ]
+                    },
+                    "max_members": {
+                        "type": "integer"
+                    },
+                    "max_campuses": {
+                        "type": "integer"
+                    },
+                    "max_storage_mb": {
+                        "type": "integer"
+                    },
+                    "features": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 0,
+                                "additionalItems": false
+                            }
+                        ]
+                    },
+                    "is_purchasable": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "plan_slug",
+                    "name",
+                    "price",
+                    "currency",
+                    "max_members",
+                    "max_campuses",
+                    "max_storage_mb",
+                    "features",
+                    "is_purchasable"
+                ],
+                "title": "PlanLimitResource"
+            },
             "PrayerRequestCollection": {
                 "type": "object",
                 "properties": {
@@ -11699,6 +12120,64 @@
                     "category"
                 ],
                 "title": "StoreTestimonyRequest"
+            },
+            "SubscriptionResource": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "stripe_id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "price_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "quantity": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "trial_ends_at": {
+                        "type": "string"
+                    },
+                    "ends_at": {
+                        "type": "string"
+                    },
+                    "on_trial": {
+                        "type": "boolean"
+                    },
+                    "on_grace_period": {
+                        "type": "boolean"
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "cancelled": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "type",
+                    "stripe_id",
+                    "status",
+                    "price_id",
+                    "quantity",
+                    "trial_ends_at",
+                    "ends_at",
+                    "on_trial",
+                    "on_grace_period",
+                    "active",
+                    "cancelled"
+                ],
+                "title": "SubscriptionResource"
             },
             "TestimonyCollection": {
                 "type": "array",

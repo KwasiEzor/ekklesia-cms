@@ -16,9 +16,9 @@ beforeEach(function () {
 
 test('donation component renders correctly', function () {
     Fund::factory()->create([
-        'name' => 'General Fund', 
+        'name' => 'General Fund',
         'is_active' => true,
-        'tenant_id' => $this->tenant->id
+        'tenant_id' => $this->tenant->id,
     ]);
 
     Livewire::test(Donation::class)

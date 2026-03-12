@@ -12,6 +12,9 @@ use App\Models\GivingRecord;
 use App\Models\Member;
 use App\Models\Page;
 use App\Models\Sermon;
+use App\Models\Subscription;
+use App\Models\SubscriptionItem;
+use App\Models\Tenant;
 use App\Observers\ContentObserver;
 use App\Services\Ai\AiManager;
 use App\Services\Ai\SkillRegistry;
@@ -21,6 +24,7 @@ use App\Services\Payment\PaymentManager;
 use Illuminate\Support\Facades\Event as EventFacade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Cashier;
 use Livewire\Livewire;
 use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
@@ -45,6 +49,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Cashier::useSubscriptionModel(Subscription::class);
+        Cashier::useSubscriptionItemModel(SubscriptionItem::class);
+        Cashier::useCustomerModel(Tenant::class);
+
         Health::checks([
             OptimizedAppCheck::new(),
             DebugModeCheck::new(),

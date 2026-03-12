@@ -40,8 +40,8 @@ test('sms channel is not configured without credentials', function () {
     config(['notifications-channels.sms.default' => 'twilio']);
     config(['notifications-channels.sms.providers.twilio.account_sid' => '']);
     config(['notifications-channels.sms.providers.twilio.auth_token' => '']);
-    
-    $channel = new SmsChannel();
+
+    $channel = new SmsChannel;
     expect($channel->isConfigured())->toBeFalse();
 });
 

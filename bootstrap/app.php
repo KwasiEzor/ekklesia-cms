@@ -25,6 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
             RateLimiter::for('auth', fn (Request $request): Limit => Limit::perMinute(5)->by(
                 $request->ip()
             ));
+
+            RateLimiter::for('webhooks', fn (Request $request): Limit => Limit::perMinute(600)->by(
+                $request->ip()
+            ));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

@@ -1187,4 +1187,53 @@ User message → ProcessAiMessage (queued job)
     - `app/Filament/Resources/NotificationDispatchResource/Pages/ListNotificationDispatches.php`
     - `app/Console/Commands/BenchmarkOctane.php`
 
+---
+
+## 2026-03-12 — Stripe Billing Integration & Plan Limits Hardening
+
+- **Status:** Done
+- **Goal:** Complete the Stripe Cashier integration for Ekklesia Premium subscriptions and resolve production readiness bugs.
+- **Summary:**
+    - **Stripe Subscriptions:** Integrated `laravel/cashier` for Tenant subscriptions. Added `Subscription` and `SubscriptionItem` models. Set up `StripeWebhookController` with a dedicated rate-limited API route to listen for Stripe webhooks and correctly initialize multi-tenancy based on `customer` (Stripe ID).
+    - **Billing UI Actions:** Upgraded the Filament `Billing` page to show active subscription status and handle Upgrade, Cancel, Resume, and Billing Portal actions using Cashier's API.
+    - **Plan Limits Enforcer Fix:** Resolved a critical bug where `PlanLimitsEnforcer` was performing global counts instead of tenant-scoped queries for members and campuses, allowing tenants to exceed limits.
+    - **PaymentManager Fix:** Fixed `getSetting()` fallback to correctly retrieve configuration from the JSON `data` column using `getAttribute()`.
+    - **Translations:** Added missing English translations for Attendances and Birthdays.
+- **Validation:**
+    - `composer test`: pass (582 passed, 1597 assertions)
+    - `composer quality`: pass
+- **Files:**
+    - `app/Http/Controllers/Api/V1/SubscriptionController.php`
+    - `app/Models/Subscription.php`, `app/Models/SubscriptionItem.php`, `app/Models/Tenant.php`
+    - `app/Filament/Pages/Billing.php`
+    - `app/Services/Billing/PlanLimitsEnforcer.php`
+    - `routes/api.php`
+    - `tests/Feature/ProductionReadinessReproTest.php`
+    - `tests/Feature/Billing/SubscriptionTest.php`
+
+    ---
+
+    ## 2026-03-12 — High-Quality Production Hardening (Final Batch)
+
+    - **Status:** Done
+    - **Goal:** Complete all remaining blocking, high, and medium priority production readiness tasks.
+    - **Summary:**
+    - **Subscription API:** Added full subscription management API (`/api/v1/subscriptions/*`) with status, plans, subscribe (checkout), portal, cancel, and resume endpoints.
+    - **Security (CSP):** Implemented a strict Content-Security-Policy header in `SecurityHeaders` middleware, specifically tuned for Stripe, fonts, and internal resources.
+    - **Security (CORS):** Published and configured `config/cors.php` to properly handle cross-origin API requests.
+    - **i18n (English):** Completed 100% English translation coverage by creating the 9 missing files (`bulk_messages`, `campaigns`, `devotionals`, `funds`, `households`, `prayer_requests`, `reading_plans`, `service_types`, `testimonies`).
+    - **PII Scrubbing:** Verified that sensitive data logging is blocked via the `scrubPii` method and `logExcept` configuration in `LogsActivityWithTenant`.
+    - **Validation:**
+    - `composer test`: pass (587 passed, 1608 assertions)
+    - `composer quality`: pass
+    - **Files:**
+    - `app/Http/Controllers/Api/V1/SubscriptionController.php` (New)
+    - `app/Http/Resources/V1/SubscriptionResource.php` (New)
+    - `app/Http/Resources/V1/PlanLimitResource.php` (New)
+    - `tests/Feature/Api/V1/SubscriptionApiTest.php` (New)
+    - `app/Http/Middleware/SecurityHeaders.php` (Updated with CSP)
+    - `config/cors.php` (New/Published)
+    - `lang/en/*.php` (9 new files)
+    - `routes/api.php` (Updated)
+
 

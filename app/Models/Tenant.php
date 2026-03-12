@@ -43,6 +43,16 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         return $this->hasMany(User::class);
     }
 
+    public function members(): HasMany
+    {
+        return $this->hasMany(Member::class);
+    }
+
+    public function campuses(): HasMany
+    {
+        return $this->hasMany(Campus::class);
+    }
+
     public function currentPlanSlug(): string
     {
         return $this->plan_slug ?? 'free';
@@ -55,9 +65,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
 
     public function getSetting(string $key, mixed $default = null): mixed
     {
-        // VirtualColumn stores non-custom columns in the JSON 'data' column.
-        // Access them as direct attributes, not via $this->data.
-        return $this->$key ?? $default;
+        // Access attributes via getAttribute() to ensure VirtualColumn/JSON data is handled correctly.
+        return $this->getAttribute($key) ?? $default;
     }
 
     public function setSetting(string $key, mixed $value): void

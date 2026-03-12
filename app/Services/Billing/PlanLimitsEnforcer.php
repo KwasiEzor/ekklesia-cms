@@ -2,8 +2,6 @@
 
 namespace App\Services\Billing;
 
-use App\Models\Campus;
-use App\Models\Member;
 use App\Models\PlanLimit;
 use App\Models\Tenant;
 
@@ -39,7 +37,7 @@ class PlanLimitsEnforcer
             return false;
         }
 
-        return Member::count() >= $plan->max_members;
+        return $tenant->members()->count() >= $plan->max_members;
     }
 
     public function campusLimitReached(Tenant $tenant): bool
@@ -50,7 +48,7 @@ class PlanLimitsEnforcer
             return false;
         }
 
-        return Campus::count() >= $plan->max_campuses;
+        return $tenant->campuses()->count() >= $plan->max_campuses;
     }
 
     public function storageLimitReached(Tenant $tenant): bool
@@ -68,19 +66,14 @@ class PlanLimitsEnforcer
 
     public function getStorageUsageMb(Tenant $tenant): float
     {
-        $modelTypes = [
-            \App\Models\Member::class,
-            \App\Models\Gallery::class,
-        ];
-
         $bytes = \Spatie\MediaLibrary\MediaCollections\Models\Media::query()
-            ->where(function ($query) use ($modelTypes, $tenant): void {
-                foreach ($modelTypes as $modelType) {
-                    $query->orWhere(function ($q) use ($modelType, $tenant): void {
-                        $q->where('model_type', $modelType)
-                            ->whereIn('model_id', $modelType::where('tenant_id', $tenant->id)->select('id'));
-                    });
-                }
+            ->where(function ($query) use ($tenant): void {
+                $query->whereIn('model_id', $tenant->members()->select('id'))
+                    ->where('model_type', \App\Models\Member::class);
+            })
+            ->orWhere(function ($query) use ($tenant): void {
+                $query->whereIn('model_id', \App\Models\Gallery::where('tenant_id', $tenant->id)->select('id'))
+                    ->where('model_type', \App\Models\Gallery::class);
             })
             ->sum('size');
 
@@ -97,12 +90,12 @@ class PlanLimitsEnforcer
 
         return [
             'members' => [
-                'current' => Member::count(),
+                'current' => $tenant->members()->count(),
                 'limit' => $plan->max_members,
                 'unlimited' => $plan->isUnlimited('max_members'),
             ],
             'campuses' => [
-                'current' => Campus::count(),
+                'current' => $tenant->campuses()->count(),
                 'limit' => $plan->max_campuses,
                 'unlimited' => $plan->isUnlimited('max_campuses'),
             ],

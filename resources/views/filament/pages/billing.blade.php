@@ -121,6 +121,20 @@
                 <span class="text-gray-500 dark:text-gray-400 text-sm">
                     {{ $this->formatPlanPrice($currentPlan) }}
                 </span>
+
+                @if($isSubscribed)
+                    <div class="flex items-center gap-2 ml-auto">
+                        @if($isCancelled && $onGracePeriod)
+                            <span class="text-xs font-medium text-amber-600 dark:text-amber-400">
+                                {{ __('billing.ends_at') }}: {{ Filament::getTenant()->subscription('default')->ends_at->format('M d, Y') }}
+                            </span>
+                            {{ ($this->resumeAction)() }}
+                        @elseif(!$isCancelled)
+                            {{ ($this->portalAction)() }}
+                            {{ ($this->cancelAction)() }}
+                        @endif
+                    </div>
+                @endif
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -338,10 +352,7 @@
                                 </div>
                             @elseif(!$isCurrent)
                                 <div class="mt-5 pt-4 border-t border-gray-100 dark:border-gray-800">
-                                    <span class="block w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold
-                                                 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-default">
-                                        {{ __('billing.coming_soon') }}
-                                    </span>
+                                    {{ ($this->upgradeAction)(['plan' => $plan->plan_slug]) }}
                                 </div>
                             @endif
                         </div>

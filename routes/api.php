@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\V1\PrayerRequestController;
 use App\Http\Controllers\Api\V1\ReadingPlanController;
 use App\Http\Controllers\Api\V1\SermonController;
 use App\Http\Controllers\Api\V1\ServiceTypeController;
+use App\Http\Controllers\Api\V1\StripeWebhookController;
+use App\Http\Controllers\Api\V1\SubscriptionController;
 use App\Http\Controllers\Api\V1\TestimonyController;
 use App\Http\Middleware\InitializeTenancyByHeader;
 use App\Http\Middleware\InitializeTenancyByUser;
@@ -73,6 +75,16 @@ Route::prefix('v1')->group(function (): void {
         Route::apiResource('bulk-messages', BulkMessageController::class)->except(['update']);
         Route::post('bulk-messages/{bulk_message}/send', [BulkMessageController::class, 'send']);
 
+        // Subscriptions
+        Route::prefix('subscriptions')->group(function (): void {
+            Route::get('status', [SubscriptionController::class, 'status']);
+            Route::get('plans', [SubscriptionController::class, 'plans']);
+            Route::post('subscribe', [SubscriptionController::class, 'subscribe']);
+            Route::post('portal', [SubscriptionController::class, 'portal']);
+            Route::post('cancel', [SubscriptionController::class, 'cancel']);
+            Route::post('resume', [SubscriptionController::class, 'resume']);
+        });
+
         // Payments — requires plan with payments feature
         Route::middleware(['plan:payments'])->group(function (): void {
             Route::post('payments/initiate', [PaymentController::class, 'initiate']);
@@ -83,6 +95,11 @@ Route::prefix('v1')->group(function (): void {
 
     // Payment webhooks — no auth, no tenant header (providers don't send it).
     // Tenant resolved from the transaction itself in the controller.
-    Route::post('payments/webhook/{provider}', [PaymentController::class, 'webhook'])
-        ->name('api.payments.webhook');
+    Route::middleware(['throttle:webhooks'])->group(function (): void {
+        Route::post('payments/webhook/{provider}', [PaymentController::class, 'webhook'])
+            ->name('api.payments.webhook');
+
+        Route::post('stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
+            ->name('api.stripe.webhook');
+    });
 });

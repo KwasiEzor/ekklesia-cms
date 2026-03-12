@@ -5,7 +5,9 @@ namespace App\Filament\Pages;
 use App\Models\PlanLimit;
 use App\Models\Tenant;
 use App\Services\Billing\PlanLimitsEnforcer;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
@@ -27,6 +29,100 @@ class Billing extends Page
     public Collection $plans;
 
     public string $currentPlanSlug = 'free';
+
+    public bool $isSubscribed = false;
+
+    public bool $isCancelled = false;
+
+    public bool $onGracePeriod = false;
+
+    public function upgradeAction(): Action
+    {
+        return Action::make('upgrade')
+            ->label(__('billing.upgrade'))
+            ->action(function (array $arguments): mixed {
+                $tenant = Filament::getTenant();
+                if (! $tenant instanceof Tenant) {
+                    return null;
+                }
+
+                $plan = PlanLimit::where('plan_slug', $arguments['plan'])->first();
+
+                if (! $plan || ! $plan->stripe_price_id) {
+                    Notification::make()
+                        ->title(__('billing.plan_not_available'))
+                        ->danger()
+                        ->send();
+
+                    return null;
+                }
+
+                return $tenant->newSubscription('default', $plan->stripe_price_id)
+                    ->checkout([
+                        'success_url' => route('filament.admin.pages.billing', ['tenant' => $tenant->id]),
+                        'cancel_url' => route('filament.admin.pages.billing', ['tenant' => $tenant->id]),
+                    ]);
+            });
+    }
+
+    public function cancelAction(): Action
+    {
+        return Action::make('cancel')
+            ->label(__('billing.cancel'))
+            ->requiresConfirmation()
+            ->color('danger')
+            ->action(function (): void {
+                $tenant = Filament::getTenant();
+                if (! $tenant instanceof Tenant) {
+                    return;
+                }
+
+                $tenant->subscription('default')?->cancel();
+
+                Notification::make()
+                    ->title(__('billing.subscription_cancelled'))
+                    ->success()
+                    ->send();
+
+                $this->redirect(route('filament.admin.pages.billing', ['tenant' => $tenant->id]));
+            });
+    }
+
+    public function resumeAction(): Action
+    {
+        return Action::make('resume')
+            ->label(__('billing.resume'))
+            ->color('success')
+            ->action(function (): void {
+                $tenant = Filament::getTenant();
+                if (! $tenant instanceof Tenant) {
+                    return;
+                }
+
+                $tenant->subscription('default')?->resume();
+
+                Notification::make()
+                    ->title(__('billing.subscription_resumed'))
+                    ->success()
+                    ->send();
+
+                $this->redirect(route('filament.admin.pages.billing', ['tenant' => $tenant->id]));
+            });
+    }
+
+    public function portalAction(): Action
+    {
+        return Action::make('portal')
+            ->label(__('billing.billing_portal'))
+            ->action(function (): mixed {
+                $tenant = Filament::getTenant();
+                if (! $tenant instanceof Tenant) {
+                    return null;
+                }
+
+                return $tenant->redirectToBillingPortal(route('filament.admin.pages.billing', ['tenant' => $tenant->id]));
+            });
+    }
 
     public static function getNavigationLabel(): string
     {
@@ -67,6 +163,11 @@ class Billing extends Page
             default => 4,
         })->values();
         $this->currentPlanSlug = $tenant->currentPlanSlug();
+
+        $subscription = $tenant->subscription('default');
+        $this->isSubscribed = $tenant->subscribed('default');
+        $this->isCancelled = $subscription?->canceled() ?? false;
+        $this->onGracePeriod = $subscription?->onGracePeriod() ?? false;
     }
 
     public function usagePercent(string $key): int

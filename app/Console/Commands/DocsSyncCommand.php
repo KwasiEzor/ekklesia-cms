@@ -19,24 +19,24 @@ class DocsSyncCommand extends Command
         // 1. Export API Specification
         $this->comment('Exporting API Specification (Scramble)...');
         $this->call('scramble:export', ['--path' => 'api.json']);
-        
+
         $publicDir = base_path('docs/public');
-        if (!File::exists($publicDir)) {
+        if (! File::exists($publicDir)) {
             File::makeDirectory($publicDir, 0755, true);
         }
-        
-        File::copy(base_path('api.json'), $publicDir . '/api.json');
+
+        File::copy(base_path('api.json'), $publicDir.'/api.json');
         $this->info('  - API Spec synced to docs/public/api.json');
 
         // 2. Sync Development Log
         $this->comment('Syncing Development Log (BUILD_PROGRESS.md)...');
         $progressContent = File::get(base_path('BUILD_PROGRESS.md'));
-        
+
         // Clean up the progress report for VitePress (e.g., adjust headings)
-        $docLog = "# Development Log\n\n" . 
-                  "> This is a real-time record of the project's construction, synced from the root `BUILD_PROGRESS.md`.\n\n" .
+        $docLog = "# Development Log\n\n".
+                  "> This is a real-time record of the project's construction, synced from the root `BUILD_PROGRESS.md`.\n\n".
                   $progressContent;
-        
+
         File::put(base_path('docs/guide/dev-log.md'), $docLog);
         $this->info('  - Dev Log synced to docs/guide/dev-log.md');
 
@@ -46,14 +46,14 @@ class DocsSyncCommand extends Command
             $this->comment("Updating Homepage with test count: {$testCount}...");
             $indexFile = base_path('docs/index.md');
             $indexContent = File::get($indexFile);
-            
+
             // Replace "X tests," pattern
             $updatedIndex = preg_replace(
                 '/([0-9]+) tests,/',
                 "{$testCount} tests,",
                 $indexContent
             );
-            
+
             File::put($indexFile, $updatedIndex);
             $this->info("  - docs/index.md updated with {$testCount} tests.");
         }
@@ -63,7 +63,7 @@ class DocsSyncCommand extends Command
         $this->syncRoadmapStatus();
 
         $this->info('Documentation sync completed successfully!');
-        
+
         return self::SUCCESS;
     }
 
@@ -90,7 +90,7 @@ class DocsSyncCommand extends Command
     {
         $roadmapFile = base_path('docs/guide/roadmap.md');
         $roadmapContent = File::get($roadmapFile);
-        
+
         // Ensure Phase 6 is marked as complete if it's not
         if (Str::contains($roadmapContent, '## Phase 6 — Premium Modules (Current)')) {
             $this->warn('Phase 6 still marked as "Current" in roadmap. Updating...');

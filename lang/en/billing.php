@@ -45,4 +45,13 @@ return [
     'hero_title' => 'Ekklesia Premium',
 
     'feature_not_available' => 'This feature is not available on your current plan. Please upgrade.',
+
+    'upgrade' => 'Upgrade Now',
+    'cancel' => 'Cancel Subscription',
+    'resume' => 'Resume Subscription',
+    'billing_portal' => 'Manage Billing',
+    'subscription_cancelled' => 'Your subscription has been cancelled.',
+    'subscription_resumed' => 'Your subscription has been resumed.',
+    'plan_not_available' => 'This plan is currently not available for online purchase. Please contact support.',
+    'ends_at' => 'Ends on',
 ];

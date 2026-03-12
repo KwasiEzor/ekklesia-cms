@@ -6,8 +6,6 @@ use App\Models\Tenant;
 use Database\Seeders\TenantContentSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Benchmark;
-use Illuminate\Support\Str;
 
 class BenchmarkOctane extends Command
 {
@@ -35,8 +33,8 @@ class BenchmarkOctane extends Command
             $this->seedTenants($tenants);
         }
 
-        $this->info("Simulating activity... Total requests: " . ($tenantCount * $requestsPerTenant));
-        
+        $this->info('Simulating activity... Total requests: '.($tenantCount * $requestsPerTenant));
+
         $startMemory = memory_get_usage(true);
         $startTime = microtime(true);
 
@@ -54,8 +52,9 @@ class BenchmarkOctane extends Command
                     $tenantDomain = "{$tenant->id}.{$host}";
                     // We hit the /give endpoint as it is public and exercises Livewire/Models
                     $calls[] = $pool->withHeaders(['Host' => $tenantDomain])
-                                   ->get("{$baseUrl}/give");
+                        ->get("{$baseUrl}/give");
                 }
+
                 return $calls;
             });
 
@@ -74,7 +73,7 @@ class BenchmarkOctane extends Command
 
         $endTime = microtime(true);
         $endMemory = memory_get_usage(true);
-        
+
         $duration = $endTime - $startTime;
         $avgTime = $duration / ($tenantCount * $requestsPerTenant);
 
@@ -83,14 +82,14 @@ class BenchmarkOctane extends Command
             [
                 ['Total Requests', $successCount + $failCount],
                 ['Successes', "<info>{$successCount}</info>"],
-                ['Failures', $failCount > 0 ? "<error>{$failCount}</error>" : "0"],
-                ['Total Duration', number_format($duration, 2) . 's'],
-                ['Avg Request Time', number_format($avgTime * 1000, 2) . 'ms'],
-                ['Peak Script Memory', number_format(memory_get_peak_usage(true) / 1024 / 1024, 2) . ' MB'],
+                ['Failures', $failCount > 0 ? "<error>{$failCount}</error>" : '0'],
+                ['Total Duration', number_format($duration, 2).'s'],
+                ['Avg Request Time', number_format($avgTime * 1000, 2).'ms'],
+                ['Peak Script Memory', number_format(memory_get_peak_usage(true) / 1024 / 1024, 2).' MB'],
             ]
         );
 
-        $this->info("Check Octane/FrankenPHP memory usage on host for real-time monitoring.");
+        $this->info('Check Octane/FrankenPHP memory usage on host for real-time monitoring.');
 
         return self::SUCCESS;
     }
@@ -110,7 +109,7 @@ class BenchmarkOctane extends Command
                     'name' => "Benchmark Church {$i}",
                     'slug' => $id,
                 ]);
-                
+
                 $host = parse_url($this->option('url'), PHP_URL_HOST) ?: 'ekklesia-cms.test';
                 $tenant->domains()->create(['domain' => "{$id}.{$host}"]);
             }
@@ -123,13 +122,13 @@ class BenchmarkOctane extends Command
 
     protected function seedTenants(array $tenants): void
     {
-        $this->comment("Seeding tenants (this may take a while)...");
+        $this->comment('Seeding tenants (this may take a while)...');
         $bar = $this->output->createProgressBar(count($tenants));
         $bar->start();
 
         foreach ($tenants as $tenant) {
             tenancy()->initialize($tenant);
-            $seeder = new TenantContentSeeder();
+            $seeder = new TenantContentSeeder;
             $seeder->run();
             tenancy()->end();
             $bar->advance();
