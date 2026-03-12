@@ -60,7 +60,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 $existingPermissions = Permission::whereIn('name', $permissions)->pluck('name')->toArray();
                 $missingPermissions = array_diff($permissions, $existingPermissions);
 
-                if (! empty($missingPermissions)) {
+                if ($missingPermissions !== []) {
                     $this->command->warn("  - Missing permissions for {$roleEnum->value}: ".implode(', ', $missingPermissions));
                 }
 

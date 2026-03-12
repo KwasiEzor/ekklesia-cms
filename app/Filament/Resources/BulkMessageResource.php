@@ -88,17 +88,15 @@ class BulkMessageResource extends Resource
                         Components\Select::make('target_id')
                             ->label(__('bulk_messages.target_id'))
                             ->visible(fn (callable $get): bool => in_array($get('target_type'), ['cell_group', 'campus', 'status']))
-                            ->options(function (callable $get) {
-                                return match ($get('target_type')) {
-                                    'cell_group' => \App\Models\CellGroup::pluck('name', 'id'),
-                                    'campus' => \App\Models\Campus::pluck('name', 'id'),
-                                    'status' => [
-                                        'active' => __('members.statuses.active'),
-                                        'inactive' => __('members.statuses.inactive'),
-                                        'visiting' => __('members.statuses.visiting'),
-                                    ],
-                                    default => [],
-                                };
+                            ->options(fn (callable $get) => match ($get('target_type')) {
+                                'cell_group' => \App\Models\CellGroup::pluck('name', 'id'),
+                                'campus' => \App\Models\Campus::pluck('name', 'id'),
+                                'status' => [
+                                    'active' => __('members.statuses.active'),
+                                    'inactive' => __('members.statuses.inactive'),
+                                    'visiting' => __('members.statuses.visiting'),
+                                ],
+                                default => [],
                             })
                             ->searchable(),
 

@@ -187,7 +187,7 @@ enum UserRole: string implements HasColor, HasDescription, HasIcon, HasLabel
      */
     public static function asOptions(): array
     {
-        return collect(self::cases())->mapWithKeys(fn (self $role) => [
+        return collect(self::cases())->mapWithKeys(fn (self $role): array => [
             $role->value => $role->getLabel(),
         ])->toArray();
     }

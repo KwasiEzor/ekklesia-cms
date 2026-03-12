@@ -21,7 +21,7 @@ class TestimonyResource extends JsonResource
             'status' => $this->status,
             'is_anonymous' => $this->is_anonymous,
             'is_featured' => $this->is_featured,
-            'member' => $this->when(! $this->is_anonymous, fn () => [
+            'member' => $this->when(! $this->is_anonymous, fn (): array => [
                 'id' => $this->whenLoaded('member', fn () => $this->member?->id),
                 'name' => $this->whenLoaded('member', fn () => $this->member?->full_name),
             ]),

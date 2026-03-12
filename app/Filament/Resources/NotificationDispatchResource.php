@@ -69,7 +69,7 @@ class NotificationDispatchResource extends Resource
                             ->label(__('notification_dispatches.subject'))
                             ->disabled()
                             ->columnSpanFull()
-                            ->hidden(fn ($get) => empty($get('subject'))),
+                            ->hidden(fn ($get): bool => empty($get('subject'))),
 
                         Components\Textarea::make('body')
                             ->label(__('notification_dispatches.body'))
@@ -80,7 +80,7 @@ class NotificationDispatchResource extends Resource
                             ->label(__('notification_dispatches.failure_reason'))
                             ->disabled()
                             ->columnSpanFull()
-                            ->hidden(fn ($get) => $get('status') !== 'failed'),
+                            ->hidden(fn ($get): bool => $get('status') !== 'failed'),
 
                         Components\KeyValue::make('metadata')
                             ->label(__('notification_dispatches.metadata'))
@@ -98,7 +98,7 @@ class NotificationDispatchResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('channel')
                     ->label(__('notification_dispatches.channel'))
-                    ->formatStateUsing(fn (string $state): string|array|null => __("notification_dispatches.channels.{$state}") ?? $state)
+                    ->formatStateUsing(fn (string $state): string|array => __("notification_dispatches.channels.{$state}") ?? $state)
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'email' => 'info',
@@ -111,7 +111,7 @@ class NotificationDispatchResource extends Resource
 
                 Tables\Columns\TextColumn::make('type')
                     ->label(__('notification_dispatches.type'))
-                    ->formatStateUsing(fn (string $state): string|array|null => __("notification_dispatches.types.{$state}") ?? $state)
+                    ->formatStateUsing(fn (string $state): string|array => __("notification_dispatches.types.{$state}") ?? $state)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('recipient')
@@ -127,7 +127,7 @@ class NotificationDispatchResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('notification_dispatches.status'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string|array|null => __("notification_dispatches.statuses.{$state}") ?? $state)
+                    ->formatStateUsing(fn (string $state): string|array => __("notification_dispatches.statuses.{$state}") ?? $state)
                     ->color(fn (string $state): string => match ($state) {
                         'sent' => 'success',
                         'delivered' => 'success',

@@ -28,7 +28,7 @@ class HouseholdController extends Controller
 
         if ($request->has('search')) {
             $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search): void {
                 $q->where('name', 'ilike', "%{$search}%")
                     ->orWhere('city', 'ilike', "%{$search}%");
             });

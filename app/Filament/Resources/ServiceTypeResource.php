@@ -122,7 +122,7 @@ class ServiceTypeResource extends Resource
                 Tables\Columns\TextColumn::make('day_of_week')
                     ->label(__('service_types.day_of_week'))
                     ->icon(Heroicon::OutlinedCalendarDays)
-                    ->formatStateUsing(fn (?string $state) => $state ? __("service_types.{$state}") : '—')
+                    ->formatStateUsing(fn (?string $state): string|array|null => $state ? __("service_types.{$state}") : '—')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('default_start_time')

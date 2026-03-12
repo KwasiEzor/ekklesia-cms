@@ -4,6 +4,7 @@ namespace App\Services\Payment;
 
 use App\Models\Tenant;
 use App\Services\Payment\Drivers\CinetPayDriver;
+use App\Services\Payment\Drivers\FedaPayDriver;
 use App\Services\Payment\Drivers\StripePaymentDriver;
 use Illuminate\Support\Manager;
 
@@ -41,6 +42,27 @@ class PaymentManager extends Manager
             siteId: $siteId,
             secretKey: $secretKey,
             baseUrl: (string) config('payments.providers.cinetpay.base_url'),
+        );
+    }
+
+    protected function createFedapayDriver(): FedaPayDriver
+    {
+        $tenant = tenant();
+        $secretKey = $tenant instanceof Tenant
+            ? (string) $tenant->getSetting('fedapay_secret_key', config('payments.providers.fedapay.secret_key'))
+            : (string) config('payments.providers.fedapay.secret_key');
+
+        $isSandbox = $tenant instanceof Tenant
+            ? (bool) $tenant->getSetting('fedapay_sandbox', config('payments.providers.fedapay.sandbox'))
+            : (bool) config('payments.providers.fedapay.sandbox');
+
+        $baseUrl = $isSandbox
+            ? 'https://sandbox-api.fedapay.com/v1'
+            : 'https://api.fedapay.com/v1';
+
+        return new FedaPayDriver(
+            secretKey: $secretKey,
+            baseUrl: $baseUrl,
         );
     }
 

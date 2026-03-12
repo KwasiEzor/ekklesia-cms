@@ -53,13 +53,13 @@ class AppServiceProvider extends ServiceProvider
             UsedDiskSpaceCheck::new(),
         ]);
 
-        Gate::before(function ($user, $ability) {
+        Gate::before(function ($user, $ability): ?true {
             // Check if super_admin role exists globally or in current team
             // We use a direct DB query to avoid any caching or scoping issues with Spatie's hasRole
             $hasSuperAdmin = \Illuminate\Support\Facades\DB::table(config('permission.table_names.model_has_roles'))
                 ->join(config('permission.table_names.roles'), 'role_id', '=', 'id')
                 ->where('model_id', $user->id)
-                ->where('model_type', get_class($user))
+                ->where('model_type', $user::class)
                 ->where('name', 'super_admin')
                 ->exists();
 

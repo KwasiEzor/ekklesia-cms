@@ -15,12 +15,12 @@ class AttendanceResource extends JsonResource
         return [
             'id' => $this->id,
             'member_id' => $this->member_id,
-            'member' => $this->whenLoaded('member', fn () => [
+            'member' => $this->whenLoaded('member', fn (): array => [
                 'id' => $this->member->id,
                 'full_name' => $this->member->full_name,
             ]),
             'service_type_id' => $this->service_type_id,
-            'service_type' => $this->whenLoaded('serviceType', fn () => [
+            'service_type' => $this->whenLoaded('serviceType', fn (): array => [
                 'id' => $this->serviceType->id,
                 'name' => $this->serviceType->name,
             ]),

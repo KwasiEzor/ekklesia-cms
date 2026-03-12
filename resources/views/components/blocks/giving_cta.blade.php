@@ -37,7 +37,7 @@
                     @if($showQuickGive && !empty($amounts))
                         <div class="mt-8 flex flex-wrap justify-center lg:justify-start gap-3">
                             @foreach($amounts as $amount)
-                                <a href="#" class="px-5 py-2.5 bg-indigo-500/30 hover:bg-indigo-500/50 text-white font-bold rounded-xl border border-indigo-400/30 transition-all hover:scale-105">
+                                <a href="{{ route('donation.give', ['amount' => $amount, 'fund' => $fundId]) }}" class="px-5 py-2.5 bg-indigo-500/30 hover:bg-indigo-500/50 text-white font-bold rounded-xl border border-indigo-400/30 transition-all hover:scale-105">
                                     ${{ $amount }}
                                 </a>
                             @endforeach
@@ -46,7 +46,7 @@
                 </div>
                 
                 <div class="flex-shrink-0">
-                    <a href="#" class="inline-flex items-center px-10 py-5 text-xl font-bold text-indigo-600 transition-all bg-white rounded-2xl hover:bg-indigo-50 shadow-xl hover:-translate-y-1">
+                    <a href="{{ route('donation.give', ['fund' => $fundId]) }}" class="inline-flex items-center px-10 py-5 text-xl font-bold text-indigo-600 transition-all bg-white rounded-2xl hover:bg-indigo-50 shadow-xl hover:-translate-y-1">
                         {{ $buttonLabel }}
                         <svg class="ml-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                     </a>

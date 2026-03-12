@@ -586,7 +586,7 @@ class PageResource extends Resource
                                             ])
                                             ->minItems(2)
                                             ->maxItems(3)
-                                            ->itemLabel(fn (array $state): ?string => 'Column '.($state['id'] ?? '')),
+                                            ->itemLabel(fn (array $state): string => 'Column '.($state['id'] ?? '')),
                                     ]),
 
                                 Components\Builder\Block::make('tabs')

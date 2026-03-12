@@ -83,7 +83,7 @@ PROMPT;
         $tenantId = tenant('id');
         $cacheKey = "tenant_context_stats:{$tenantId}";
 
-        $stats = cache()->remember($cacheKey, now()->addMinutes(15), function () {
+        $stats = cache()->remember($cacheKey, now()->addMinutes(15), function (): array {
             $thisMonth = GivingRecord::whereMonth('date', now()->month)
                 ->whereYear('date', now()->year);
 

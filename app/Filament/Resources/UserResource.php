@@ -59,7 +59,7 @@ class UserResource extends Resource
                 Components\TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                    ->dehydrated(fn ($state) => filled($state))
+                    ->dehydrated(fn ($state): bool => filled($state))
                     ->required(fn (string $context): bool => $context === 'create'),
                 Components\Select::make('roles')
                     ->relationship('roles', 'name')

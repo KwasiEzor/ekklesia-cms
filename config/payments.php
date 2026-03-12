@@ -15,6 +15,13 @@ return [
             'publishable_key' => env('STRIPE_KEY'),
             'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
         ],
+        'fedapay' => [
+            'secret_key' => env('FEDAPAY_SECRET_KEY'),
+            'sandbox' => env('FEDAPAY_SANDBOX', true),
+            'base_url' => env('FEDAPAY_SANDBOX', true)
+                ? 'https://sandbox-api.fedapay.com/v1'
+                : 'https://api.fedapay.com/v1',
+        ],
     ],
 
     'currencies' => [

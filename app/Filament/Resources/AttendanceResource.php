@@ -49,7 +49,7 @@ class AttendanceResource extends Resource
                             ->label(__('attendances.member'))
                             ->placeholder(__('attendances.member_placeholder'))
                             ->relationship('member', 'first_name')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
+                            ->getOptionLabelFromRecordUsing(fn ($record): string => "{$record->first_name} {$record->last_name}")
                             ->searchable(['first_name', 'last_name'])
                             ->preload()
                             ->required(),
@@ -157,7 +157,7 @@ class AttendanceResource extends Resource
 
                 Tables\Columns\TextColumn::make('check_in_method')
                     ->label(__('attendances.check_in_method'))
-                    ->formatStateUsing(fn (string $state) => __("attendances.method_{$state}"))
+                    ->formatStateUsing(fn (string $state): string|array|null => __("attendances.method_{$state}"))
                     ->toggleable(),
 
                 Tables\Columns\IconColumn::make('is_first_time')
@@ -197,11 +197,9 @@ class AttendanceResource extends Resource
                         Components\DatePicker::make('date_to')
                             ->label(__('attendances.filter_date_to')),
                     ])
-                    ->query(function ($query, array $data) {
-                        return $query
-                            ->when($data['date_from'], fn ($q, $date) => $q->whereDate('date', '>=', $date))
-                            ->when($data['date_to'], fn ($q, $date) => $q->whereDate('date', '<=', $date));
-                    }),
+                    ->query(fn ($query, array $data) => $query
+                        ->when($data['date_from'], fn ($q, $date) => $q->whereDate('date', '>=', $date))
+                        ->when($data['date_to'], fn ($q, $date) => $q->whereDate('date', '<=', $date))),
             ])
             ->actions([
                 Actions\ViewAction::make()

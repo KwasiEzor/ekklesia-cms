@@ -10,10 +10,10 @@ class Permission extends SpatiePermission
 {
     protected static function booted(): void
     {
-        static::addGlobalScope('tenant', function (Builder $builder) {
+        static::addGlobalScope('tenant', function (Builder $builder): void {
             if (tenant('id')) {
                 $table = $builder->getModel()->getTable();
-                $builder->where(function ($query) use ($table) {
+                $builder->where(function ($query) use ($table): void {
                     $query->where("{$table}.team_id", tenant('id'))
                         ->orWhereNull("{$table}.team_id");
                 });

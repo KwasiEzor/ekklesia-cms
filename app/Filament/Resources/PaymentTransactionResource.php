@@ -84,13 +84,13 @@ class PaymentTransactionResource extends Resource
                         Components\DateTimePicker::make('failed_at')
                             ->label(__('payments.failed_at'))
                             ->disabled()
-                            ->hidden(fn ($get) => empty($get('failed_at'))),
+                            ->hidden(fn ($get): bool => empty($get('failed_at'))),
 
                         Components\Textarea::make('failure_reason')
                             ->label(__('payments.failure_reason'))
                             ->disabled()
                             ->columnSpanFull()
-                            ->hidden(fn ($get) => empty($get('failure_reason'))),
+                            ->hidden(fn ($get): bool => empty($get('failure_reason'))),
 
                         Components\KeyValue::make('provider_metadata')
                             ->label(__('payments.provider_metadata'))
@@ -119,12 +119,12 @@ class PaymentTransactionResource extends Resource
 
                 Tables\Columns\TextColumn::make('provider')
                     ->label(__('payments.provider'))
-                    ->formatStateUsing(fn (string $state): string|array|null => __("payments.providers.{$state}") ?? $state)
+                    ->formatStateUsing(fn (string $state): string|array => __("payments.providers.{$state}") ?? $state)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label(__('payments.payment_method'))
-                    ->formatStateUsing(fn (?string $state): string|array|null => $state ? (__("payments.methods.{$state}") ?? $state) : '-')
+                    ->formatStateUsing(fn (?string $state): string|array => $state ? (__("payments.methods.{$state}") ?? $state) : '-')
                     ->toggleable(),
 
                 Tables\Columns\IconColumn::make('is_voided')
@@ -138,7 +138,7 @@ class PaymentTransactionResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('payments.status'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string|array|null => __("payments.statuses.{$state}") ?? $state)
+                    ->formatStateUsing(fn (string $state): string|array => __("payments.statuses.{$state}") ?? $state)
                     ->color(fn (string $state): string => match ($state) {
                         'completed' => 'success',
                         'pending', 'processing' => 'warning',

@@ -51,14 +51,14 @@ class MemberFactory extends Factory
     public function birthdayToday(): static
     {
         return $this->state(fn (): array => [
-            'date_of_birth' => now()->subYears(rand(15, 60)),
+            'date_of_birth' => now()->subYears(random_int(15, 60)),
         ]);
     }
 
     public function anniversaryToday(): static
     {
         return $this->state(fn (): array => [
-            'wedding_anniversary' => now()->subYears(rand(1, 30)),
+            'wedding_anniversary' => now()->subYears(random_int(1, 30)),
         ]);
     }
 }

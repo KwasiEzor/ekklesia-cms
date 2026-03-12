@@ -15,7 +15,7 @@ return new class extends Migration
         $teamKey = $columnNames['team_foreign_key'];
         $modelMorphKey = $columnNames['model_morph_key'];
 
-        Schema::table($tableNames['model_has_roles'], function (Blueprint $table) use ($teamKey, $pivotRole, $modelMorphKey) {
+        Schema::table($tableNames['model_has_roles'], function (Blueprint $table) use ($teamKey, $pivotRole, $modelMorphKey): void {
             $table->dropPrimary('model_has_roles_role_model_type_primary');
             $table->string($teamKey)->nullable()->change();
 
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->unique([$teamKey, $pivotRole, $modelMorphKey, 'model_type'], 'model_has_roles_role_model_type_unique');
         });
 
-        Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) use ($teamKey, $pivotPermission, $modelMorphKey) {
+        Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) use ($teamKey, $pivotPermission, $modelMorphKey): void {
             $table->dropPrimary('model_has_permissions_permission_model_type_primary');
             $table->string($teamKey)->nullable()->change();
 

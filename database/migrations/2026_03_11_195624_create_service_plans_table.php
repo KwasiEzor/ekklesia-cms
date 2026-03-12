@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_plans', function (Blueprint $blueprint) {
+        Schema::create('service_plans', function (Blueprint $blueprint): void {
             $blueprint->id();
             $blueprint->string('tenant_id');
             $blueprint->foreignId('campus_id')->nullable()->constrained()->onDelete('set null');

@@ -48,7 +48,7 @@ class PrayerRequestResource extends Resource
                         Components\Select::make('member_id')
                             ->label(__('prayer_requests.member'))
                             ->relationship('member', 'first_name')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
+                            ->getOptionLabelFromRecordUsing(fn ($record): string => "{$record->first_name} {$record->last_name}")
                             ->searchable(['first_name', 'last_name'])
                             ->preload()
                             ->required(),
@@ -168,8 +168,8 @@ class PrayerRequestResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->label(__('prayer_requests.type'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state) => __("prayer_requests.type_{$state}"))
-                    ->color(fn (string $state) => match ($state) {
+                    ->formatStateUsing(fn (string $state): string|array|null => __("prayer_requests.type_{$state}"))
+                    ->color(fn (string $state): string => match ($state) {
                         'prayer' => 'primary',
                         'praise' => 'success',
                         'testimony' => 'warning',
@@ -190,8 +190,8 @@ class PrayerRequestResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('prayer_requests.status'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state) => __("prayer_requests.status_{$state}"))
-                    ->color(fn (string $state) => match ($state) {
+                    ->formatStateUsing(fn (string $state): string|array|null => __("prayer_requests.status_{$state}"))
+                    ->color(fn (string $state): string => match ($state) {
                         'active' => 'primary',
                         'answered' => 'success',
                         'closed' => 'gray',

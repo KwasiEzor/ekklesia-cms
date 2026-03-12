@@ -37,7 +37,11 @@ test('email channel is always configured', function () {
 });
 
 test('sms channel is not configured without credentials', function () {
-    $channel = new SmsChannel('', '', null);
+    config(['notifications-channels.sms.default' => 'twilio']);
+    config(['notifications-channels.sms.providers.twilio.account_sid' => '']);
+    config(['notifications-channels.sms.providers.twilio.auth_token' => '']);
+    
+    $channel = new SmsChannel();
     expect($channel->isConfigured())->toBeFalse();
 });
 

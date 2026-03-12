@@ -38,3 +38,10 @@ test('stripe driver lists card provider', function () {
 
     expect($providers)->toHaveKey('card');
 });
+
+test('payment manager resolves fedapay driver', function () {
+    config(['payments.default' => 'fedapay']);
+
+    $manager = new PaymentManager(app());
+    expect($manager->driver('fedapay'))->toBeInstanceOf(\App\Services\Payment\Drivers\FedaPayDriver::class);
+});

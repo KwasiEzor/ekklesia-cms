@@ -10,7 +10,7 @@ use App\Jobs\ProcessPaymentWebhook;
 use App\Models\PaymentTransaction;
 use App\Models\Tenant;
 use App\Services\Payment\PaymentManager;
-use App\Services\Payment\PaymentRequest;
+use App\Services\Payment\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -54,51 +54,14 @@ class PaymentController extends Controller
      *
      * Start a new payment transaction with the specified provider. Returns the checkout URL.
      */
-    public function initiate(InitiatePaymentRequest $request, PaymentManager $manager): JsonResponse
+    public function initiate(InitiatePaymentRequest $request, PaymentService $service): JsonResponse
     {
-        $validated = $request->validated();
-        $provider = $validated['provider'] ?? $manager->getDefaultDriver();
-
-        $transaction = PaymentTransaction::create([
-            'tenant_id' => tenant('id'),
-            'member_id' => $validated['member_id'] ?? null,
-            'campus_id' => $validated['campus_id'] ?? null,
-            'amount' => $validated['amount'],
-            'currency' => $validated['currency'] ?? config('payments.default_currency', 'XOF'),
-            'provider' => $provider,
-            'payment_method' => $validated['payment_method'] ?? null,
-            'phone_number' => $validated['phone_number'] ?? null,
-            'campaign_id' => $validated['campaign_id'] ?? null,
-            'status' => 'pending',
-        ]);
-
-        $paymentRequest = new PaymentRequest(
-            amount: (float) $transaction->amount,
-            currency: $transaction->currency,
-            phone: $transaction->phone_number,
-            paymentMethod: $transaction->payment_method,
-            returnUrl: $validated['return_url'] ?? null,
-            notifyUrl: route('api.payments.webhook', ['provider' => $provider]),
-            description: $validated['description'] ?? null,
-            transactionId: $transaction->uuid,
-        );
-
-        $response = $manager->driver($provider)->initiate($paymentRequest);
-
-        $transaction->update([
-            'status' => $response->status,
-            'provider_reference' => $response->providerReference,
-            'provider_metadata' => $response->providerMetadata,
-        ]);
-
-        if ($response->status === 'failed') {
-            $transaction->markAsFailed($response->failureReason ?? 'Payment initiation failed');
-        }
+        $result = $service->initiatePayment($request->validated());
 
         return response()->json([
-            'data' => new PaymentTransactionResource($transaction->fresh()),
-            'payment_url' => $response->paymentUrl,
-        ], $response->status === 'failed' ? 422 : 201);
+            'data' => new PaymentTransactionResource($result['transaction']),
+            'payment_url' => $result['payment_url'],
+        ], $result['status'] === 'failed' ? 422 : 201);
     }
 
     /**

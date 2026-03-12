@@ -14,7 +14,7 @@ class PrayerRequestResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'member' => $this->when(! $this->is_anonymous, fn () => [
+            'member' => $this->when(! $this->is_anonymous, fn (): array => [
                 'id' => $this->member->id,
                 'full_name' => $this->member->full_name,
             ]),

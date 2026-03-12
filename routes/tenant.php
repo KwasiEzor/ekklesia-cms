@@ -2,21 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Livewire\Donation;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
-/*
-|--------------------------------------------------------------------------
-| Tenant Routes
-|--------------------------------------------------------------------------
-|
-| Here you can register the tenant routes for your application.
-| These routes are loaded by the TenantRouteServiceProvider.
-|
-| Feel free to customize them however you want. Good luck!
-|
-*/
 
 Route::middleware([
     'web',
@@ -24,4 +13,7 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function (): void {
     Route::get('/', fn (): string => 'This is your multi-tenant application. The id of the current tenant is '.tenant('id'));
+
+    Route::get('/give', Donation::class)->name('donation.give');
+    Route::get('/donation/success', fn () => view('donation-success'))->name('donation.success');
 });

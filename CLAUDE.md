@@ -88,8 +88,8 @@ Work through these phases in order. Do not skip ahead.
 
 ### PHASE 0 — Architecture Completion
 Resolve remaining open questions before touching code:
-- [ ] Content versioning strategy (no versioning / soft / full revision table)
-- [ ] Plugin architecture contract
+- [x] Content versioning strategy (DECIDED: soft versioning with JSONB snapshot)
+- [ ] Plugin architecture contract (OPEN — resolve before v1 alpha)
 
 ### PHASE 1 — Project Scaffold
 ```
@@ -132,17 +132,18 @@ Session 6 → GivingRecord
 
 ### PHASE 5 — AI Layer
 ```
-- Internal maintenance agents (GitHub webhooks + Claude API)
-- User-facing assistant in Filament panel (French/English)
-- Tenant-scoped context pipeline
+- Multi-provider AiManager (Claude, OpenAI, Gemini)
+- 14 specialized skills with intent detection
+- Tenant-scoped context pipeline with PII scrubbing
+- Streaming responses via Reverb
 ```
 
-### PHASE 6 — Premium Modules
+### PHASE 6 — Premium Modules (IN PROGRESS)
 ```
-- Mobile money giving (MTN, Orange, Wave)
-- SMS notifications
-- Multi-campus management
-- Hosted platform billing
+- Mobile money giving (CinetPay/Aggregator strategy)
+- SMS notifications (Africa's Talking / Twilio)
+- Multi-campus management (CampusResource)
+- Hosted platform billing (Laravel Cashier)
 ```
 
 ---
@@ -311,20 +312,16 @@ To work on a specific phase, tell Claude Code:
 - [x] Tech stack finalized
 - [x] Core architectural decisions made
 - [x] Content versioning decision — DECIDED: soft versioning with `previous_version` JSONB
-- [ ] Plugin architecture contract — OPEN (resolve before Phase 1)
+- [ ] Plugin architecture contract — OPEN (resolve before v1 alpha)
 - [x] Phase 1 scaffold — COMPLETE
-- [x] Phase 2, Session 1 — Sermon content type COMPLETE
-- [x] Phase 2, Session 2 — Event content type COMPLETE
-- [x] Phase 2, Session 3 — Announcement content type COMPLETE
-- [x] Phase 2, Session 4 — Member & Gallery content types COMPLETE
-- [x] Phase 2, Session 5 — Page content type (with block builder) COMPLETE
-- [x] Phase 2, Session 6 — GivingRecord content type COMPLETE
-- [x] **Phase 2 — Core Content Types COMPLETE** (all 6 content types built)
-- [x] Phase 2.5 — Hardening Sprint COMPLETE (Rector, PHPStan, CI, security headers, rate limiting, Sanctum, SECURITY.md, CONTRIBUTING.md)
-- [x] Phase 3 — API Layer COMPLETE (auth endpoints, token management, Scramble API docs, Gallery form requests)
-- [x] Phase 4 — First Deployment COMPLETE (tenancy middleware, tenant:create, seeders, health check, Docker)
-- [x] UI Refonte — Premium admin redesign COMPLETE (dashboard widgets, settings page, resource form redesign, translations, icon buttons, full-width forms)
-- [x] Phase 5 — AI Layer COMPLETE (multi-provider assistant, 14 skills, tenant-scoped context pipeline, streaming via Reverb)
+- [x] Phase 2 — Core Content Types COMPLETE (Sermon, Event, Announcement, Member, Gallery, Page, GivingRecord)
+- [x] Phase 2.5 — Hardening Sprint COMPLETE (Rector, PHPStan, CI, security headers, rate limiting)
+- [x] Phase 3 — API Layer COMPLETE (Auth, CRUD, Scramble docs, Rate limiting)
+- [x] Phase 4 — First Deployment COMPLETE (Docker, Octane, Health checks, Seeders)
+- [x] UI Refonte — Premium admin redesign COMPLETE (Dashboard widgets, Settings tabs, Full-width layouts)
+- [x] Phase 5 — AI Layer COMPLETE (14 skills, Context pipeline, Streaming)
+- [x] Production Readiness Sprint COMPLETE (Attendance, Households, Funds, Prayer, Devotionals, Testimonies, Birthdays, Reading Plans, Bulk SMS)
+- [x] Page Builder "Pro" Update COMPLETE (Dynamic data, Motion components, Layout enhancements)
 - [ ] Phase 6 — Premium Modules IN PROGRESS
 
 ===

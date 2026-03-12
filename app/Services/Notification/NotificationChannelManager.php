@@ -26,22 +26,7 @@ class NotificationChannelManager extends Manager
 
     protected function createSmsDriver(): SmsChannel
     {
-        $tenant = tenant();
-        $apiKey = $tenant instanceof Tenant
-            ? (string) $tenant->getSetting('sms_api_key', config('notifications-channels.sms.api_key'))
-            : (string) config('notifications-channels.sms.api_key');
-        $username = $tenant instanceof Tenant
-            ? (string) $tenant->getSetting('sms_username', config('notifications-channels.sms.username'))
-            : (string) config('notifications-channels.sms.username');
-        $senderId = $tenant instanceof Tenant
-            ? $tenant->getSetting('sms_sender_id', config('notifications-channels.sms.sender_id'))
-            : config('notifications-channels.sms.sender_id');
-
-        return new SmsChannel(
-            apiKey: $apiKey,
-            username: $username,
-            senderId: is_string($senderId) ? $senderId : null,
-        );
+        return new SmsChannel;
     }
 
     protected function createWhatsappDriver(): WhatsAppChannel

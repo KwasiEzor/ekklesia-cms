@@ -1161,15 +1161,27 @@ User message → ProcessAiMessage (queued job)
 
 ---
 
-## 2026-03-11 — UI Hotfix (Heroicon Constant Error)
+## 2026-03-12 — Phase 6: FedaPay Integration & Donation Component
 
 - **Status:** Done
-- **Goal:** Resolve internal server error in `PageResource` caused by an undefined Heroicon constant.
+- **Goal:** Complete the public-facing donation system with FedaPay support for mobile money and card payments.
 - **Summary:**
-  - Corrected `Heroicon::OutlinedColumns` to `Heroicon::OutlinedViewColumns` in `app/Filament/Resources/PageResource.php`.
+    - **FedaPay Driver:** Implemented the `FedaPayDriver` with support for transaction initiation and status checking via the FedaPay V1 API.
+    - **Donation Livewire Component:** Created a premium, multi-step donation form with amount presets, fund selection (including Campaign-aware deep-linking), and real-time validation.
+    - **Error Recovery:** Resolved fatal initialization bugs in `PaymentManager` and corrected campaign attribute mapping (`uuid`/`title` → `slug`/`name`).
+    - **Test Coverage:** Added 100% test coverage for the new driver and component, including edge cases for payment failures and validation errors.
+    - **UI Polish:** Removed legacy "lightning" component and ensured all views follow the premium design system with rounded corners, elevated shadows, and responsive layouts.
 - **Validation:**
-  - Verified constant existence via Tinker.
-  - `php artisan test tests/Feature/Api/V1/PageApiTest.php`: pass
+    - `pest`: pass (576 passed)
+    - `composer quality`: pass
 - **Files:**
-  - `app/Filament/Resources/PageResource.php`
+    - `app/Livewire/Donation.php`
+    - `app/Services/Payment/Drivers/FedaPayDriver.php`
+    - `app/Services/Payment/PaymentService.php`
+    - `resources/views/livewire/donation.blade.php`
+    - `resources/views/donation-success.blade.php`
+    - `tests/Unit/Services/Payment/FedaPayDriverTest.php`
+    - `tests/Feature/Livewire/DonationTest.php`
+    - `app/Services/Payment/PaymentManager.php`
+    - `routes/tenant.php`
 
