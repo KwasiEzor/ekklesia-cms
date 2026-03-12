@@ -41,6 +41,7 @@ export default defineConfig({
             { text: 'Why Ekklesia?', link: '/guide/why-ekklesia' },
             { text: 'Quick Start', link: '/guide/quick-start' },
             { text: 'Admin Runbook', link: '/guide/admin-runbook' },
+            { text: 'Development Log', link: '/guide/dev-log' },
             { text: 'AI Gates Self-Test', link: '/guide/ai-gates-self-test' },
             { text: 'Roadmap', link: '/guide/roadmap' },
             { text: 'Changelog', link: '/guide/changelog' },

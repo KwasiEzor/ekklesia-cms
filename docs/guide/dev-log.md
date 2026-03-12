@@ -1,0 +1,1190 @@
+# Development Log
+
+> This is a real-time record of the project's construction, synced from the root `BUILD_PROGRESS.md`.
+
+# Ekklesia CMS — Build Progress Report
+
+> Auto-updated as each phase and session completes.
+> Repo: https://github.com/KwasiEzor/ekklesia-cms
+
+---
+
+## Phase Summary
+
+| Phase | Description | Status | Date |
+|-------|------------|--------|------|
+| 0 | Architecture Completion | Done | 2026-02-25 |
+| 1 | Project Scaffold | Done | 2026-02-25 |
+| 2.1 | Sermon Content Type | Done | 2026-02-25 |
+| 2.2 | Event Content Type | Done | 2026-02-25 |
+| — | Laravel Reverb Integration | Done | 2026-02-25 |
+| 2.3 | Announcement Content Type | Done | 2026-02-25 |
+| 2.4 | Member & Gallery Content Types | Done | 2026-02-28 |
+| 2.5 | Page Content Type (block builder) | Done | 2026-02-28 |
+| 2.6 | GivingRecord Content Type | Done | 2026-02-28 |
+| 2.5H | Hardening Sprint | Done | 2026-03-01 |
+| 3 | API Layer | Done | 2026-03-01 |
+| 4 | First Deployment (prep) | In Progress | 2026-03-02 |
+| — | UI Refonte — Premium Admin | Done | 2026-03-03 |
+| 5 | AI Layer | Done | 2026-03-03 |
+| 6 | Premium Modules | Pending | — |
+
+---
+
+## Phase 0 — Architecture Completion
+
+**Commit:** `b3abd47` — `docs: resolve content versioning — soft versioning with previous_version JSONB`
+**Date:** 2026-02-25
+
+### Decisions Made
+
+**Content Versioning — DECIDED: Soft versioning**
+- Each content table gets a nullable `previous_version JSONB` column
+- `App\Concerns\HasSoftVersioning` Eloquent trait snapshots dirty fields on `updating` event
+- One-level undo in v1; upgrade path to full revision tables remains open
+- Rationale: church staff are non-technical — accidental saves must be recoverable without the complexity of full revision tables
+
+**Plugin Architecture — still OPEN** (deferred, not blocking Phase 1)
+
+### Files Changed
+- `docs/architecture/decisions.md` — added Content Versioning DECIDED section
+- `docs/architecture/open-questions.md` — marked versioning as resolved
+- `docs/guide/changelog.md` — added decision entry
+- `CLAUDE.md` — checked off versioning, fixed Livewire ^3.0 → ^4.0
+
+---
+
+## Phase 1 — Project Scaffold
+
+**Commit:** `9df01e3` — `feat: Laravel 12 scaffold with Filament v5, stancl/tenancy, PostgreSQL`
+**Date:** 2026-02-25
+
+### What Was Built
+
+| Component | Detail |
+|-----------|--------|
+| Framework | Laravel 12 (v12.53.0) |
+| Admin UI | Filament v5 with Livewire v4 |
+| Multi-tenancy | stancl/tenancy v3 — single-database mode, `tenant_id` column scoping |
+| Database | PostgreSQL 16 — databases: `ekklesia` (dev), `ekklesia_test` (test) |
+| Media | spatie/laravel-medialibrary v11 |
+| i18n | spatie/laravel-translatable v6 |
+| API Auth | Laravel Sanctum v4 |
+| Performance | Laravel Octane v2 (FrankenPHP) |
+| Testing | Pest PHP v3 with pest-plugin-laravel |
+
+### Key Configuration
+- **Locale:** French primary (`APP_LOCALE=fr`), English fallback
+- **Tenant resolution:** Filament panel uses `->tenant(Tenant::class, slugAttribute: 'slug')`
+- **DatabaseTenancyBootstrapper:** Disabled (single-DB mode — scoping via `BelongsToTenant` trait)
+- **DB creation/deletion jobs:** Removed from TenancyServiceProvider
+- **VitePress docs:** Isolated to `docs/package.json` with own `node_modules`
+- **GitHub Actions:** Updated to `working-directory: docs`; legacy Jekyll workflow deleted
+
+### Models Created
+- `App\Models\Tenant` — HasDatabase, HasDomains, HasFactory; custom columns: id, name, slug
+- `App\Models\User` — BelongsToTenant, HasApiTokens; tenant_id foreign key + unique email per tenant
+
+### Traits Created
+- `App\Concerns\HasSoftVersioning` — snapshots changed fields into `previous_version` JSONB on update; `revertToPreviousVersion()` restores and clears
+
+### Migrations
+| Migration | Tables |
+|-----------|--------|
+| `0001_01_00_000000` | `tenants` (id, name, slug, data, timestamps) |
+| `0001_01_00_000001` | `domains` (domain, tenant_id FK) |
+| `0001_01_01_000000` | `users` (tenant_id FK, unique email per tenant), `password_reset_tokens`, `sessions` |
+| `0001_01_01_000001` | `cache`, `cache_locks` |
+| `0001_01_01_000002` | `jobs`, `job_batches`, `failed_jobs` |
+| `2026_02_25_123804` | `media` (spatie/medialibrary) |
+| `2026_02_25_124148` | `personal_access_tokens` (Sanctum) |
+
+### Translation Files
+- `lang/fr/navigation.php` — sidebar labels in French
+- `lang/fr/common.php` — CRUD action labels in French
+- `lang/en/navigation.php` — English fallback
+- `lang/en/common.php` — English fallback
+
+---
+
+## Phase 2, Session 1 — Sermon Content Type
+
+**Commit:** `874fde7` — `feat: Sermon content type — model, migration, Filament resource, API, tests`
+**Date:** 2026-02-25
+
+### Models
+- **`App\Models\Sermon`** — BelongsToTenant, HasSoftVersioning, HasFactory
+  - Casts: `date`, `duration` (int), `tags` (array), `custom_fields` (array), `previous_version` (array)
+  - Hidden: `tenant_id`
+  - Accessor: `formatted_duration` — converts seconds to `H:MM:SS` or `M:SS`
+  - Relationship: `belongsTo(SermonSeries::class)`
+
+- **`App\Models\SermonSeries`** — BelongsToTenant, HasFactory
+  - Relationship: `hasMany(Sermon::class)`
+
+### Migrations
+| Migration | Table | Indexes |
+|-----------|-------|---------|
+| `2026_02_25_140000` | `sermon_series` | `tenant_id`, unique `(tenant_id, slug)` |
+| `2026_02_25_140001` | `sermons` | `tenant_id`, `(tenant_id, created_at)`, `(tenant_id, date)`, unique `(tenant_id, slug)`, GIN on `custom_fields` |
+
+### Filament Resource
+- **`App\Filament\Resources\SermonResource`**
+  - Navigation: icon `Heroicon::OutlinedMicrophone`, group "Contenu" (French)
+  - Form: title (auto-slug), slug, speaker, date, duration, series (select), audio_url, video_url, tags, transcript
+  - Table: title, speaker, date, series, formatted_duration; filter by series; default sort by date desc
+  - Pages: ListSermons, CreateSermon, EditSermon
+
+### API Layer
+| Endpoint | Controller Method | Auth |
+|----------|------------------|------|
+| `GET /api/v1/sermons` | `index` | Sanctum |
+| `POST /api/v1/sermons` | `store` | Sanctum |
+| `GET /api/v1/sermons/{sermon}` | `show` | Sanctum |
+| `PUT /api/v1/sermons/{sermon}` | `update` | Sanctum |
+| `DELETE /api/v1/sermons/{sermon}` | `destroy` | Sanctum |
+
+- **Filtering:** `?speaker=`, `?series_id=`, `?tag=`
+- **Pagination:** `?per_page=` (default 15)
+- **Response:** `SermonResource` / `SermonCollection` — never exposes `tenant_id`
+- **Validation:** `StoreSermonRequest` / `UpdateSermonRequest` — tenant-scoped unique slug
+
+### Tests — 23 passing (67 assertions)
+
+**Unit (11 tests)**
+- `SermonTest` — casts (custom_fields, tags), hidden tenant_id, formatted_duration (hours, minutes, null), belongs to series
+- `HasSoftVersioningTest` — snapshot on update, revert restores previous, revert returns false when empty, hasPreviousVersion boolean
+
+**Feature (12 tests)**
+- `SermonApiTest` — 401 without auth, list, no tenant_id in response, create, show, update, delete, pagination, filter by speaker
+- `SermonIsolationTest` — sermon invisible to other tenant, count isolated per tenant, API returns only own tenant's sermons
+
+### Translation Files
+- `lang/fr/sermons.php` — all field labels in French
+- `lang/en/sermons.php` — English fallback
+
+---
+
+## Phase 2, Session 2 — Event Content Type
+
+**Commit:** `4b1ea2f` — `feat: Event content type — model, migration, Filament resource, API, tests`
+**Date:** 2026-02-25
+
+### Model
+- **`App\Models\Event`** — BelongsToTenant, HasSoftVersioning, HasFactory
+  - Casts: `start_at` (datetime), `end_at` (datetime), `capacity` (int), `custom_fields` (array), `previous_version` (array)
+  - Hidden: `tenant_id`
+  - Accessors: `is_upcoming` (start_at is future), `is_past` (end_at or start_at is past)
+
+### Migration
+| Migration | Table | Indexes |
+|-----------|-------|---------|
+| `2026_02_25_150000` | `events` | `tenant_id`, `(tenant_id, start_at)`, `(tenant_id, created_at)`, unique `(tenant_id, slug)`, GIN on `custom_fields` |
+
+### Filament Resource
+- **`App\Filament\Resources\EventResource`**
+  - Navigation: icon `Heroicon::OutlinedCalendarDays`, group "Contenu", sort 2
+  - Form: title (auto-slug), slug, start_at, end_at (validated after start_at), location, capacity, image URL, registration URL, description
+  - Table: title, start_at, end_at, location, capacity; filters for upcoming/past; default sort by start_at desc
+  - Pages: ListEvents, CreateEvent, EditEvent
+
+### API Layer
+| Endpoint | Controller Method | Auth |
+|----------|------------------|------|
+| `GET /api/v1/events` | `index` | Sanctum |
+| `POST /api/v1/events` | `store` | Sanctum |
+| `GET /api/v1/events/{event}` | `show` | Sanctum |
+| `PUT /api/v1/events/{event}` | `update` | Sanctum |
+| `DELETE /api/v1/events/{event}` | `destroy` | Sanctum |
+
+- **Filtering:** `?location=` (ilike), `?upcoming=true`, `?past=true`
+- **Pagination:** `?per_page=` (default 15)
+- **Validation:** `end_at` must be after `start_at`; tenant-scoped unique slug
+
+### Tests — 20 new (43 total, 136 assertions)
+
+**Unit (6 tests)**
+- `EventTest` — casts (custom_fields, start_at/end_at, capacity), hidden tenant_id, is_upcoming, is_past
+
+**Feature (14 tests)**
+- `EventApiTest` — 401 without auth, list, no tenant_id, create, show, update, delete, pagination, filter upcoming, filter location, end_at validation
+- `EventIsolationTest` — event invisible to other tenant, count isolated, API scoped to tenant
+
+---
+
+## Laravel Reverb Integration — Real-Time Broadcasting
+
+**Commit:** `ea70018` — `feat: integrate Laravel Reverb for real-time broadcasting`
+**Date:** 2026-02-25
+
+### What Was Built
+
+Real-time broadcasting infrastructure so Filament admin panel users receive live notifications when other admins in their tenant create, update, or delete content.
+
+### Architecture
+
+```
+Content CRUD → ContentObserver → ContentChanged (ShouldBroadcast)
+                                       ├─→ Broadcasts on private-tenant.{id} channel
+                                       └─→ NotifyTenantAdmins listener
+                                              └─→ Database notification to other admins
+                                                    └─→ Filament bell icon (30s polling)
+```
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `app/Events/ContentChanged.php` | Broadcast event — carries content_type, action, content_id, content_title, changed_by, tenant_id |
+| `app/Observers/ContentObserver.php` | Registered on Sermon and Event; dispatches ContentChanged on created/updated/deleted |
+| `app/Listeners/NotifyTenantAdmins.php` | Sends database notifications to all tenant admins except the author |
+| `app/Notifications/ContentChangedNotification.php` | Database notification with French action labels (créé, modifié, supprimé) |
+| `routes/channels.php` | Channel authorization: `tenant.{tenantId}` (tenant_id match) and `App.Models.User.{id}` (user id match) |
+| `config/broadcasting.php` | Reverb driver configuration |
+| `config/reverb.php` | Reverb server configuration |
+| `database/migrations/..._create_notifications_table.php` | Laravel notifications table for database channel |
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `app/Providers/AppServiceProvider.php` | Register ContentObserver on Sermon/Event; bind ContentChanged → NotifyTenantAdmins |
+| `app/Providers/Filament/AdminPanelProvider.php` | Added `->databaseNotifications()` and `->databaseNotificationsPolling('30s')` |
+| `bootstrap/app.php` | Added `channels:` route registration |
+| `.env.example` | Added Reverb env vars (REVERB_APP_ID, REVERB_APP_KEY, etc.) |
+
+### Channel Authorization
+
+| Channel Pattern | Rule |
+|----------------|------|
+| `private-tenant.{tenantId}` | `$user->tenant_id === $tenantId` |
+| `private-App.Models.User.{id}` | `(int) $user->id === (int) $id` |
+
+### Tests — 12 new (55 total, 164 assertions)
+
+**Broadcasting (12 tests)**
+- `ContentChangedTest` — dispatch on create/update/delete, broadcasts on correct tenant channel, payload structure, notification sent to other admins only, cross-tenant isolation
+- `ChannelAuthTest` — tenant channel auth (own/other), user channel auth (own/other), channel callbacks registered
+
+### Bug Fixes During Integration
+
+1. **Tenant isolation tests broken (3 tests):** `ContentObserver` dispatching `ContentChanged` (ShouldBroadcast) triggered synchronous `BroadcastEvent` queue jobs. The `QueueTenancyBootstrapper` reset tenant context after job completion, causing `Sermon::count()` / `Event::count()` to return unscoped results. **Fix:** `Event::fake([ContentChanged::class])` in isolation test `beforeEach()`.
+
+2. **Channel auth tests failing (3 tests):** `NullBroadcaster::auth()` is a no-op — returns null/200 for all requests regardless of authorization. **Fix:** Rewrote tests to verify channel callback logic directly instead of hitting `/broadcasting/auth` endpoint.
+
+---
+
+## Phase 2, Session 3 — Announcement Content Type
+
+**Commit:** `824e0c9` — `feat: Announcement content type — model, migration, Filament resource, API, tests`
+**Date:** 2026-02-25
+
+### Model
+- **`App\Models\Announcement`** — BelongsToTenant, HasSoftVersioning, HasFactory
+  - Casts: `published_at` (datetime), `expires_at` (datetime), `pinned` (boolean), `custom_fields` (array), `previous_version` (array)
+  - Hidden: `tenant_id`
+  - Accessors: `is_active` (published and not expired), `is_expired` (past expiry date)
+
+### Migration
+| Migration | Table | Indexes |
+|-----------|-------|---------|
+| `2026_02_25_160000` | `announcements` | `tenant_id`, `(tenant_id, published_at)`, `(tenant_id, created_at)`, unique `(tenant_id, slug)`, GIN on `custom_fields` |
+
+### Filament Resource
+- **`App\Filament\Resources\AnnouncementResource`**
+  - Navigation: icon `Heroicon::OutlinedMegaphone`, group "Contenu", sort 3
+  - Form: title (auto-slug), slug, published_at, expires_at (validated after published_at), pinned toggle, target_group select (Tous/Jeunesse/Femmes/Hommes/Responsables), body (MarkdownEditor)
+  - Table: title, published_at, expires_at, pinned (icon), target_group; filters for active/expired/pinned; default sort by published_at desc
+  - Pages: ListAnnouncements, CreateAnnouncement, EditAnnouncement
+
+### API Layer
+| Endpoint | Controller Method | Auth |
+|----------|------------------|------|
+| `GET /api/v1/announcements` | `index` | Sanctum |
+| `POST /api/v1/announcements` | `store` | Sanctum |
+| `GET /api/v1/announcements/{announcement}` | `show` | Sanctum |
+| `PUT /api/v1/announcements/{announcement}` | `update` | Sanctum |
+| `DELETE /api/v1/announcements/{announcement}` | `destroy` | Sanctum |
+
+- **Filtering:** `?pinned=true`, `?active=true`, `?expired=true`, `?target_group=`
+- **Pagination:** `?per_page=` (default 15)
+- **Validation:** `expires_at` must be after `published_at`; tenant-scoped unique slug
+
+### Tests — 24 new (79 total, 244 assertions)
+
+**Unit (9 tests)**
+- `AnnouncementTest` — casts (custom_fields, published_at/expires_at, pinned), hidden tenant_id, is_active (published+not expired, published+no expiry, not yet published), is_expired (past expiry, no expiry)
+
+**Feature (15 tests)**
+- `AnnouncementApiTest` — 401 without auth, list, no tenant_id, create, show, update, delete, pagination, filter pinned, filter active, filter target_group, expires_at validation
+- `AnnouncementIsolationTest` — announcement invisible to other tenant, count isolated, API scoped to tenant
+
+### Observer Registration
+- `Announcement::observe(ContentObserver::class)` added in `AppServiceProvider::boot()`
+
+---
+
+## Phase 2, Session 4 — Member & Gallery Content Types
+
+**Commit:** `d62d215` area — Member & Gallery content types
+**Date:** 2026-02-28
+
+### Models
+- **`App\Models\Member`** — BelongsToTenant, HasSoftVersioning, HasFactory
+  - Fields: first_name, last_name, email, phone, baptism_date, cell_group_id, status, custom_fields
+  - Avatar via Spatie Media Library (`avatar` collection)
+  - Relationship: `belongsTo(CellGroup::class)`
+- **`App\Models\CellGroup`** — BelongsToTenant, HasFactory
+- **`App\Models\Gallery`** — BelongsToTenant, HasSoftVersioning, HasFactory
+  - Photos via Spatie Media Library (`photos` collection)
+
+### Filament Resources
+- **MemberResource** — icon UserGroup, group "Membres", filters by status/cell group
+- **GalleryResource** — icon Photo, group "Contenu", media library integration
+
+---
+
+## Phase 2, Session 5 — Page Content Type
+
+**Date:** 2026-02-28
+
+### Model
+- **`App\Models\Page`** — BelongsToTenant, HasSoftVersioning, HasFactory
+  - Fields: title, slug, content_blocks (JSONB), seo_title, seo_description, published_at
+  - Filament Builder with block types: heading, text, image, video, quote, call-to-action
+
+---
+
+## Phase 2, Session 6 — GivingRecord Content Type
+
+**Commit:** `d62d215` — `feat: GivingRecord content type — model, migration, Filament resource, API, tests`
+**Date:** 2026-02-28
+
+### Model
+- **`App\Models\GivingRecord`** — BelongsToTenant, HasFactory
+  - Fields: member_id, amount, currency, date, method, reference, campaign_id, custom_fields
+  - Relationship: `belongsTo(Member::class)`
+
+---
+
+## Phase 2.5 — Hardening Sprint
+
+**Commit:** `4a381b2` — `feat: Phase 2.5 hardening — Rector, PHPStan, CI, security headers, rate limiting`
+**Date:** 2026-03-01
+
+### What Was Done
+- Rector PHP code quality rules applied
+- PHPStan level 5 static analysis (all passing)
+- GitHub Actions CI pipeline (tests + PHPStan)
+- Security headers middleware
+- API rate limiting per tenant
+- Sanctum token management
+- SECURITY.md and CONTRIBUTING.md
+
+---
+
+## Phase 3 — API Layer
+
+**Commit:** `5f4c7ce` — `feat: Phase 3 API layer — auth endpoints, token management, Scramble docs`
+**Date:** 2026-03-01
+
+### What Was Built
+- Auth endpoints: login, logout, register, token refresh
+- Token management: create, list, revoke personal access tokens
+- Scramble API documentation auto-generation
+- Gallery form requests for API validation
+- All 6 content types with full CRUD API endpoints
+
+### API Endpoints Summary
+| Resource | Base URL | Methods |
+|----------|----------|---------|
+| Sermons | `/api/v1/sermons` | GET, POST, GET/:id, PUT/:id, DELETE/:id |
+| Events | `/api/v1/events` | GET, POST, GET/:id, PUT/:id, DELETE/:id |
+| Announcements | `/api/v1/announcements` | GET, POST, GET/:id, PUT/:id, DELETE/:id |
+| Members | `/api/v1/members` | GET, POST, GET/:id, PUT/:id, DELETE/:id |
+| Pages | `/api/v1/pages` | GET, POST, GET/:id, PUT/:id, DELETE/:id |
+| GivingRecords | `/api/v1/giving-records` | GET, POST, GET/:id, PUT/:id, DELETE/:id |
+| Galleries | `/api/v1/galleries` | GET, POST, GET/:id, PUT/:id, DELETE/:id |
+| Auth | `/api/v1/auth/*` | login, logout, register, tokens |
+
+---
+
+## Phase 4 — First Deployment (prep)
+
+**Commit:** `a5f76ef` — `feat: Phase 4 deployment prep — tenancy middleware, tenant:create, Docker, health check`
+**Date:** 2026-03-02
+
+### What Was Built
+- Tenancy middleware for API tenant resolution
+- `tenant:create` Artisan command for provisioning tenants
+- Database seeders for demo data
+- Health check endpoint
+- Docker / docker-compose configuration
+- Status: deployment prep complete, awaiting production push
+
+---
+
+## UI Refonte — Premium Admin Redesign
+
+**Commit:** `f7b19bf` — `feat: premium admin UI refonte — dashboard, settings, form redesign, icon buttons, full-width layouts`
+**Date:** 2026-03-03
+
+### Dashboard — 5 Widgets in 3-Column Grid
+
+| Widget | Type | Position |
+|--------|------|----------|
+| StatsOverview | 4 stat cards (members, giving, events, sermons) with sparklines | Full width |
+| GivingChart | Bar chart — giving per month (12 months) | 2/3 width |
+| MemberDistributionChart | Doughnut — members by status | 1/3 width |
+| UpcomingEventsWidget | Table — next 5 events | 2/3 width |
+| SermonsChart | Line chart — sermons per month (12 months) | 1/3 width |
+
+### Settings Page — 7 Tabs (standalone sidebar navigation)
+
+| Tab | Key Fields |
+|-----|-----------|
+| Church Information | Name, pastor, denomination, year founded, capacity, address, phones, email, website, worship schedule repeater |
+| Appearance & Design | Logo, favicon, cover image, colors, fonts, dark mode, custom CSS |
+| Social Media | Facebook, Instagram, YouTube, Twitter/X, TikTok, WhatsApp |
+| SEO & Analytics | Title suffix, meta description, keywords, OG image, Google Analytics, GTM, Facebook Pixel |
+| Notifications | Email sender config, welcome/event/giving/announcement notification toggles, custom welcome message |
+| Modules | Enable/disable: Sermons, Events, Announcements, Members, Pages, Giving, Galleries |
+| Advanced | Locale, timezone, currency, date/time formats, items per page, API toggle + rate limit, maintenance mode |
+
+All settings stored in tenant `data` JSONB column via dot notation (`data.primary_color`, etc.).
+
+### Resource Form Redesign (7 resources)
+
+Applied across all resources:
+- Sections with **icons** (`Heroicon::Outlined*`) and **descriptions**
+- **Collapsible** sections for secondary content (collapsed by default for less-used fields)
+- **Prefix icons** on email, phone, URL fields
+- **Placeholders** and **helper texts** on all inputs
+- Full FR + EN translations for all new section titles, descriptions, placeholders
+
+### Table Actions — Icon-Only Buttons
+
+All 7 resource tables changed from text+icon buttons to compact icon-only buttons:
+- `ViewAction::make()->iconButton()` — eye icon
+- `EditAction::make()->iconButton()` — pencil icon
+- `DeleteAction::make()->iconButton()` — trash icon
+
+### Full-Width Create/Edit Layouts
+
+All 14 Create and Edit pages set to `Width::Full` (`protected Width|string|null $maxContentWidth = Width::Full`) — forms expand to use all available screen width.
+
+### Panel Configuration
+- Color palette: Indigo primary, Rose danger, Slate gray, Sky info, Emerald success, Amber warning
+- `sidebarCollapsibleOnDesktop()` for more workspace
+- Database notifications with 30s polling
+
+### Translation Files
+- **4 new files:** `lang/{fr,en}/dashboard.php`, `lang/{fr,en}/settings.php`
+- **14 enriched files:** All resource translation files with `section_*`, `section_*_desc`, `*_placeholder` keys
+
+### Files Changed: 51 files, +2,161 lines
+
+| Category | Files |
+|----------|-------|
+| New pages | `Dashboard.php`, `Settings.php` |
+| New widgets | `StatsOverview.php`, `GivingChart.php`, `MemberDistributionChart.php`, `UpcomingEventsWidget.php`, `SermonsChart.php` |
+| Resources | 7 resource files + 14 Create/Edit page files |
+| Models | `Tenant.php` (data cast + helpers), `User.php` (HasTenants) |
+| Panel | `AdminPanelProvider.php` |
+| Translations | 18 translation files (4 new + 14 modified) |
+| Migration | `alter_notifications_data_to_jsonb.php` |
+
+### Tests: 194 passing (604 assertions) — all green
+
+---
+
+## Phase 5 — AI Layer
+
+**Commit:** `1e047c0` — `feat: Phase 5 AI layer — multi-provider assistant, 14 skills, tenant-scoped context pipeline`
+**Date:** 2026-03-03
+
+### What Was Built
+
+Multi-provider AI assistant with tenant-scoped context pipeline and 14 specialized skills.
+
+### Architecture — Multi-Provider Driver Pattern
+
+```
+AiManager (extends Illuminate\Support\Manager)
+├── ClaudeDriver    → anthropic-ai/sdk
+├── OpenAiDriver    → openai-php/client
+└── GeminiDriver    → google-gemini-php/client
+```
+
+Per-tenant config stored in `data` JSONB: `ai_provider`, `ai_api_key`, `ai_model`, `ai_max_tokens`.
+
+### AI Skills System — 14 Skills in 5 Categories
+
+| Category | Skills |
+|----------|--------|
+| Content Creation | sermon-outline, content-write, translate, seo-optimize, proofread |
+| Church Management | event-plan, comm-draft, giving-insights, dashboard-narrate |
+| Design & Branding | brand-advise, social-create |
+| Security & Maintenance | content-audit, data-quality |
+| AI Guidance | strategy-advise |
+
+### Streaming Architecture
+
+```
+User message → ProcessAiMessage (queued job)
+  → AiManager resolves driver per tenant
+  → TenantContextBuilder builds system prompt (no PII)
+  → Driver streams response → AiResponseChunk (ShouldBroadcastNow)
+  → Private channel ai-chat.{userId} → Livewire/Echo
+```
+
+### New Files (40+)
+
+| Category | Files |
+|----------|-------|
+| Config | `config/ai.php` |
+| Driver Pattern | AiDriverInterface, AiResponse, AiManager, ClaudeDriver, OpenAiDriver, GeminiDriver |
+| Skills | AiSkill base, SkillRegistry, 14 skill classes |
+| Context | TenantContextBuilder |
+| Models | AiConversation, AiMessage + migrations + factories |
+| Chat | AiResponseChunk event, ProcessAiMessage job, AiChat Livewire, AiAssistant page |
+| Analysis | AiAnalyzeContent job, AiAnalyzeAction |
+| Translations | `lang/{fr,en}/ai.php` |
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `AppServiceProvider.php` | AiManager singleton, SkillRegistry singleton, Livewire registration |
+| `Settings.php` | AI configuration tab (provider, model, API key, max tokens) |
+| `routes/channels.php` | `ai-chat.{userId}` channel authorization |
+| `.env.example` | AI provider env vars |
+| `lang/{fr,en}/settings.php` | AI settings translations |
+
+### Tests: 228 passing (34 new + 194 existing) — all green
+
+---
+
+## 2026-03-04 — Codex x Claude Collaboration Setup
+
+- **Status:** Done
+- **Goal:** Establish strict TDD collaboration workflow, premium UI quality bar, and mandatory progress-saving protocol for ongoing development.
+- **Deliverables:**
+  - `AI_COLLABORATION_PLAN.md` — execution plan, TDD lifecycle, DoD, premium UI checklist, progress and commit protocol
+  - `CLAUDE_COLLAB_INSTRUCTIONS.md` — Claude-operating instructions for Codex collaboration
+  - `CLAUDE.md` updated with startup command to load collaboration docs
+- **Quality checks:** Not applicable (documentation/process setup task)
+- **Notes:** Future implementation tasks must follow `composer test` + `composer quality` gate before each completion and must append progress in this report.
+
+---
+
+## 2026-03-04 — Hardening Sprint (Quality Gate Recovery)
+
+- **Status:** Done
+- **Goal:** Restore strict code-quality gates for the active Phase 6 codebase and remove static-analysis debt blocking CI.
+- **Summary:**
+  - Resolved PHPStan blockers (65 -> 0 errors) across tenancy-safe billing, AI manager/drivers, notification/payment managers, soft versioning, and Livewire chat typing.
+  - Applied Rector-compatible refactors and type signatures required by the current ruleset.
+  - Cleaned stale PHPStan ignore patterns and updated baseline alignment.
+  - Ensured optional SMS SDK path is handled safely when dependency is absent.
+- **Tests:**
+  - `composer test`: pass (`309 passed`, `888 assertions`)
+- **Quality:**
+  - `composer quality`: pass (`pint`, `phpstan`, `rector --dry-run`)
+- **Files:** hardening updates across AI, billing, notification, payment, Filament pages/resources/widgets, and PHPStan config.
+- **Notes:** This milestone is a quality stabilization checkpoint; next slice can focus on premium UX upgrades and Phase 6 completion under the same TDD gates.
+
+---
+
+## 2026-03-04 — Premium UI Pass (Dashboard + Theme Foundation)
+
+- **Status:** Done
+- **Goal:** Raise visual quality for core admin experience with a stronger premium design system and dashboard identity.
+- **Summary:**
+  - TDD applied for dashboard metadata (title + subheading) with new unit tests.
+  - Added localized premium dashboard heading/subheading.
+  - Upgraded Filament admin theme with a deliberate visual foundation:
+    - design tokens (surface, border, primary, accent, typography contrast),
+    - atmospheric background gradients,
+    - elevated widget/section/table surfaces,
+    - stronger input focus treatments,
+    - polished topbar/sidebar glass effect,
+    - lightweight page entrance animation.
+  - Mobile-specific polish for card radius and subheading readability.
+- **Tests:**
+  - Added: `tests/Unit/Pages/DashboardPageTest.php`
+  - `composer test`: pass (`311 passed`, `890 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `app/Filament/Pages/Dashboard.php`
+  - `resources/css/filament/admin/theme.css`
+  - `lang/fr/dashboard.php`
+  - `lang/en/dashboard.php`
+  - `tests/Unit/Pages/DashboardPageTest.php`
+- **Notes:** Next premium slice should target settings form ergonomics and billing view refinement for stronger visual consistency.
+
+---
+
+## 2026-03-04 — Premium UI Pass (Settings + Billing Refinement)
+
+- **Status:** Done
+- **Goal:** Improve premium UX for configuration-heavy screens and pricing presentation quality.
+- **Summary:**
+  - Added full-width layout behavior to Settings and Billing pages for better information density and usability.
+  - Improved Billing price rendering to be currency-aware (USD/EUR/GBP symbols, currency code fallback).
+  - Refined Billing page structure with a premium hero section and cleaner reusable icon sizing.
+  - Extended admin theme with billing-specific visual language (hero gradient, elevated cards, subtle motion, settings section accents).
+  - Removed inline view styling in favor of reusable theme classes.
+- **Tests:**
+  - Added: `tests/Unit/Pages/BillingPageTest.php`
+  - Added: `tests/Unit/Pages/SettingsPageTest.php`
+  - `composer test`: pass (`315 passed`, `895 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `app/Filament/Pages/Billing.php`
+  - `app/Filament/Pages/Settings.php`
+  - `resources/views/filament/pages/billing.blade.php`
+  - `resources/css/filament/admin/theme.css`
+  - `tests/Unit/Pages/BillingPageTest.php`
+  - `tests/Unit/Pages/SettingsPageTest.php`
+  - `BUILD_PROGRESS.md`
+- **Notes:** Next premium slice should target dashboard widgets + table density/accessibility tuning (focus states, empty states, and consistent data emphasis).
+
+---
+
+## 2026-03-04 — Billing UI Hotfix (Icon Scaling Regression)
+
+- **Status:** Done
+- **Goal:** Correct oversized icon rendering in Billing page cards and feature lists.
+- **Summary:**
+  - Added resilient icon sizing rules directly in Billing view scope (`.ekk-billing`) to prevent SVG expansion when utility classes are not reliably available.
+  - Enforced fixed dimensions for both small and medium icon variants with explicit min-size constraints.
+- **Tests:**
+  - `php artisan test tests/Unit/Pages/BillingPageTest.php`: pass
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `resources/views/filament/pages/billing.blade.php`
+- **Notes:** This hotfix targets visual correctness from production-like rendering conditions and keeps existing billing behavior unchanged.
+
+---
+
+## 2026-03-04 — Settings Crash Fix (fill() on null)
+
+- **Status:** Done
+- **Goal:** Resolve internal server error on `/admin/{tenant}/settings` caused by null form object during mount.
+- **Summary:**
+  - Root cause: page-level `$form` handling conflicted with runtime lifecycle, leading to `fill()` on null in `Settings::mount()`.
+  - Refactored settings state initialization to use direct Livewire state (`$this->data`) in `mount()` instead of form object fill.
+  - Updated save flow to read from normalized state and safely persist tenant values.
+  - Added regression coverage to ensure tenant settings route no longer throws 500.
+- **Tests:**
+  - Added/updated: `tests/Feature/Filament/SettingsPageTest.php`
+  - Verified: `php artisan test` pass (`316 passed`, `896 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `app/Filament/Pages/Settings.php`
+  - `tests/Feature/Filament/SettingsPageTest.php`
+  - `BUILD_PROGRESS.md`
+- **Notes:** Access policy may still return 403 for unauthorized users, but the internal server error is eliminated.
+
+---
+
+## 2026-03-04 — CRUD Display Quality Upgrade (Filament Resources)
+
+- **Status:** Done
+- **Goal:** Fix design-quality and rendering consistency issues across all Filament CRUD resource screens.
+- **Summary:**
+  - Normalized all resource `List*` pages to full-width layouts so list/table screens match create/edit density and avoid cramped presentation.
+  - Hardened global CRUD UI styles in the shared Filament admin theme:
+    - Better header toolbar spacing and responsive behavior.
+    - Improved filter panel readability and visual grouping.
+    - Horizontal containment for wide tables with safer minimum widths.
+    - Better cell/column text wrapping to prevent overflow and clipping.
+    - Consistent table action button wrapping/alignment for row actions.
+    - Improved form field rhythm and label emphasis.
+  - Applied changes globally so all current and future resources inherit the same quality baseline.
+- **Tests:**
+  - Verified: `php artisan test` pass (`316 passed`, `896 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `app/Filament/Resources/AnnouncementResource/Pages/ListAnnouncements.php`
+  - `app/Filament/Resources/CampusResource/Pages/ListCampuses.php`
+  - `app/Filament/Resources/EventResource/Pages/ListEvents.php`
+  - `app/Filament/Resources/GalleryResource/Pages/ListGalleries.php`
+  - `app/Filament/Resources/GivingRecordResource/Pages/ListGivingRecords.php`
+  - `app/Filament/Resources/MemberResource/Pages/ListMembers.php`
+  - `app/Filament/Resources/NotificationDispatchResource/Pages/ListNotificationDispatches.php`
+  - `app/Filament/Resources/PageResource/Pages/ListPages.php`
+  - `app/Filament/Resources/PaymentTransactionResource/Pages/ListPaymentTransactions.php`
+  - `app/Filament/Resources/SermonResource/Pages/ListSermons.php`
+  - `BUILD_PROGRESS.md`
+- **Notes:** Next quality pass should target per-resource column semantics (e.g., explicit truncation/tooltips and priority-based responsive column visibility) for even stronger mobile ergonomics.
+
+---
+
+## 2026-03-04 — Show Modal Quality Upgrade (ViewAction + Infolist Columns)
+
+- **Status:** Done
+- **Goal:** Fix low-quality visual rendering in Filament "show" modals, especially infolist column readability.
+- **Summary:**
+  - Applied global `ViewAction` defaults to improve modal composition consistency:
+    - Wider modal width (`5xl`) for better data density.
+    - Start-aligned modal layout for improved label/content scanning.
+  - Added premium modal and infolist styling in the shared admin theme:
+    - Upgraded modal surface, border contrast, and hierarchy.
+    - Better infolist row containers with spacing and structure.
+    - Improved inline label/content column behavior and multiline readability.
+    - Refined key-value and repeatable table presentation inside modals.
+    - Mobile fallback so columns collapse cleanly without visual breakage.
+- **Tests:**
+  - Verified: `php artisan test` pass (`316 passed`, `896 assertions`)
+- **Quality:**
+  - `composer quality`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`
+- **Notes:** Next step can add per-resource `ViewAction::infolist()` schemas for high-priority entities to control field ordering and semantic grouping, beyond global styling.
+
+---
+
+## 2026-03-04 — Show Modal Single-Column Hotfix
+
+- **Status:** Done
+- **Goal:** Enforce single-column display for show-view modal entries.
+- **Summary:**
+  - Removed two-column inline label/content layout in modal infolist entries.
+  - Forced `.fi-in-entry-has-inline-label` to render as one column across all breakpoints for cleaner, consistent reading flow.
+- **Tests:**
+  - Verified: `composer quality` pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Show Modal Grid Columns Fix (Screenshot Follow-up)
+
+- **Status:** Done
+- **Goal:** Remove remaining two-per-row field layout in show modals (resource sections still rendering as multi-column).
+- **Summary:**
+  - Added modal-scoped overrides for Filament schema grid variables (`--cols-*`) to force one-column rendering in modal content at all breakpoints.
+  - Fix directly targets the layout seen in Event and Sermon show screenshots where section fields were still displayed in two columns.
+- **Tests:**
+  - Verified: `composer quality` pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Premium CRUD List Visual Pass (Global Table UX)
+
+- **Status:** Done
+- **Goal:** Elevate Filament CRUD list pages (Members and all other table-based resources) with stronger premium visual quality and usability.
+- **Summary:**
+  - Improved table visual hierarchy: stronger heading styles, clearer header metadata, and better body text readability.
+  - Upgraded toolbar/search/filter prominence with bordered elevated toolbar container and clearer search field treatment.
+  - Improved row interaction clarity with refined row borders and subtle hover states.
+  - Redesigned row action controls for accessibility and precision:
+    - Larger hit areas.
+    - Better icon sizing and hover feedback.
+  - Strengthened pagination clarity and active-state treatment (buttons, overview text, and page emphasis).
+  - Improved sidebar navigation emphasis with clearer active/current state styling and stronger group label readability.
+  - Verified shared-class coverage so changes apply across all Filament CRUD list screens using common `fi-ta-*`, `fi-pagination*`, and `fi-sidebar*` components.
+- **Validation:**
+  - `composer quality`: pass
+  - `npm run build`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Edit Pages Single-Column Layout (Global Resource Fix)
+
+- **Status:** Done
+- **Goal:** Change Filament resource edit pages from two columns to a single-column form layout.
+- **Summary:**
+  - Added a shared app-level edit page base class to override Filament `EditRecord` default form column behavior.
+  - Forced default edit form schema to `columns(1)` when the schema does not explicitly define custom columns.
+  - Updated all resource edit pages to extend the shared base class for consistent behavior across modules.
+  - Scope is edit pages only; create/list/show behavior remains unchanged.
+- **Validation:**
+  - `composer quality`: pass
+  - Targeted tests: `php artisan test tests/Unit/Pages tests/Feature/Filament`: pass
+  - `npm run build`: pass
+- **Files:**
+  - `app/Filament/Resources/Pages/EditRecord.php`
+  - `app/Filament/Resources/AnnouncementResource/Pages/EditAnnouncement.php`
+  - `app/Filament/Resources/CampusResource/Pages/EditCampus.php`
+  - `app/Filament/Resources/EventResource/Pages/EditEvent.php`
+  - `app/Filament/Resources/GalleryResource/Pages/EditGallery.php`
+  - `app/Filament/Resources/GivingRecordResource/Pages/EditGivingRecord.php`
+  - `app/Filament/Resources/MemberResource/Pages/EditMember.php`
+  - `app/Filament/Resources/PageResource/Pages/EditPage.php`
+  - `app/Filament/Resources/SermonResource/Pages/EditSermon.php`
+  - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Create Pages Single-Column Layout (Global Resource Fix)
+
+- **Status:** Done
+- **Goal:** Change Filament resource create pages from two columns to a single-column form layout.
+- **Summary:**
+  - Added a shared app-level create page base class to override Filament `CreateRecord` default form column behavior.
+  - Forced default create form schema to `columns(1)` when the schema does not explicitly define custom columns.
+  - Updated all resource create pages to extend the shared base class for consistent behavior across modules.
+  - Scope is create pages only; edit/list/show behavior remains unchanged.
+- **Validation:**
+  - `composer quality`: pass
+  - Targeted tests: `php artisan test tests/Unit/Pages tests/Feature/Filament`: pass
+  - `npm run build`: pass
+- **Files:**
+  - `app/Filament/Resources/Pages/CreateRecord.php`
+  - `app/Filament/Resources/AnnouncementResource/Pages/CreateAnnouncement.php`
+  - `app/Filament/Resources/EventResource/Pages/CreateEvent.php`
+  - `app/Filament/Resources/GalleryResource/Pages/CreateGallery.php`
+  - `app/Filament/Resources/GivingRecordResource/Pages/CreateGivingRecord.php`
+  - `app/Filament/Resources/MemberResource/Pages/CreateMember.php`
+  - `app/Filament/Resources/PageResource/Pages/CreatePage.php`
+  - `app/Filament/Resources/SermonResource/Pages/CreateSermon.php`
+  - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-04 — Global Border Softening Pass (Transparent Premium Edges)
+
+- **Status:** Done
+- **Goal:** Reduce heavy border appearance across Filament components by making border treatment more transparent and premium.
+- **Summary:**
+  - Introduced shared border tone tokens:
+    - `--ekk-border-soft`
+    - `--ekk-border-faint`
+  - Replaced heavy component border colors with transparent soft variants across:
+    - sections/widgets/tables
+    - table toolbar/filters/row dividers/action buttons
+    - pagination wrappers/buttons
+    - input/select/text fields
+    - modal shells/headers/infolist containers
+    - billing cards
+  - Preserved structure using shadows and spacing so readability remains strong while visual noise is reduced.
+- **Validation:**
+  - `composer quality`: pass
+  - `npm run build`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+  - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-06 — High-Quality Architecture & Security Hardening
+
+- **Status:** Done
+- **Goal:** Implement high-priority architecture fixes, design improvements, and security hardening (AI rate limiting, robust multi-tenant design).
+- **Summary:**
+  - Removed `HasSoftVersioning` from `GivingRecord` to secure financial ledgers (they should be immutable/append-only).
+  - Implemented AI Rate Limiting using Laravel `RateLimiter` inside `ProcessAiMessage` (10 messages/minute scoped by `tenant_id`) to protect from API quota abuse.
+  - Refactored Filament Form Layouts:
+    - Removed hacky global CSS forcing single columns.
+    - Deleted custom `CreateRecord` and `EditRecord` base class overrides.
+    - Updated all 8 resource `Create*.php` and `Edit*.php` files to use native Filament base classes.
+    - Re-applied `->columns(1)` natively and cleanly across all 10 `*Resource.php` schema builders.
+- **Validation:**
+  - `php artisan test`: pass (319 passed, 917 assertions)
+  - `composer quality`: pass
+- **Files:**
+  - `app/Models/GivingRecord.php`
+  - `app/Jobs/ProcessAiMessage.php`
+  - `resources/css/filament/admin/theme.css`
+  - `app/Filament/Resources/*Resource.php` (10 files)
+  - `app/Filament/Resources/*Resource/Pages/Create*.php` (8 files)
+  - `app/Filament/Resources/*Resource/Pages/Edit*.php` (8 files)
+  - `BUILD_PROGRESS.md`
+
+---
+
+## 2026-03-06 — Financial Integrity & Audit Robustness
+
+- **Status:** Done
+- **Goal:** Implement robust append-only audit logs for all financial models and prepare database partitioning strategy.
+- **Summary:**
+  - **Financial Hardening:**
+    - Secured `GivingRecord` and `PaymentTransaction` models as **immutable**: blocked `updating` and `deleting` at the model level (Eloqeunt events) for core financial fields.
+    - Disabled `EditAction` and `DeleteAction` in `GivingRecordResource` and `PaymentTransactionResource`.
+    - Grouped all financial audit trails under a dedicated `financial` log name in `Spatie/Activitylog`.
+    - Excluded sensitive fields (`phone_number`, `provider_metadata`) from audit logs for privacy and security.
+  - **Audit Log Visibility:**
+    - Implemented a read-only `ActivityResource` in Filament to allow administrators to review the audit trail.
+    - Scoped `Activity` model to current tenant using `BelongsToTenant` trait.
+    - Added English and French translations for the audit log interface.
+  - **Scaling Strategy:**
+    - Drafted `docs/architecture/partitioning-strategy.md` for PostgreSQL declarative partitioning of `activity_log` and `media` tables.
+- **Validation:**
+  - `php artisan test`: pass
+  - Audit log visibility confirmed in Filament dashboard.
+  - Financial records verified as immutable via manual attempt.
+- **Files:**
+  - `app/Models/GivingRecord.php` (Hardening)
+  - `app/Models/PaymentTransaction.php` (Hardening + LogsActivity)
+  - `app/Concerns/LogsActivityWithTenant.php` (Robustness)
+  - `app/Filament/Resources/GivingRecordResource.php` (UI Hardening)
+  - `app/Filament/Resources/ActivityResource.php` (New Resource)
+  - `app/Models/Activity.php` (Tenant Scoping)
+  - `docs/architecture/partitioning-strategy.md` (New Doc)
+  - `lang/*/activity.php` (Translations)
+
+
+---
+
+## 2026-03-06 — Financial API Hardening & Audit Quality
+
+- **Status:** Done
+- **Goal:** Align GivingRecord API with model-level immutability and resolve quality gate blockers in Audit Log (ActivityResource).
+- **Summary:**
+  - **Financial API Hardening:**
+    - Restricted `giving-records` API to read/create only; disabled `PUT/PATCH` and `DELETE` methods in `routes/api.php`.
+    - Updated `GivingRecordApiTest` to verify that update/delete attempts return `405 Method Not Allowed`.
+  - **Quality Gate Recovery:**
+    - Fixed PHPStan crash by increasing memory limit.
+    - Resolved PHPStan `class.notFound` in `ActivityResource.php` by importing `Filament\Actions` namespace.
+    - Suppressed `narrowedType` warning in `LogsActivityWithTenant` trait using `@phpstan-ignore`.
+    - Applied Rector closure return type fixes and Pint style normalization.
+  - **Audit UX:**
+    - Localized filter options and action labels in `ActivityResource`.
+- **Validation:**
+  - `php artisan test tests/Feature/Api/V1/GivingRecordApiTest.php`: pass (14 passed)
+  - `vendor/bin/phpstan analyze`: pass (no errors)
+  - `vendor/bin/rector --dry-run`: pass (no changes pending)
+- **Files:**
+  - `routes/api.php`
+  - `app/Filament/Resources/ActivityResource.php`
+  - `app/Concerns/LogsActivityWithTenant.php`
+  - `app/Models/GivingRecord.php` (Rector)
+  - `app/Models/PaymentTransaction.php` (Rector)
+  - `tests/Feature/Api/V1/GivingRecordApiTest.php`
+
+---
+
+## 2026-03-06 — RBAC & Security Wave A
+
+- **Status:** Done
+- **Goal:** Implement granular Role-Based Access Control (RBAC) across the platform and API.
+- **Summary:**
+  - **Filament Shield Integration:**
+    - Installed `bezhansalleh/filament-shield` v4 (Filament v5 compatible).
+    - Configured multi-tenancy support for permissions using `stancl/tenancy`.
+    - Migrated `spatie/laravel-permission` with `team_id` as `string` to match tenant slugs.
+  - **RBAC Foundation:**
+    - Created `RolesAndPermissionsSeeder` defining 4 base roles: `Super Admin`, `Pastor`, `Treasurer`, `Volunteer`.
+    - Generated policies for all 10 core resources.
+  - **API Authorization:**
+    - Updated all API V1 Controllers to enforce model policies via `$this->authorize()`.
+    - Verified that unauthorized users (e.g., Volunteers) receive `403 Forbidden` on sensitive endpoints like Giving/Payments.
+- **Validation:**
+  - `php artisan test tests/Feature/Filament/RbacTest.php`: pass (4 passed)
+- **Files:**
+---
+
+## 2026-03-11 — Stage 1 Hardening & Security Audit
+
+- **Status:** Done
+- **Goal:** Harden financial integrity, optimize AI performance, and enforce PII scrubbing in audit logs.
+- **Summary:**
+  - **Financial Hardening:**
+    - Created `ImmutableRecordException` for uniform handling of forbidden modifications.
+    - Updated `GivingRecord` and `PaymentTransaction` models to throw localized exceptions on `updating` or `deleting`.
+  - **Privacy & Security:**
+    - Enhanced `LogsActivityWithTenant` trait with a `scrubPii` method that automatically redacts sensitive keys (`phone`, `email`, `amount`, etc.) within `custom_fields` JSON property.
+  - **AI Performance & UX:**
+    - Optimized `TenantContextBuilder` by caching aggregate stats for 15 minutes per tenant to avoid N+1 queries during AI interaction.
+    - Enhanced AI financial context with "Safe Totals" (comparing current month to previous month) to enable trend analysis without exposing individual records.
+    - Upgraded `SkillRegistry` with keyword-based skill detection and scoring, allowing the AI assistant to recognize intent even without explicit `/slug` commands.
+- **Validation:**
+  - `php artisan test --filter=GivingRecordApiTest`: pass (14 passed)
+- **Files:**
+  - `app/Exceptions/ImmutableRecordException.php`
+  - `app/Models/GivingRecord.php`
+  - `app/Models/PaymentTransaction.php`
+  - `app/Concerns/LogsActivityWithTenant.php`
+  - `app/Services/TenantContextBuilder.php`
+  - `app/Services/Ai/AiSkill.php`
+---
+
+## 2026-03-11 — Stage 2: Financial Corrections & Data Portability
+
+- **Status:** In Progress
+- **Goal:** Enable safe financial corrections and provide data export tools.
+- **Summary:**
+  - **Adjustment System:**
+    - Implemented a polymorphic `Adjustment` model to track voids and corrections for immutable records.
+    - Added `Void` action to `GivingRecordResource` and `PaymentTransactionResource` with reason tracking and audit trail.
+    - Integrated visual indicators (IconColumn) to identify voided records in tables.
+  - **Data Portability:**
+
+    - Enabled `withResponsiveImages()` for Member avatars and Gallery photos to optimize bandwidth for low-connectivity areas.
+    - Added high-quality thumbnails and medium-sized conversions for all core models.
+- **Validation:**
+  - `php artisan test`: pass
+  - Exporters and Media conversions verified.
+- **Files:**
+  - `app/Models/Adjustment.php`
+  - `database/migrations/2026_03_11_095048_create_adjustments_table.php`
+  - `app/Filament/Exports/GivingRecordExporter.php`
+  - `app/Filament/Exports/MemberExporter.php`
+  - `app/Filament/Resources/GivingRecordResource.php`
+  - `app/Filament/Resources/GivingRecordResource/Pages/ListGivingRecords.php`
+  - `app/Filament/Resources/MemberResource/Pages/ListMembers.php`
+  - `app/Filament/Resources/NotificationDispatchResource.php`
+  - **Fund Management:**
+    - Enhanced `FundResource` and `CampaignResource` with real-time financial tracking (Total Raised calculations).
+    - Integrated multi-currency support for global church operations.
+
+## 2026-03-11 — Stage 3: Launch Prep & Observability
+
+- **Status:** Done
+- **Goal:** Ensure system reliability and prepare for production deployment.
+- **Summary:**
+  - **Observability:**
+    - Integrated `spatie/laravel-health` to monitor core system vitals.
+    - Registered health checks for Database, Storage, Debug Mode, Environment, and App Optimization.
+  - **Documentation:**
+    - Created a comprehensive `Admin Runbook` for church staff (Treasurers, Pastors).
+    - Integrated the runbook into the VitePress documentation site.
+- **Validation:**
+  - `php artisan test`: pass (330 passed, 959 assertions)
+  - `php artisan health:list`: verified (manual check)
+- **Files:**
+  - `app/Providers/AppServiceProvider.php`
+  - `docs/guide/admin-runbook.md`
+  - `app/Filament/Resources/FundResource.php`
+  - `app/Filament/Resources/CampaignResource.php`
+  - `IMPROVEMENTS_PLAN.md`
+
+---
+
+## 2026-03-11 — Stage 4: Bulk Messaging Test Coverage & Bug Fix
+
+- **Status:** Done
+- **Goal:** Complete test coverage for the Bulk Messaging feature (Feature 9) and fix a type bug.
+- **Summary:**
+  - **Bug Fix:**
+    - Fixed `BulkMessage::getRecipients()` returning `Illuminate\Support\Collection` instead of `Illuminate\Database\Eloquent\Collection` for the default case.
+  - **Test Coverage (45 new tests):**
+    - **Unit Tests (16):** Model casts, hidden attributes, scopes (draft, scheduled, sent, sending, readyToSend), status transition methods (markAsSending, markAsSent, markAsFailed), getRecipients targeting, relationship to creator.
+    - **API Feature Tests (20):** Auth guard, CRUD operations, send action dispatching, status/channel filtering, pagination, validation errors, update endpoint returns 405.
+    - **Tenant Isolation Tests (3):** Cross-tenant invisibility, count isolation, API scoping.
+    - **Job & Command Tests (7):** SendBulkMessageJob status transitions, dispatch record creation, failure counting, contact info skipping; SendScheduledBulkMessages command multi-tenant processing, no-op when nothing due.
+  - **Code Style:** Applied Pint formatting to all dirty files (policies, migrations, services).
+- **Validation:**
+  - `pest`: pass (568 passed, 1561 assertions)
+  - `phpstan analyze app/Models/BulkMessage.php`: pass (no errors)
+- **Files:**
+  - `app/Models/BulkMessage.php` (bug fix: default return type)
+  - `tests/Unit/Models/BulkMessageTest.php` (new — 16 tests)
+  - `tests/Feature/Api/V1/BulkMessageApiTest.php` (new — 20 tests)
+  - `tests/Feature/TenantIsolation/BulkMessageIsolationTest.php` (new — 3 tests)
+  - `tests/Feature/Commands/SendScheduledBulkMessagesTest.php` (new — 7 tests including job tests)
+- **Notes:** Features 7 (Birthday Notifications), 8 (Reading Plans), and 9 (Bulk Messaging) are now all complete with full test coverage. Production readiness sprint features 1-9 done.
+
+---
+
+## 2026-03-11 — UI Hotfix (Table Toolbar Icon Bleed)
+
+- **Status:** Done
+- **Goal:** Fix Filament table UI where column manager and filter trigger icons were being pushed completely outside the table card due to search field width constraints.
+- **Summary:**
+  - Modified `.fi-ta-header-toolbar > div` flex layout to include `flex-wrap: wrap;` allowing children to naturally break if space is constrained.
+  - Updated `.fi-ta-search-field` to use `flex: 1 1 auto;` with a minimum width instead of an inflexible `width: 100%;`.
+  - Ensured the column manager and action icons properly fit inside the rounded `.fi-ta` table container without bleeding out over the edges.
+- **Validation:**
+  - `npm run build`: pass
+  - `php -d memory_limit=512M vendor/bin/pest`: pass (568 passed, 1561 assertions)
+  - `composer quality`: pass
+- **Files:**
+  - `resources/css/filament/admin/theme.css`
+
+---
+
+## 2026-03-11 — Giving Records UI Fix (Translations & Icon Consistency)
+
+- **Status:** Done
+- **Goal:** Fix missing translation keys for "Void" actions and labels in the Giving Records table.
+- **Summary:**
+  - Added `void`, `voided`, `void_heading`, `void_description`, and `void_reason` keys to `lang/fr/giving_records.php` and `lang/en/giving_records.php`.
+  - Converted the `void` action in `GivingRecordResource` to an icon-only button to match the premium admin design system (was showing as a red text link with a raw translation key).
+- **Validation:**
+  - `composer quality`: pass
+  - UI visual check: translation keys now resolve to "Annuler" / "Annulé" (FR) or "Void" / "Voided" (EN).
+- **Files:**
+  - `lang/fr/giving_records.php`
+  - `lang/en/giving_records.php`
+  - `app/Filament/Resources/GivingRecordResource.php`
+
+---
+
+## 2026-03-11 — Page Builder "Pro" Update
+
+- **Status:** Done
+- **Goal:** Transition the Ekklesia CMS Page Builder from a static marketing tool to a professional-grade dynamic Church CMS.
+- **Summary:**
+  - **Dynamic & Motion Updates:**
+    - Upgraded `hero` block with multiple slides, configurable transition types (fade/slide), and autoplay speed.
+    - Updated `logo_cloud` block with infinite scrolling/marquee loop for partner logos.
+  - **Church-Specific Dynamic Blocks:**
+    - `sermon_feed`: Pulls dynamic data from `Sermons` with filters and a new `notes_url` for downloading notes.
+    - `staff_directory`: Dynamically loads from `User` model, filtering by active roles and `department`. Supports `bio`, `title`, and `social_links`.
+    - `events_feed`: Added campus filtering and visual improvements.
+    - `giving_cta`: Added "Quick Give" functionality linked directly to `Funds`.
+  - **Engagement & Automation:**
+    - `live_stream`: Respects a global tenant `live_stream_active` setting from the Admin Settings to show/hide dynamically.
+  - **Layout & Structure:**
+    - Enhanced `columns` block to support nested dynamic blocks (like `video`, `quote`).
+    - Upgraded `divider` block with decorative wave patterns.
+    - Added `mosaic` grid layout to `gallery` block for varying photo sizes.
+  - **Database & Resources:**
+    - Added `notes_url` to `sermons` table.
+    - Added `title`, `department`, `bio`, and `social_links` to `users` table.
+    - Fully translated all new block properties in FR and EN.
+- **Validation:**
+  - `php artisan test tests/Feature/Api/V1/PageApiTest.php`: pass
+  - `composer quality`: pass
+- **Files Changed:**
+  - `app/Filament/Resources/PageResource.php`
+  - `app/Filament/Resources/SermonResource.php`
+  - `app/Filament/Resources/UserResource.php`
+  - `app/Models/Sermon.php`, `app/Models/User.php`
+  - `resources/views/components/blocks/*.blade.php`
+  - Migrations for sermons and users.
+
+---
+
+## 2026-03-12 — Stage 3: Notification Dashboard & Octane Benchmark
+
+- **Status:** Done
+- **Goal:** Enhance notification observability and validate system stability under multi-tenant load.
+- **Summary:**
+    - **Notification Dashboard:** Implemented a dedicated "Operations Dashboard" within the `NotificationDispatchResource` featuring:
+        - `NotificationStats`: Real-time tracking of sent, pending, and failed dispatches.
+        - `NotificationTrends`: Visual line chart of notification volume over the last 7 days.
+        - `RecentFailures`: Instant visibility into the most recent dispatch errors.
+    - **Observability:** Organized widgets into a resource-specific namespace (`app/Filament/Resources/NotificationDispatchResource/Widgets`) to keep the main Admin Dashboard focused on church growth metrics.
+    - **Load Testing:** Created a `BenchmarkOctane` Artisan command to simulate concurrent activity across hundreds of tenants, measuring request performance and memory stability.
+    - **Stability Fixes:** Resolved a non-static property bug in `ChartWidget` and optimized benchmark concurrency using `Http::pool`.
+- **Validation:**
+    - `php artisan app:benchmark`: verified execution flow.
+    - UI verified: Widgets correctly rendered on the Notification Dispatch list page.
+- **Files:**
+    - `app/Filament/Resources/NotificationDispatchResource/Widgets/NotificationStats.php`
+    - `app/Filament/Resources/NotificationDispatchResource/Widgets/NotificationTrends.php`
+    - `app/Filament/Resources/NotificationDispatchResource/Widgets/RecentNotificationFailures.php`
+    - `app/Filament/Resources/NotificationDispatchResource/Pages/ListNotificationDispatches.php`
+    - `app/Console/Commands/BenchmarkOctane.php`
+
+

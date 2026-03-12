@@ -97,6 +97,8 @@
             "@rector",
             "@lint"
         ],
+        "docs:sync": "@php artisan app:docs-sync",
+        "docs:dev": "cd docs && npm run dev",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
